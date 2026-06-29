@@ -62,8 +62,14 @@ export default function TermsPage() {
   }, [pathname]);
 
   return (
-    <div style={{ background: "var(--bg)", color: "var(--text)", minHeight: "100vh", fontFamily: "Inter, sans-serif" }}>
-
+    <div
+      style={{
+        background: "var(--bg)",
+        color: "var(--text)",
+        minHeight: "100vh",
+        fontFamily: "Inter, sans-serif",
+      }}
+    >
       {/* Nav */}
       <nav className="legal-nav">
         <Link to="/" className="legal-logo">
@@ -71,8 +77,12 @@ export default function TermsPage() {
           <span className="legal-logo-text">Haadi Cloud</span>
         </Link>
         <div className="legal-nav-links">
-          <Link to="/login" className="legal-nav-link">Sign In</Link>
-          <Link to="/register" className="legal-nav-btn">Get Started</Link>
+          <Link to="/login" className="legal-nav-link">
+            Sign In
+          </Link>
+          <Link to="/register" className="legal-nav-btn">
+            Get Started
+          </Link>
         </div>
       </nav>
 
@@ -80,15 +90,25 @@ export default function TermsPage() {
       <div className="legal-content">
         <div className="legal-label">Legal</div>
         <h1 className="legal-title">Terms of Service</h1>
-        <p className="legal-updated">Effective date: {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}</p>
+        <p className="legal-updated">
+          Effective date:{" "}
+          {new Date().toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })}
+        </p>
 
         <div className="legal-intro-box">
           <p className="legal-intro-text">
-            Please read these Terms of Service carefully. They govern your use of Haadi Cloud's personal cloud storage service — including uploading and organising files, managing subscriptions, and accessing files across devices.
+            Please read these Terms of Service carefully. They govern your use
+            of Haadi Cloud's personal cloud storage service — including
+            uploading and organising files, managing subscriptions, and
+            accessing files across devices.
           </p>
         </div>
 
-        {sections.map(s => (
+        {sections.map((s) => (
           <div key={s.title} className="legal-section">
             <h2 className="legal-section-title">{s.title}</h2>
             <p className="legal-section-text">{s.content}</p>
@@ -99,7 +119,12 @@ export default function TermsPage() {
           <h3 className="legal-highlight-title">Questions about our Terms?</h3>
           <p className="legal-highlight-text">
             Contact us at{" "}
-            <a href="mailto:contact@mirhaadi.in" className="legal-highlight-link">contact@mirhaadi.in</a>
+            <a
+              href="mailto:contact@mirhaadi.in"
+              className="legal-highlight-link"
+            >
+              contact@mirhaadi.in
+            </a>
             . We aim to respond within 5 business days.
           </p>
         </div>
@@ -108,10 +133,16 @@ export default function TermsPage() {
       {/* Footer */}
       <footer className="legal-footer">
         <div className="legal-footer-inner">
-          <span className="legal-footer-copy">© {new Date().getFullYear()} Haadi Cloud. All rights reserved.</span>
+          <span className="legal-footer-copy">
+            © {new Date().getFullYear()} Haadi Cloud. All rights reserved.
+          </span>
           <div className="legal-footer-links">
-            <Link to="/privacy" className="legal-nav-link">Privacy Policy</Link>
-            <Link to="/" className="legal-nav-link">Home</Link>
+            <Link to="/privacy" className="legal-nav-link">
+              Privacy Policy
+            </Link>
+            <Link to="/" className="legal-nav-link">
+              Home
+            </Link>
           </div>
         </div>
       </footer>

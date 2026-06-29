@@ -50,7 +50,7 @@ function inputSx() {
 export default function SettingsPage() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("security");
   const [logoutAllConfirm, setLogoutAllConfirm] = useState(false);
   const [errorAlert, setErrorAlert] = useState("");
   const [pwForm, setPwForm] = useState({ current: "", newPw: "", confirm: "" });
@@ -164,7 +164,6 @@ export default function SettingsPage() {
       ];
 
   const tabs = [
-    { id: "profile", label: "Profile" },
     { id: "security", label: "Security" },
     { id: "storage", label: "Storage" },
   ];
@@ -211,162 +210,6 @@ export default function SettingsPage() {
             </button>
           ))}
         </div>
-
-        {/* Profile Tab */}
-        {activeTab === "profile" && (
-          <>
-            <Section title="Profile Information">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                  marginBottom: 24,
-                }}
-              >
-                <div
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: "50%",
-                    background: "var(--primary)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                    flexShrink: 0,
-                    overflow: "hidden",
-                  }}
-                >
-                  {user?.picture ? (
-                    <img
-                      src={user.picture}
-                      alt=""
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  ) : (
-                    "👤"
-                  )}
-                </div>
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: 16 }}>
-                    {user?.name || "User"}
-                  </div>
-                  <div style={{ color: "var(--muted)", fontSize: 13 }}>
-                    {user?.email}
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: "grid", gap: 16 }}>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: "var(--muted)",
-                      marginBottom: 6,
-                      textTransform: "uppercase",
-                      letterSpacing: 0.5,
-                    }}
-                  >
-                    Full Name
-                  </label>
-                  <input
-                    value={user?.name || ""}
-                    disabled
-                    style={{
-                      ...inputSx(),
-                      opacity: 0.5,
-                      cursor: "not-allowed",
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: "var(--muted)",
-                      marginBottom: 6,
-                      textTransform: "uppercase",
-                      letterSpacing: 0.5,
-                    }}
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    defaultValue={user?.email}
-                    disabled
-                    style={{
-                      ...inputSx(),
-                      opacity: 0.5,
-                      cursor: "not-allowed",
-                    }}
-                  />
-                  <p
-                    style={{
-                      fontSize: 11,
-                      color: "var(--muted)",
-                      marginTop: 4,
-                    }}
-                  >
-                    Email address cannot be changed
-                  </p>
-                </div>
-              </div>
-            </Section>
-
-            <Section title="Account Details">
-              {[
-                [
-                  "Member since",
-                  user?.createdAt
-                    ? new Date(user.createdAt).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })
-                    : "—",
-                ],
-                ["Account type", "Personal"],
-                ["Account ID", user?.id || "—"],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "10px 0",
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
-                  <span style={{ fontSize: 13, color: "var(--muted)" }}>
-                    {label}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: "var(--text)",
-                      fontFamily:
-                        label === "Account ID" ? "monospace" : "inherit",
-                      fontSize: label === "Account ID" ? 11 : 13,
-                    }}
-                  >
-                    {value}
-                  </span>
-                </div>
-              ))}
-            </Section>
-          </>
-        )}
 
         {/* Security Tab */}
         {activeTab === "security" && (
@@ -446,7 +289,7 @@ export default function SettingsPage() {
               <button
                 onClick={handlePasswordSubmit}
                 style={{
-                  marginTop: 8,
+                  marginTop: 16,
                   padding: "10px 20px",
                   // background: "var(--primary)",
                   background:
@@ -741,7 +584,7 @@ export default function SettingsPage() {
         open={disableAccountConfirm}
         icon="⏸️"
         title="Disable your account?"
-        message="You'll be signed out immediately and won't be able to sign in again until your account is restored. Your files and data will be kept."
+        message="You'll be signed out immediately and won't be able to sign in again until your account is restored by admin. Your files and data will be kept."
         confirmLabel="Disable Account"
         confirmDanger
         onConfirm={() => {

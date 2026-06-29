@@ -33,7 +33,7 @@ const sections = [
   },
   {
     title: "8. Your Rights",
-    content: `You can access, update, or delete your personal information at any time through your account settings. You may download your files directly from the dashboard at any time. To request a complete export of all data we hold, or to permanently delete your account, email us at privacy@haadi.cloud. We will respond within 30 days.`,
+    content: `You can access, update, or delete your personal information at any time through your account settings. You may download your files directly from the dashboard at any time. To request a complete export of all data we hold, or to permanently delete your account, email us at contact@mirhaadi.in. We will respond within 30 days.`,
   },
   {
     title: "9. Cookies & Sessions",

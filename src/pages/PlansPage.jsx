@@ -665,11 +665,9 @@ function StorageBar({ user, activeSubscription, premiumActive }) {
 function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
   const consequences = [
     { icon: "📦", text: `Storage drops to 1 GB (Free tier) at end of billing period.` },
-    { icon: "🔒", text: "Files exceeding 1 GB will become inaccessible (not deleted)." },
-    { icon: "⚡", text: "Priority upload speeds and advanced features will be disabled." },
+    { icon: "🔒", text: "Files exceeding 1 GB will become inaccessible (deleted)." },
     { icon: "📅", text: `Premium access continues until your billing period ends${endDate ? ` (${endDate})` : ""}.` },
     { icon: "💸", text: "No refund for the current billing period — you keep access until it ends." },
-    { icon: "🔄", text: "You can re-subscribe at any time to restore access." },
   ];
 
   return (
@@ -693,7 +691,7 @@ function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
           <div>
             <h3 style={{ fontSize: 17, fontWeight: 700, color: "#FCA5A5", marginBottom: 4 }}>Cancel Subscription?</h3>
             <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
-              Before you proceed, here's what happens when you cancel your <strong style={{ color: "var(--text)" }}>{plan || "current"}</strong> plan:
+              Before you proceed, here's what happens when you cancel your current plan:
             </p>
           </div>
         </div>
