@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
 import { useUser } from "./context/UserContext";
+
 import {
   getDirectoryItems,
   createDirectory,
@@ -86,7 +87,7 @@ function uploadFileToR2({ item, fileId, uploadUrl, setProgressMap }) {
 export default function DirectoryView() {
   const { dirId } = useParams();
   const navigate = useNavigate();
-  const { refreshUser } = useUser();
+  const { user, refreshUser } = useUser();
   const isMobile = useIsMobile();
 
   // ── state ──────────────────────────────────────────────────────────────────
@@ -152,11 +153,11 @@ export default function DirectoryView() {
   const fileInputRef = useRef(null);
   const dragCounter = useRef(0);
   const processUploadRef = useRef(null);
+  const cacheKey = `${user?.id}:${dirId || "root"}`;
 
   // ── load directory ─────────────────────────────────────────────────────────
   const loadDirectory = useCallback(
     async (opts = {}) => {
-      const cacheKey = dirId || "root";
       if (!opts.force && dirCache.has(cacheKey)) {
         const { directories, files, breadcrumbs: bc } = dirCache.get(cacheKey);
         setDirectoriesList(directories);
@@ -188,14 +189,26 @@ export default function DirectoryView() {
         setListRefreshing(false);
       }
     },
-    [dirId],
+    [cacheKey, dirId, addToast],
   );
+  
+const previousUserId = useRef();
 
-  useEffect(() => {
-    loadDirectory();
-    setSelectedItems([]);
-    setSelectionMode(false);
-  }, [dirId, loadDirectory]);
+useEffect(() => {
+  if (!user) {
+    dirCache.clear();
+    previousUserId.current = undefined;
+    return;
+  }
+
+  if (previousUserId.current !== user.id) {
+    dirCache.clear();
+    previousUserId.current = user.id;
+  }
+  loadDirectory();
+  setSelectedItems([]);
+  setSelectionMode(false);
+}, [dirId, user?.id, loadDirectory]);
 
   useEffect(() => {
     localStorage.setItem("viewMode", viewMode);
@@ -325,7 +338,7 @@ export default function DirectoryView() {
       else
         setFilesList((prev) => prev.filter((f) => String(f._id || f.id) !== itemId));
       await refreshUser();
-      dirCache.delete(dirId || "root");
+      dirCache.delete(cacheKey);
       addToast(`"${item.name}" ${item.isDirectory ? "folder" : "file"} deleted`, "success");
     } catch (err) {
       addToast(getErr(err), "error");
@@ -343,7 +356,7 @@ export default function DirectoryView() {
       const name = newDirname;
       setNewDirname("New Folder");
       setShowCreateDir(false);
-      dirCache.delete(dirId || "root");
+      dirCache.delete(cacheKey);
       loadDirectory({ force: true, silent: true });
       addToast(`"${name}" folder created`, "success");
     } catch (err) {
@@ -360,7 +373,7 @@ export default function DirectoryView() {
       if (renameTarget.type === "file") await renameFile(renameTarget.id, renameTarget.value);
       else await renameDirectory(renameTarget.id, renameTarget.value);
       setShowRename(false);
-      dirCache.delete(dirId || "root");
+      dirCache.delete(cacheKey);
       loadDirectory({ force: true, silent: true });
       addToast(`Renamed to "${renameTarget.value}"`, "success");
     } catch (err) {
@@ -382,7 +395,7 @@ export default function DirectoryView() {
       });
       setSelectionMode(false);
       setSelectedItems([]);
-      dirCache.delete(dirId || "root");
+      dirCache.delete(cacheKey);
       await Promise.all([
         loadDirectory({ force: true, silent: true }),
         refreshUser(),
