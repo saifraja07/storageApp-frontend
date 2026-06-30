@@ -6,6 +6,11 @@ export const fetchAllUsers = async () => {
   return data;
 };
 
+export const fetchPlansDashboard = async () => {
+  const { data } = await axiosWithCreds.get("/admin/plans-overview");
+  return data;
+};
+
 export const logoutUserByAdmin = async (id) => {
   const { data } = await axiosWithCreds.post(`/admin/users/${id}/logout`);
   return data;

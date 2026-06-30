@@ -11,11 +11,11 @@ import {
 import { useUser } from "../context/UserContext.jsx";
 import AppLayout from "../components/AppLayout.jsx";
 import { getErr } from "../utils/directoryUtils.js";
-import ToastMessage from "../components/admin/ToastMessage.jsx";
-import UserStats from "../components/admin/UserStats.jsx";
-import UserFilters from "../components/admin/UserFilters.jsx";
-import UserTable from "../components/admin/UserTable.jsx";
-import DeleteUserModal from "../components/admin/DeleteUserModal.jsx";
+import ToastMessage from "../components/admin/usersPage/ToastMessage.jsx";
+import UserStats from "../components/admin/usersPage/UserStats.jsx";
+import UserFilters from "../components/admin/usersPage/UserFilters.jsx";
+import UserTable from "../components/admin/usersPage/UserTable.jsx";
+import DeleteUserModal from "../components/admin/usersPage/DeleteUserModal.jsx";
 
 const TABLE_COLUMNS = "minmax(180px,2fr) minmax(240px,2.3fr) 170px 120px 90px 90px";
 
@@ -50,7 +50,7 @@ export default function AdminUsersPage() {
       const data = await fetchAllUsers();
       setUsers(data);
     } catch (err) {
-      if (err.response?.status === 403) navigate("/drive");
+      if (err.response?.status === 403) navigate("/directory");
       else if (err.response?.status === 401) navigate("/login");
     } finally {
       setLoading(false);

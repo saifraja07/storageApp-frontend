@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { formatStorage } from "../../utils/directoryUtils.js";
+import { formatStorage } from "../../../utils/directoryUtils.js";
 
 const UserStorageBar = memo(function UserStorageBar({ usedStorageInBytes, maxStorageInBytes }) {
   const storePct =
