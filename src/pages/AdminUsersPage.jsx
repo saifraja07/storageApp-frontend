@@ -33,7 +33,7 @@ export default function AdminUsersPage() {
   const [listRefreshing, setListRefreshing] = useState(false);
 
   const navigate = useNavigate();
-  const { user: currentLoggedUser } = useUser();
+  const { user: currentLoggedUser, setUser } = useUser();
   const myRole = currentLoggedUser?.role;
   const isSuperAdmin = myRole === "SuperAdmin";
   const isAdmin = myRole === "Admin";
@@ -84,12 +84,13 @@ export default function AdminUsersPage() {
 
   const confirmLogout = async () => {
     if (!logoutTarget) return;
+    const isSelf = logoutTarget.id === currentLoggedUser.id;
 
     try {
       await logoutUserByAdmin(logoutTarget.id);
-      if (logoutTarget.email === userEmail) {
-        setLogoutTarget(null);
-        navigate("/login");
+      if (isSelf) {
+        setUser(null);
+        navigate("/login", { replace: true });
         return;
       }
       await refreshUsers();
