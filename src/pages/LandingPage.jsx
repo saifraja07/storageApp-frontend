@@ -185,7 +185,7 @@ export default function LandingPage() {
       {/* ── Hero ── */}
       <section className="landing-hero">
         <div className="landing-hero-badge">
-          <span>☁️</span> Simple personal cloud storage
+          <span>☁️</span> Simple secured personal cloud storage
         </div>
         <h1 className="landing-hero-title">
           Store your files securely
