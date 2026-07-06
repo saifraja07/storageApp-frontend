@@ -22,17 +22,21 @@ export default function Register() {
     email: "",
     password: "",
   });
-  const [serverError, setServerError] = useState("");
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    otp: "",
+    password: "",
+    general: "",
+  });
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
-  const [otpError, setOtpError] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [countdown, setCountdown] = useState(0);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [googleError, setGoogleError] = useState("");
   const { refreshUser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -50,45 +54,75 @@ export default function Register() {
     const { name, value } = e.target;
     if (googleError) setGoogleError("");
     if (name === "email") {
-      setServerError("");
-      setOtpError("");
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+        email: "",
+        otp: "",
+        general: "",
+      }));
       setOtpSent(false);
       setOtpVerified(false);
       setCountdown(0);
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: "", general: "" }));
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateEmail = (trimmedEmail) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setErrors((prev) => ({ ...prev, email: "Please Enter Valid Email" }));
+      return false;
+    }
+    setErrors((prev) => ({ ...prev, email: "" }));
+    return true;
+  };
+
   const handleSendOtp = async () => {
-    if (!formData.email) {
-      setServerError("Please enter your email first.");
+    const trimmedEmail = formData.email.trim();
+    if (!trimmedEmail) {
+      setErrors((prev) => ({
+        ...prev,
+        email: "Please enter your email first.",
+      }));
       return;
-    } else if (!validateEmail()) return;
+    } else if (!validateEmail(trimmedEmail)) return;
     try {
       setIsSending(true);
-      await sendOtp(formData.email);
+      await sendOtp(trimmedEmail);
       setOtpSent(true);
       setCountdown(60);
-      setServerError("");
+      setErrors((prev) => ({ ...prev, email: "", general: "" }));
     } catch (err) {
-      setServerError(err.response?.data?.error || "Failed to send OTP.");
+      setErrors((prev) => ({
+        ...prev,
+        email: err.response?.data?.error || "Failed to send OTP.",
+      }));
     } finally {
       setIsSending(false);
     }
   };
 
   const handleVerifyOtp = async () => {
-    if (!otp || otp.length !== 4) {
-      setOtpError("Please enter OTP.");
+    if (!/^\d{4}$/.test(otp)) {
+      setErrors((prev) => ({
+        ...prev,
+        otp: "Please enter a valid 4-digit code.",
+      }));
       return;
     }
     try {
       setIsVerifying(true);
-      await verifyOtp(formData.email, otp);
+      await verifyOtp(formData.email.trim(), otp);
       setOtpVerified(true);
-      setOtpError("");
+      setErrors((prev) => ({ ...prev, otp: "", general: "" }));
     } catch (err) {
-      setOtpError(err.response?.data?.error || "Invalid or expired OTP.");
+      setErrors((prev) => ({
+        ...prev,
+        otp: err.response?.data?.error || "Invalid or expired OTP.",
+      }));
     } finally {
       setIsVerifying(false);
     }
@@ -96,30 +130,48 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!otpVerified) {
-      setOtpError("Please verify your email with OTP.");
+    const trimmedName = formData.name.trim();
+    const nameError = trimmedName ? "" : "Please enter your name.";
+    const otpFieldError = otpVerified
+      ? ""
+      : "Please verify your email with OTP.";
+    const passwordError =
+      formData.password.length < 4
+        ? "Password must be at least 4 characters."
+        : "";
+
+    if (nameError || otpFieldError || passwordError) {
+      setErrors((prev) => ({
+        ...prev,
+        name: nameError,
+        otp: otpFieldError,
+        password: passwordError,
+      }));
       return;
     }
+
     try {
+      setErrors((prev) => ({
+        ...prev,
+        general: "",
+      }));
       setIsSubmitting(true);
-      await registerUser({ ...formData, otp });
+      await registerUser({
+        ...formData,
+        name: trimmedName,
+        email: formData.email.trim(),
+        otp,
+      });
       await refreshUser();
       setIsSuccess(true);
       setTimeout(() => navigate(redirectTo, { replace: true }), 1500);
     } catch (err) {
-      setServerError(err.response?.data?.error || "Something went wrong.");
+      setErrors((prev) => ({
+        ...prev,
+        general: err.response?.data?.error || "Something went wrong.",
+      }));
       setIsSubmitting(false);
     }
-  };
-
-  const validateEmail = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setServerError("Please Enter Valid Email");
-      return false;
-    }
-    setServerError("");
-    return true;
   };
 
   const inputStyle = {
@@ -213,14 +265,27 @@ export default function Register() {
             <input
               type="text"
               name="name"
-              required
+              autoComplete="name"
               placeholder="Enter your name"
               value={formData.name}
               onChange={handleChange}
-              style={inputStyle}
+              style={{
+                ...inputStyle,
+                flex: 1,
+                borderColor: errors.name ? "#EF4444" : "var(--border)",
+              }}
               onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
-              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+              onBlur={(e) =>
+                (e.target.style.borderColor = errors.name
+                  ? "#EF4444"
+                  : "var(--border)")
+              }
             />
+            {errors.name && (
+              <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+                {errors.name}
+              </p>
+            )}
           </div>
 
           <div>
@@ -230,17 +295,19 @@ export default function Register() {
                 type="email"
                 name="email"
                 required
+                autoComplete="email"
+                disabled={otpVerified}
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
                 style={{
                   ...inputStyle,
                   flex: 1,
-                  borderColor: serverError ? "#EF4444" : "var(--border)",
+                  borderColor: errors.email ? "#EF4444" : "var(--border)",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
                 onBlur={(e) =>
-                  (e.target.style.borderColor = serverError
+                  (e.target.style.borderColor = errors.email
                     ? "#EF4444"
                     : "var(--border)")
                 }
@@ -249,7 +316,10 @@ export default function Register() {
                 type="button"
                 onClick={handleSendOtp}
                 disabled={
-                  otpVerified || isSending || countdown > 0 || !formData.email
+                  otpVerified ||
+                  isSending ||
+                  countdown > 0 ||
+                  !formData.email.trim()
                 }
                 style={{
                   padding: "0 14px",
@@ -260,12 +330,15 @@ export default function Register() {
                   fontSize: 13,
                   fontWeight: 600,
                   cursor:
-                    otpVerified || isSending || countdown > 0 || !formData.email
+                    otpVerified ||
+                    isSending ||
+                    countdown > 0 ||
+                    !formData.email.trim()
                       ? "not-allowed"
                       : "pointer",
                   whiteSpace: "nowrap",
                   fontFamily: "Inter, sans-serif",
-                  opacity: otpVerified || !formData.email ? 0.4 : 1,
+                  opacity: otpVerified || !formData.email.trim() ? 0.5 : 1,
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
@@ -291,9 +364,9 @@ export default function Register() {
                 )}
               </button>
             </div>
-            {serverError && (
+            {errors.email && (
               <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
-                {serverError}
+                {errors.email}
               </p>
             )}
           </div>
@@ -309,21 +382,35 @@ export default function Register() {
               <div style={{ display: "flex", gap: 8 }}>
                 <input
                   type="text"
+                  inputMode="numeric"
                   maxLength={4}
+                  autoComplete="one-time-code"
+                  disabled={otpVerified}
                   placeholder="4-digit OTP"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  onChange={(e) => {
+                    const digitsOnly = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 4);
+                    setErrors((prev) => ({ ...prev, otp: "" }));
+                    setOtp(digitsOnly);
+                  }}
                   style={{
                     ...inputStyle,
                     flex: 1,
                     letterSpacing: 5,
                     textAlign: "center",
                     fontSize: 16,
+                    borderColor: errors.otp ? "#EF4444" : "var(--border)",
                   }}
                   onFocus={(e) =>
                     (e.target.style.borderColor = "var(--primary)")
                   }
-                  onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+                  onBlur={(e) =>
+                    (e.target.style.borderColor = errors.otp
+                      ? "#EF4444"
+                      : "var(--border)")
+                  }
                 />
                 <button
                   type="button"
@@ -362,12 +449,18 @@ export default function Register() {
                   )}
                 </button>
               </div>
-              {otpError && (
+              {errors.otp && (
                 <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
-                  {otpError}
+                  {errors.otp}
                 </p>
               )}
             </div>
+          )}
+
+          {!otpSent && errors.otp && (
+            <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+              {errors.otp}
+            </p>
           )}
 
           <div>
@@ -375,15 +468,43 @@ export default function Register() {
             <input
               type="password"
               name="password"
-              required
+              autoComplete="new-password"
               placeholder="Choose a strong password"
               value={formData.password}
               onChange={handleChange}
-              style={inputStyle}
+              style={{
+                ...inputStyle,
+                flex: 1,
+                borderColor: errors.password ? "#EF4444" : "var(--border)",
+              }}
               onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
-              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+              onBlur={(e) =>
+                (e.target.style.borderColor = errors.password
+                  ? "#EF4444"
+                  : "var(--border)")
+              }
             />
+            {errors.password && (
+              <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+                {errors.password}
+              </p>
+            )}
           </div>
+
+          {errors.general && (
+            <p
+              style={{
+                background: "rgba(239,68,68,0.1)",
+                border: "1px solid rgba(239,68,68,0.25)",
+                borderRadius: 8,
+                padding: "10px 14px",
+                fontSize: 13,
+                color: "#FCA5A5",
+              }}
+            >
+              {errors.general}
+            </p>
+          )}
 
           <button
             type="submit"
@@ -485,7 +606,8 @@ export default function Register() {
           >
             Terms of Service
           </Link>
-          . and acknowledge that you have read our < br className="desktop-only" />
+          . and acknowledge that you have read our{" "}
+          <br className="desktop-only" />
           <Link
             to="/privacy"
             style={{

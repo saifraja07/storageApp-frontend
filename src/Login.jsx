@@ -36,9 +36,20 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const trimmedEmail = formData.email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(trimmedEmail)) {
+      setServerError("Please enter a valid email address.");
+      return;
+    }
+    if (formData.password.length < 4) {
+      setServerError("Password must be at least 4 characters.");
+      return;
+    }
     setIsLoading(true);
     try {
-      await loginUser(formData);
+      await loginUser({...formData, email: trimmedEmail});
       await refreshUser();
       navigate(redirectTo, { replace: true });
     } catch (err) {
@@ -146,7 +157,7 @@ export default function Login() {
             <input
               name="email"
               type="email"
-              required
+              autoComplete="email"
               placeholder="Enter your Email"
               value={formData.email}
               onChange={handleChange}
@@ -164,7 +175,7 @@ export default function Login() {
             <input
               name="password"
               type="password"
-              required
+              autoComplete="current-password"
               placeholder="Enter Password"
               value={formData.password}
               onChange={handleChange}
@@ -288,7 +299,8 @@ export default function Login() {
           >
             Terms of Service
           </Link>
-            . and acknowledge that you have read our{" "}< br className="desktop-only" />
+          . and acknowledge that you have read our{" "}
+          <br className="desktop-only" />
           <Link
             to="/privacy"
             style={{

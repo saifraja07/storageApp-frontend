@@ -59,7 +59,7 @@ export default function AdminUsersPage() {
       setListRefreshing(true);
       const data = await fetchAllUsers();
       setUsers(data);
-      toast.success("Users refreshed");
+      // toast.success("Users refreshed");
     } catch (err) {
       toast.error(getErr(err));
     } finally {
@@ -109,7 +109,7 @@ export default function AdminUsersPage() {
       else await hardDeleteUserByAdmin(deleteTarget.id);
       setDeleteTarget(null);
       await refreshUsers();
-      toast.success("User deleted");
+      toast.success("User deleted successfully");
     } catch (err) {
       logError(err);
       toast.error(getErr(err));
@@ -120,7 +120,7 @@ export default function AdminUsersPage() {
     try {
       await recoverUserByAdmin(id);
       await refreshUsers();
-      toast.success(`${email} recovered`);
+      toast.success(`${email} recovered successfully`);
     } catch (err) {
       logError(err);
       toast.error(getErr(err));
