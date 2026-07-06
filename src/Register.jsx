@@ -370,7 +370,7 @@ export default function Register() {
               </p>
             )}
           </div>
-
+          
           {otpSent && (
             <div>
               <label style={labelStyle}>
