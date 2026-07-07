@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { X, TriangleAlert, Check } from "lucide-react";
 import { subscribe, getSnapshot, cancelAll } from "../utils/uploadManager";
 import { formatStorage, formatSpeed } from "../utils/directoryUtils";
 
@@ -78,7 +79,15 @@ export default function UploadProgressBar() {
                   : "#10B981",
             }}
           >
-            <span>{isError ? "✕" : display.failedFiles > 0 ? "⚠" : "✓"}</span>
+            <span style={{ display: "flex" }}>
+              {isError ? (
+                <X size={15} aria-hidden="true" />
+              ) : display.failedFiles > 0 ? (
+                <TriangleAlert size={15} aria-hidden="true" />
+              ) : (
+                <Check size={15} aria-hidden="true" />
+              )}
+            </span>
             {isError
               ? display.errorMessage || "Upload failed"
               : display.failedFiles > 0

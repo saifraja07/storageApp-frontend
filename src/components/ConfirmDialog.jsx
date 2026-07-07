@@ -41,7 +41,7 @@ export default function ConfirmDialog({
       >
         {/* Icon */}
         {icon && (
-          <div style={{ fontSize: 36, marginBottom: 14, textAlign: "center" }}>
+          <div style={{ fontSize: 36, marginBottom: 14, textAlign: "center", display: "flex", justifyContent: "center" }}>
             {icon}
           </div>
         )}

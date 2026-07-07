@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+import { House } from "lucide-react";
 
 export default function Breadcrumbs({ breadcrumbs }) {
   return (
@@ -26,7 +26,7 @@ export default function Breadcrumbs({ breadcrumbs }) {
         onMouseOver={(e) => (e.currentTarget.style.color = "var(--text)")}
         onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}
       >
-        <FaHome className="inline mr-1" />
+        <House size={14} className="inline mr-1" aria-hidden="true" />
         My Drive
       </Link>
 

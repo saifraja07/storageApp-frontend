@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChartColumn } from "lucide-react";
 import AppLayout from "../components/AppLayout";
 import { useUser } from "../context/UserContext";
 import { fetchPlansDashboard } from "../api/adminApi";
@@ -80,9 +81,12 @@ export default function AdminPlansPage() {
                 fontWeight: 700,
                 color: "var(--text)",
                 marginBottom: 4,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
               }}
             >
-              📊 Plan Management
+              <ChartColumn size={20} aria-hidden="true" /> Plan Management
             </h1>
             <p style={{ fontSize: 13, color: "var(--muted)" }}>
               Monitor subscriptions, revenue, and storage usage across all

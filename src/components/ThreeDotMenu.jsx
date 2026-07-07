@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { EllipsisVertical } from "lucide-react";
 
 // ── Three-dot menu ────────────────────────────────────────────────────────────
 function ThreeDotMenu({ item, onRename, onDelete, onDetails, onDownload }) {
@@ -60,8 +61,9 @@ const [openUp, setOpenUp] = useState(false);
           !open && (e.currentTarget.style.background = "transparent")
         }
         title="More options"
+        aria-label="More options"
       >
-        ⋮
+        <EllipsisVertical size={16} aria-hidden="true" />
       </button>
       {open && (
         <div

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Crown, User } from "lucide-react";
 import { SkeletonRow } from "../../SkeletonLoading";
 import { formatStorage, formatDate } from "../../../utils/directoryUtils.js";
 import StatusBadge from "./StatusBadge";
@@ -44,7 +45,9 @@ const ActivePlansTable = memo(function ActivePlansTable({ loading, plans }) {
         {/* Empty state */}
         {!loading && plans.length === 0 && (
           <div style={{ textAlign: "center", padding: "48px 20px", color: "var(--muted)" }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>👑</div>
+            <div style={{ fontSize: 36, marginBottom: 12, display: "flex", justifyContent: "center" }}>
+              <Crown size={36} aria-hidden="true" />
+            </div>
             <div style={{ fontWeight: 600, color: "var(--text)" }}>No premium users</div>
           </div>
         )}
@@ -94,7 +97,7 @@ const ActivePlansTable = memo(function ActivePlansTable({ loading, plans }) {
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                     ) : (
-                      "👤"
+                      <User size={14} aria-hidden="true" />
                     )}
                   </div>
                   <div

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { TriangleAlert, CircleCheck, User } from "lucide-react";
 import { SkeletonCard } from "../../SkeletonLoading.jsx";
 import { formatStorage } from "../../../utils/directoryUtils.js";
 
@@ -12,8 +13,8 @@ const StorageAlerts = memo(function StorageAlerts({ loading, users }) {
         padding: "16px 18px",
       }}
     >
-      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 14 }}>
-        ⚠️ highest Storage-used Users
+      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+        <TriangleAlert size={15} aria-hidden="true" /> highest Storage-used Users
       </div>
 
       {loading && (
@@ -32,7 +33,9 @@ const StorageAlerts = memo(function StorageAlerts({ loading, users }) {
 
       {!loading && users.length === 0 && (
         <div style={{ textAlign: "center", padding: "32px 16px", color: "var(--muted)" }}>
-          <div style={{ fontSize: 30, marginBottom: 10 }}>✅</div>
+          <div style={{ fontSize: 30, marginBottom: 10, display: "flex", justifyContent: "center" }}>
+            <CircleCheck size={30} aria-hidden="true" />
+          </div>
           <div style={{ fontWeight: 600, color: "var(--text)", fontSize: 13 }}>
             No users near storage limit
           </div>
@@ -83,7 +86,7 @@ const StorageAlerts = memo(function StorageAlerts({ loading, users }) {
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                     ) : (
-                      "👤"
+                      <User size={14} aria-hidden="true" />
                     )}
                   </div>
                   <div style={{ minWidth: 0 }}>

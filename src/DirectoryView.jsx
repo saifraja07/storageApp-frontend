@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 import AppLayout from "./components/AppLayout";
 import { useUser } from "./context/UserContext";
 import toast from "react-hot-toast";
@@ -80,7 +81,8 @@ function uploadFileToR2({ item, fileId, uploadUrl }) {
     xhr.setRequestHeader("Content-Type", item.contentType);
     uploadManager.registerXhr(item.id, xhr, fileId);
     xhr.upload.onprogress = (evt) => {
-      if (evt.lengthComputable) uploadManager.updateItemProgress(item.id, evt.loaded);
+      if (evt.lengthComputable)
+        uploadManager.updateItemProgress(item.id, evt.loaded);
     };
     xhr.onload = async () => {
       if (xhr.status === 200) {
@@ -757,7 +759,7 @@ export default function DirectoryView() {
 
       <ConfirmDialog
         open={bulkConfirm}
-        icon="🗑️"
+        icon={<Trash2 size={32} aria-hidden="true" />}
         title={`Delete ${selectedItems.length} item${selectedItems.length !== 1 ? "s" : ""}?`}
         message="This will permanently delete the selected files and folders. This cannot be undone."
         confirmLabel="Delete"

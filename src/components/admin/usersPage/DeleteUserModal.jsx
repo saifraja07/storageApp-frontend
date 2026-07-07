@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { TriangleAlert } from "lucide-react";
 
 const DeleteUserModal = memo(function DeleteUserModal({ user, onClose, onConfirm }) {
   return (
@@ -38,8 +39,8 @@ const DeleteUserModal = memo(function DeleteUserModal({ user, onClose, onConfirm
         <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>
           {user.email}
         </p>
-        <p style={{ fontSize: 12, color: "#F87171", marginBottom: 22 }}>
-          ⚠️ Hard delete cannot be undone.
+        <p style={{ fontSize: 12, color: "#F87171", marginBottom: 22, display: "flex", alignItems: "center", gap: 6 }}>
+          <TriangleAlert size={14} aria-hidden="true" /> Hard delete cannot be undone.
         </p>
         <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
           <button

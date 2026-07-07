@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { EllipsisVertical } from "lucide-react";
 
 const UserActionsMenu = memo(function UserActionsMenu({
   u,
@@ -50,6 +51,7 @@ const UserActionsMenu = memo(function UserActionsMenu({
           e.stopPropagation();
           onOpenMenu(e, u.id);
         }}
+        aria-label="User actions"
         style={{
           width: 28,
           height: 28,
@@ -64,7 +66,7 @@ const UserActionsMenu = memo(function UserActionsMenu({
           justifyContent: "center",
         }}
       >
-        ⋮
+        <EllipsisVertical size={16} aria-hidden="true" />
       </button>
 
       {openMenuId === u.id && (

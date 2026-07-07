@@ -1,38 +1,53 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
+import {
+  Folder,
+  Cloud,
+  Zap,
+  Download,
+  ChartColumn,
+  Smartphone,
+  Gift,
+  Crown,
+  X,
+  Menu,
+  CreditCard,
+  Check,
+  ArrowRight,
+} from "lucide-react";
 import "../landing.css";
 
 import dashboardPreview from "../assets/dashboard-preview.png";
 
 const features = [
   {
-    icon: "📁",
+    icon: Folder,
     title: "Folder Organization",
     desc: "Organize files into folders and nested directories to keep everything tidy.",
   },
   {
-    icon: "☁️",
+    icon: Cloud,
     title: "Secure Storage",
     desc: "Files are stored safely in the cloud and accessible only by you.",
   },
   {
-    icon: "⚡",
+    icon: Zap,
     title: "Fast Uploads",
     desc: "Upload multiple files simultaneously with real-time progress tracking.",
   },
   {
-    icon: "📥",
+    icon: Download,
     title: "Easy Downloads",
     desc: "Download any file instantly, anytime you need it.",
   },
   {
-    icon: "📊",
+    icon: ChartColumn,
     title: "Storage Tracking",
     desc: "Always know how much storage you've used at a glance.",
   },
   {
-    icon: "📱",
+    icon: Smartphone,
     title: "Mobile Friendly",
     desc: "Fully responsive — works great on phones, tablets, and desktops.",
   },
@@ -47,7 +62,7 @@ const plans = [
     storage: "500 MB",
     color: "#6B7280",
     badge: null,
-    emoji: "🆓",
+    emoji: Gift,
     features: [
       "500 MB cloud storage",
       "Access from 1 device",
@@ -63,7 +78,7 @@ const plans = [
     storage: "100 GB",
     color: "#3B82F6",
     badge: "Most Popular",
-    emoji: "⚡",
+    emoji: Zap,
     features: [
       "100 GB cloud storage",
       "Unlimited shared folders",
@@ -80,7 +95,7 @@ const plans = [
     storage: "500 GB",
     color: "#8B5CF6",
     badge: "Best Value",
-    emoji: "👑",
+    emoji: Crown,
     features: [
       "500 GB cloud storage",
       "Unlimited everything",
@@ -141,7 +156,7 @@ export default function LandingPage() {
             className="landing-mobile-btn"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            {menuOpen ? "✕" : "☰"}
+            {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
           </button>
         </div>
 
@@ -238,7 +253,7 @@ export default function LandingPage() {
         <div className="landing-features-grid">
           {features.map((f) => (
             <div key={f.title} className="landing-feature-card">
-              <div className="landing-feature-icon">{f.icon}</div>
+              <div className="landing-feature-icon"> <f.icon size={22} aria-hidden="true" /></div>
               <h3 className="landing-feature-title">{f.title}</h3>
               <p className="landing-feature-desc">{f.desc}</p>
             </div>
@@ -250,7 +265,7 @@ export default function LandingPage() {
       <section id="pricing" className="landing-pricing">
         <div className="landing-section-header">
           <div className="landing-pricing-badge">
-            💳 Simple, transparent pricing
+            <CreditCard size={14} aria-hidden="true" /> Simple, transparent pricing
           </div>
           <h2 className="landing-section-title">Plans & Pricing</h2>
           <p className="landing-section-desc">
@@ -293,7 +308,7 @@ export default function LandingPage() {
                     border: `1px solid ${plan.color}44`,
                   }}
                 >
-                  {plan.emoji}
+                   <plan.emoji size={20} aria-hidden="true" />
                 </div>
                 <h3 className="landing-plan-name">{plan.name}</h3>
                 <div className="landing-plan-price-row">
@@ -319,7 +334,7 @@ export default function LandingPage() {
                           color: plan.color,
                         }}
                       >
-                        ✓
+                        <Check size={11} aria-hidden="true" />
                       </span>
                       {f}
                     </div>
@@ -356,7 +371,9 @@ export default function LandingPage() {
                     : plan.id === "free"
                       ? "Get Started Free"
                       : "Sign In to Upgrade"}
-                  <span>→</span>
+                  <span style={{ display: "inline-flex" }}>
+                    <ArrowRight size={14} aria-hidden="true" />
+                  </span>
                 </a>
               </div>
             );
@@ -379,9 +396,12 @@ export default function LandingPage() {
                   color: "var(--primary)",
                   textDecoration: "none",
                   fontWeight: 600,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
-                Manage your subscription →
+                Manage your subscription <ArrowRight size={13} aria-hidden="true" />
               </Link>
             </>
           ) : (
@@ -393,9 +413,12 @@ export default function LandingPage() {
                   color: "var(--primary)",
                   textDecoration: "none",
                   fontWeight: 600,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
-                Sign in →
+                Sign in <ArrowRight size={13} aria-hidden="true" />
               </Link>
             </>
           )}

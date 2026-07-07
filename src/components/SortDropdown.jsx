@@ -1,10 +1,21 @@
 import { useState, useRef, useEffect } from "react";
+import {
+  ArrowDownAZ,
+  Calendar,
+  Ruler,
+  FolderTree,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+  ChevronDown,
+  X,
+} from "lucide-react";
 
 const OPTIONS = [
-  { label: "Name", field: "name", icon: "🔤" },
-  { label: "Date Modified", field: "date", icon: "📅" },
-  { label: "Size", field: "size", icon: "📏" },
-  { label: "Type", field: "type", icon: "🗂️" },
+  { label: "Name", field: "name", icon: ArrowDownAZ },
+  { label: "Date Modified", field: "date", icon: Calendar },
+  { label: "Size", field: "size", icon: Ruler },
+  { label: "Type", field: "type", icon: FolderTree },
 ];
 
 export default function SortDropdown({ sortBy, sortDir, onSort }) {
@@ -45,15 +56,23 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
       >
         {current ? (
           <>
-            <span>{current.icon}</span>
+            <span style={{ display: "flex" }}>
+              <current.icon size={14} aria-hidden="true" />
+            </span>
             <span style={{ fontWeight: 500 }}>{current.label}</span>
-            <span style={{ color: "var(--muted)", fontSize: 10 }}>
-              {sortDir === "asc" ? "↑" : "↓"}
+            <span style={{ color: "var(--muted)", fontSize: 10, display: "flex" }}>
+              {sortDir === "asc" ? (
+                <ArrowUp size={12} aria-hidden="true" />
+              ) : (
+                <ArrowDown size={12} aria-hidden="true" />
+              )}
             </span>
           </>
         ) : (
           <>
-            <span>↕️</span>
+            <span style={{ display: "flex" }}>
+              <ArrowUpDown size={14} aria-hidden="true" />
+            </span>
             <span style={{ fontWeight: 500 }}>Sort</span>
           </>
         )}
@@ -63,9 +82,10 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
             color: "var(--muted)",
             fontSize: 9,
             marginLeft: 1,
+            display: "flex",
           }}
         >
-          ▾
+          <ChevronDown size={12} aria-hidden="true" />
         </span>
       </button>
 
@@ -127,13 +147,19 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
                     gap: 8,
                   }}
                 >
-                  <span>{opt.icon}</span>
+                  <span style={{ display: "flex" }}>
+                    <opt.icon size={14} aria-hidden="true" />
+                  </span>
                   {opt.label}
                 </span>
 
                 {active && (
-                  <span style={{ fontSize: 11 }}>
-                    {sortDir === "asc" ? "↑" : "↓"}
+                  <span style={{ fontSize: 11, display: "flex" }}>
+                    {sortDir === "asc" ? (
+                      <ArrowUp size={12} aria-hidden="true" />
+                    ) : (
+                      <ArrowDown size={12} aria-hidden="true" />
+                    )}
                   </span>
                 )}
               </button>
@@ -176,7 +202,7 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
                   e.currentTarget.style.background = "none";
                 }}
               >
-                ✖ Clear sorting
+                <X size={13} aria-hidden="true" /> Clear sorting
               </button>
 
               <div
@@ -187,9 +213,9 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
                 }}
               >
                 {[
-                  ["asc", "↑ Ascending"],
-                  ["desc", "↓ Descending"],
-                ].map(([dir, label]) => (
+                  ["asc", ArrowUp, "Ascending"],
+                  ["desc", ArrowDown, "Descending"],
+                ].map(([dir, DirIcon, label]) => (
                   <button
                     key={dir}
                     onClick={() => {
@@ -224,7 +250,7 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
                       }
                     }}
                   >
-                    {label}
+                    <DirIcon size={12} aria-hidden="true" /> {label}
                   </button>
                 ))}
               </div>

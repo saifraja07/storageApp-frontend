@@ -2,6 +2,7 @@ import AppLayout from "../components/AppLayout";
 import { useUser } from "../context/UserContext";
 import { Link } from "react-router-dom";
 import { formatStorage } from "../utils/directoryUtils";
+import { User } from "lucide-react";
 
 export default function ProfilePage() {
   const { user } = useUser();
@@ -52,7 +53,7 @@ export default function ProfilePage() {
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             ) : (
-              "👤"
+              <User size={32} color="#fff" aria-hidden="true" />
             )}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>

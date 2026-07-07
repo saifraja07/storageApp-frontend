@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { User, Crown, IndianRupee, TrendingUp } from "lucide-react";
 import { SkeletonCard } from "../../SkeletonLoading";
 
 function formatINR(amount) {
@@ -24,10 +25,10 @@ const PlanStats = memo(function PlanStats({ summary, loading }) {
   }
 
   const cards = [
-    { label: "Total Users", value: (summary.totalUsers ?? 0).toLocaleString(), icon: "👤", color: "#3B82F6" },
-    { label: "Premium Users", value: (summary.premiumUsers ?? 0).toLocaleString(), icon: "👑", color: "#8B5CF6" },
-    { label: "Monthly Revenue", value: formatINR(summary.monthlyRevenue), icon: "💰", color: "#10B981" },
-    { label: "Yearly Revenue", value: formatINR(summary.yearlyRevenue), icon: "📈", color: "#F59E0B" },
+    { label: "Total Users", value: (summary.totalUsers ?? 0).toLocaleString(), icon: User, color: "#3B82F6" },
+    { label: "Premium Users", value: (summary.premiumUsers ?? 0).toLocaleString(), icon: Crown, color: "#8B5CF6" },
+    { label: "Monthly Revenue", value: formatINR(summary.monthlyRevenue), icon: IndianRupee, color: "#10B981" },
+    { label: "Yearly Revenue", value: formatINR(summary.yearlyRevenue), icon: TrendingUp, color: "#F59E0B" },
   ];
 
   return (
@@ -49,7 +50,9 @@ const PlanStats = memo(function PlanStats({ summary, loading }) {
             padding: "14px 16px",
           }}
         >
-          <div style={{ fontSize: 20, marginBottom: 6 }}>{s.icon}</div>
+          <div style={{ fontSize: 20, marginBottom: 6, color: s.color }}>
+            <s.icon size={20} aria-hidden="true" />
+          </div>
           <div style={{ fontSize: 22, fontWeight: 700, color: s.color, wordBreak: "break-word" }}>
             {s.value}
           </div>

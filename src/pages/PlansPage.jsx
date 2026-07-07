@@ -1,4 +1,16 @@
 import { useEffect, useState, useCallback, useRef } from "react";
+import {
+  Gift,
+  Zap,
+  Crown,
+  Check,
+  TriangleAlert,
+  Package,
+  Lock,
+  Calendar,
+  Banknote,
+  PartyPopper,
+} from "lucide-react";
 import AppLayout from "../components/AppLayout";
 import { useUser } from "../context/UserContext";
 import { formatStorage } from "../utils/directoryUtils";
@@ -26,7 +38,7 @@ const FREE_PLAN_MONTHLY = {
   price: "₹0",
   period: "/mo",
   color: "#6B7280",
-  emoji: "🆓",
+  emoji: Gift,
   features: ["500 MB cloud storage", "Access from 1 device", "Basic file types", "Web access"],
   isFree: true,
 };
@@ -41,7 +53,7 @@ const FREE_PLAN_YEARLY = {
   price: "₹0",
   period: "/yr",
   color: "#6B7280",
-  emoji: "🆓",
+  emoji: Gift,
   features: ["500 MB cloud storage", "Access from 1 device", "Basic file types", "Web access"],
   isFree: true,
 };
@@ -59,7 +71,7 @@ const PLAN_CATALOG = {
       price: "₹169",
       period: "/mo",
       color: "#3B82F6",
-      emoji: "⚡",
+      emoji: Zap,
       badge: "Most Popular",
       features: ["100 GB cloud storage", "Access from up to 3 device", "Priority uploads", "Email support"],
       isFree: false,
@@ -74,7 +86,7 @@ const PLAN_CATALOG = {
       price: "₹499",
       period: "/mo",
       color: "#8B5CF6",
-      emoji: "👑",
+      emoji: Crown,
       badge: "Best Value",
       features: ["500 GB cloud storage", "Everything in Pro", "Access from up to 4 device", "Priority support", "Secure encrypted storage"],
       isFree: false,
@@ -92,7 +104,7 @@ const PLAN_CATALOG = {
       price: "₹1,599",
       period: "/yr",
       color: "#3B82F6",
-      emoji: "⚡",
+      emoji: Zap,
       badge: "Most Popular",
       features: ["100 GB cloud storage", "Access from up to 3 device", "Priority uploads", "Email support"],
       isFree: false,
@@ -107,7 +119,7 @@ const PLAN_CATALOG = {
       price: "₹4,999",
       period: "/yr",
       color: "#8B5CF6",
-      emoji: "👑",
+      emoji: Crown,
       badge: "Best Value",
       features: ["500 GB cloud storage", "Everything in Pro", "Access from up to 4 device",  "Priority support", "Secure encrypted storage"],
       isFree: false,
@@ -521,7 +533,7 @@ function PlanCard({ plan, activeSubscription, premiumActive, onSelect, loadingId
           width: 36, height: 36, borderRadius: 10,
           background: `${plan.color}22`,
           display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
-        }}>{plan.emoji}</div>
+        }}><plan.emoji size={18} aria-hidden="true" /></div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)" }}>{plan.name}</div>
           <div style={{ fontSize: 11, color: "var(--muted)" }}>{plan.tagline}</div>
@@ -539,7 +551,9 @@ function PlanCard({ plan, activeSubscription, premiumActive, onSelect, loadingId
       <ul style={{ flex: 1, marginBottom: 20, listStyle: "none" }}>
         {plan.features.map((f) => (
           <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 8, fontSize: 13, color: "var(--text)" }}>
-            <span style={{ color: plan.color, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+            <span style={{ color: plan.color, fontWeight: 700, flexShrink: 0, marginTop: 1, display: "flex" }}>
+              <Check size={14} aria-hidden="true" />
+            </span>
             {f}
           </li>
         ))}
@@ -626,10 +640,10 @@ function StorageBar({ user, activeSubscription, premiumActive }) {
 
 function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
   const consequences = [
-    { icon: "📦", text: `Storage drops to 500 MB (Free tier) at end of billing period.` },
-    { icon: "🔒", text: "Files exceeding free tier limit will become inaccessible (deleted)." },
-    { icon: "📅", text: `Premium access continues until your billing period ends${endDate ? ` (${endDate})` : ""}.` },
-    { icon: "💸", text: "No refund for the current billing period — you keep access until it ends." },
+    { icon: Package, text: `Storage drops to 500 MB (Free tier) at end of billing period.` },
+    { icon: Lock, text: "Files exceeding free tier limit will become inaccessible (deleted)." },
+    { icon: Calendar, text: `Premium access continues until your billing period ends${endDate ? ` (${endDate})` : ""}.` },
+    { icon: Banknote, text: "No refund for the current billing period — you keep access until it ends." },
   ];
 
   return (
@@ -649,7 +663,9 @@ function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
       >
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 20 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>⚠️</div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
+            <TriangleAlert size={22} aria-hidden="true" />
+          </div>
           <div>
             <h3 style={{ fontSize: 17, fontWeight: 700, color: "#FCA5A5", marginBottom: 4 }}>Cancel Subscription?</h3>
             <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
@@ -666,7 +682,9 @@ function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
               background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 10, padding: "10px 12px",
             }}>
-              <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{c.icon}</span>
+              <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1, display: "flex" }}>
+                <c.icon size={16} aria-hidden="true" />
+              </span>
               <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{c.text}</p>
             </div>
           ))}
@@ -732,7 +750,7 @@ export default function PlansPage() {
     if (type === "success") return toast.success(message);
     if (type === "error") return toast.error(message);
     return toast(message, {
-      icon: "⚠️",
+      icon: <TriangleAlert size={16} color="#FCD34D" aria-hidden="true" />,
       style: {
         background: "#1F2937",
         border: "1px solid rgba(245,158,11,0.35)",
@@ -846,7 +864,12 @@ export default function PlansPage() {
         const freshEnd = freshData?.subscription?.currentEnd;
         switch (outcome) {
           case "active":
-            showToast("success", "🎉 Premium storage activated successfully!");
+            showToast(
+              "success",
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <PartyPopper size={14} aria-hidden="true" /> Premium storage activated successfully!
+              </span>
+            );
             break;
           case "pending":
             showToast("warning", `Payment received. Renewal is pending. Premium active until ${fmtDate(freshEnd)}.`);

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Clock, Inbox } from "lucide-react";
 import { SkeletonRow } from "../../SkeletonLoading.jsx";
 import { formatDate } from "../../../utils/directoryUtils.js";
 import StatusBadge from "./StatusBadge";
@@ -22,9 +23,12 @@ const RecentSubscriptions = memo(function RecentSubscriptions({ loading, subscri
           fontSize: 14,
           fontWeight: 600,
           color: "var(--text)",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
         }}
       >
-        🕓 Recent Subscriptions
+        <Clock size={15} aria-hidden="true" /> Recent Subscriptions
       </div>
 
       <div style={{ overflowX: "auto" }}>
@@ -52,7 +56,9 @@ const RecentSubscriptions = memo(function RecentSubscriptions({ loading, subscri
 
           {!loading && subscriptions.length === 0 && (
             <div style={{ textAlign: "center", padding: "40px 18px", color: "var(--muted)" }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>📭</div>
+              <div style={{ fontSize: 32, marginBottom: 10, display: "flex", justifyContent: "center" }}>
+                <Inbox size={32} aria-hidden="true" />
+              </div>
               <div style={{ fontWeight: 600, color: "var(--text)", fontSize: 13 }}>
                 No subscriptions
               </div>

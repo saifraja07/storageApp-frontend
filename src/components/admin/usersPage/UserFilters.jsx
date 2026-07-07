@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Search, RefreshCw } from "lucide-react";
 
 const UserFilters = memo(function UserFilters({
   searchQ,
@@ -29,9 +30,10 @@ const UserFilters = memo(function UserFilters({
             transform: "translateY(-50%)",
             color: "var(--muted)",
             fontSize: 14,
+            display: "flex",
           }}
         >
-          🔍
+          <Search size={14} aria-hidden="true" />
         </span>
         <input
           type="text"
@@ -109,9 +111,18 @@ const UserFilters = memo(function UserFilters({
           fontWeight: 600,
           cursor: listRefreshing ? "not-allowed" : "pointer",
           opacity: listRefreshing ? 0.7 : 1,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
         }}
       >
-        {listRefreshing ? "Refreshing..." : "↻ Refresh"}
+        {listRefreshing ? (
+          "Refreshing..."
+        ) : (
+          <>
+            <RefreshCw size={14} aria-hidden="true" /> Refresh
+          </>
+        )}
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Lock, TriangleAlert, Pause, Trash2 } from "lucide-react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
@@ -559,7 +560,7 @@ export default function SettingsPage() {
       </div>
       <ConfirmDialog
         open={logoutAllConfirm}
-        icon="🔐"
+        icon={<Lock size={32} aria-hidden="true" />}
         title="Sign out of all devices?"
         message="This will end all active sessions. You'll need to sign in again on every device."
         confirmLabel="Sign Out All"
@@ -572,7 +573,7 @@ export default function SettingsPage() {
       />
       <ConfirmDialog
         open={!!errorAlert}
-        icon="⚠️"
+        icon={<TriangleAlert size={32} aria-hidden="true" />}
         title="Something went wrong"
         message={errorAlert}
         confirmLabel="OK"
@@ -582,7 +583,7 @@ export default function SettingsPage() {
       />
       <ConfirmDialog
         open={disableAccountConfirm}
-        icon="⏸️"
+        icon={<Pause size={32} aria-hidden="true" />}
         title="Disable your account?"
         message="You'll be signed out immediately and won't be able to sign in again until your account is restored by admin. Your files and data will be kept."
         confirmLabel="Disable Account"
@@ -595,7 +596,7 @@ export default function SettingsPage() {
       />
       <ConfirmDialog
         open={deleteAccountConfirm}
-        icon="🗑️"
+        icon={<Trash2 size={32} aria-hidden="true" />}
         title="Delete your account permanently?"
         message="This will permanently delete your account, all folders, files, and other data. This action cannot be undone."
         confirmLabel="Delete Permanently"

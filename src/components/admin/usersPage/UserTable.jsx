@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Search } from "lucide-react";
 import UserRow from "./UserRow";
 import UserSkeleton from "./UserSkeleton";
 
@@ -64,7 +65,9 @@ const UserTable = memo(function UserTable({
               color: "var(--muted)",
             }}
           >
-            <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
+            <div style={{ fontSize: 36, marginBottom: 12, display: "flex", justifyContent: "center" }}>
+              <Search size={36} aria-hidden="true" />
+            </div>
             <div style={{ fontWeight: 600, color: "var(--text)" }}>No users found</div>
           </div>
         )}

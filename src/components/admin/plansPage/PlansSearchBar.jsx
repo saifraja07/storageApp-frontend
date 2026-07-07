@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Search } from "lucide-react";
 
 const PlansSearchBar = memo(function PlansSearchBar({
   searchQ,
@@ -25,9 +26,10 @@ const PlansSearchBar = memo(function PlansSearchBar({
             transform: "translateY(-50%)",
             color: "var(--muted)",
             fontSize: 14,
+            display: "flex",
           }}
         >
-          🔍
+          <Search size={14} aria-hidden="true" />
         </span>
         <input
           type="text"

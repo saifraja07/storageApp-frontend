@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Users, Lock } from "lucide-react";
 import {
   fetchAllUsers,
   logoutUserByAdmin,
@@ -175,9 +176,12 @@ export default function AdminUsersPage() {
                 fontWeight: 700,
                 color: "var(--text)",
                 marginBottom: 4,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
               }}
             >
-              👥 User Management
+              <Users size={20} aria-hidden="true" /> User Management
             </h1>
             <p style={{ fontSize: 13, color: "var(--muted)" }}>
               Manage all registered users, roles, and sessions.
@@ -226,7 +230,7 @@ export default function AdminUsersPage() {
       {logoutTarget && (
         <ConfirmDialog
           open={true}
-          icon="🔐"
+          icon={<Lock size={32} aria-hidden="true" />}
           title="Log out user?"
           message={
             logoutTarget.email === userEmail

@@ -1,4 +1,5 @@
 import { memo, useCallback, useSyncExternalStore } from "react";
+import { Folder, Check, Upload } from "lucide-react";
 import { BASE_URL } from "../api/axiosInstances";
 import {
   formatDate,
@@ -16,7 +17,10 @@ function useItemProgress(id, active) {
     (cb) => (active ? subscribeItem(id, cb) : () => {}),
     [id, active],
   );
-  const getSnap = useCallback(() => (active ? getItemProgress(id) : 0), [id, active]);
+  const getSnap = useCallback(
+    () => (active ? getItemProgress(id) : 0),
+    [id, active],
+  );
   return useSyncExternalStore(subscribeFn, getSnap);
 }
 
@@ -66,7 +70,8 @@ export const FileRow = memo(function FileRow({
   const emoji = item.isDirectory ? "📁" : getFileEmoji(ext);
   const selected = selectedIds?.has(String(item._id || item.id)) ?? false;
   const isLoading = loadingItems?.has(String(item._id || item.id));
-  const isUploading = typeof item.id === "string" && item.id.startsWith("temp-");
+  const isUploading =
+    typeof item.id === "string" && item.id.startsWith("temp-");
   const uploadPct = useItemProgress(item.id, isUploading);
   const disabled = isLoading || isUploading;
 
@@ -149,7 +154,7 @@ export const FileRow = memo(function FileRow({
             color: "#fff",
           }}
         >
-          {selected && "✓"}
+          {selected && <Check size={11} aria-hidden="true" />}
         </div>
       )}
       <span style={{ fontSize: 17, flexShrink: 0 }}>{emoji}</span>
@@ -172,9 +177,18 @@ export const FileRow = memo(function FileRow({
               fontSize: 11,
               color: uploadPct >= 100 ? "#10B981" : "var(--primary)",
               fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 3,
             }}
           >
-            {uploadPct >= 100 ? "✓ Done" : `${Math.round(uploadPct)}%`}
+            {uploadPct >= 100 ? (
+              <>
+                <Check size={11} aria-hidden="true" /> Done
+              </>
+            ) : (
+              `${Math.round(uploadPct)}%`
+            )}
           </span>
         )}
       </span>
@@ -243,7 +257,8 @@ export const FileCard = memo(function FileCard({
   const emoji = item.isDirectory ? "📁" : getFileEmoji(ext);
   const selected = selectedIds?.has(String(item._id || item.id)) ?? false;
   const isLoading = loadingItems?.has(String(item._id || item.id));
-  const isUploading = typeof item.id === "string" && item.id.startsWith("temp-");
+  const isUploading =
+    typeof item.id === "string" && item.id.startsWith("temp-");
   const uploadPct = useItemProgress(item.id, isUploading);
   const disabled = isLoading || isUploading;
 
@@ -257,7 +272,7 @@ export const FileCard = memo(function FileCard({
         background: selected ? "rgba(59,130,246,0.12)" : "var(--surface)",
         border: `1px solid ${selected ? "rgba(59,130,246,0.45)" : isUploading ? "rgba(59,130,246,0.3)" : "var(--border)"}`,
         borderRadius: 10,
-        padding: "14px 12px 12px",
+        padding: isUploading ? "30px 12px 12px" : "14px 12px 12px",
         cursor: isUploading ? "progress" : isLoading ? "default" : "pointer",
         transition: "all 0.15s",
         position: "relative",
@@ -331,7 +346,7 @@ export const FileCard = memo(function FileCard({
             zIndex: 2,
           }}
         >
-          {selected && "✓"}
+          {selected && <Check size={13} aria-hidden="true" />}
         </div>
       )}
       <div
@@ -367,9 +382,10 @@ export const FileCard = memo(function FileCard({
           marginBottom: 10,
           paddingRight: 20,
           opacity: isUploading ? 0.5 : 1,
+          display: "flex",
         }}
       >
-        {isUploading ? <span style={{ fontSize: 22 }}>⬆️</span> : emoji}
+        {isUploading ? <Upload size={22} aria-hidden="true" /> : emoji}
       </div>
       <div
         style={{

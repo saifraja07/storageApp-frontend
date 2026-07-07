@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { User } from "lucide-react";
 import UserStorageBar from "./UserStorageBar";
 import UserStatus from "./UserStatus";
 import UserActionsMenu from "./UserActionsMenu";
@@ -77,7 +78,7 @@ const UserRow = memo(function UserRow({
         >
           {u.picture ? (
             <img src={u.picture} alt={u.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          ) : "👤"}
+          ) : <User size={15} aria-hidden="true" />}
         </div>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>

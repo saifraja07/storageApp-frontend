@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Pencil } from "lucide-react";
 import Modal from "./Modal";
 import { inputStyle } from "../utils/directoryUtils";
 
@@ -44,7 +45,11 @@ export default function RenameModal({
   if (!showRename) return null;
 
   return (
-    <Modal title={`✏️ Rename ${isFile ? "File" : "Folder"}`} onClose={handleClose}>
+    <Modal  title={
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <Pencil size={16} aria-hidden="true" /> Rename {isFile ? "File" : "Folder"}
+        </span>
+      } onClose={handleClose}>
       <form onSubmit={handleRenameSubmit}>
         <label style={{
           display: "block", fontSize: 12, fontWeight: 600,
