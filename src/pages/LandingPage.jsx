@@ -135,7 +135,7 @@ export default function LandingPage() {
         <div className="landing-nav-inner">
           <Link to="/" className="landing-logo">
             <div className="landing-logo-icon">☁️</div>
-            <span className="landing-logo-text">Haadi Storage App</span>
+            <span className="landing-logo-text">Haadi Cloud</span>
           </Link>
 
           <div className="landing-desktop-nav">
