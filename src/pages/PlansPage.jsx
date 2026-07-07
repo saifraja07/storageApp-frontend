@@ -54,7 +54,7 @@ const FREE_PLAN_YEARLY = {
   period: "/yr",
   color: "#6B7280",
   emoji: Gift,
-  features: ["512 MB cloud storage", "Access from 1 device", "Upload limits: 20 files at a time", "Basic support"],
+  features: ["512 MB cloud storage", "Access from 1 device", "No size limits", "Upload limits: 20 files at a time", "Basic support"],
   isFree: true,
 };
 
@@ -73,7 +73,7 @@ const PLAN_CATALOG = {
       color: "#3B82F6",
       emoji: Zap,
       badge: "Most Popular",
-      features: ["100 GB cloud storage", "Access from up to 3 device", "Priority uploads", "Email support"],
+      features: ["100 GB cloud storage", "Access from up to 3 device", "No size limits", "Priority uploads", "Email support"],
       isFree: false,
     },
     {
@@ -106,7 +106,7 @@ const PLAN_CATALOG = {
       color: "#3B82F6",
       emoji: Zap,
       badge: "Most Popular",
-      features: ["100 GB cloud storage", "Access from up to 3 device", "Priority uploads", "Email support"],
+      features: ["100 GB cloud storage", "Access from up to 3 device", "No size limits", "Priority uploads", "Email support"],
       isFree: false,
     },
     {
