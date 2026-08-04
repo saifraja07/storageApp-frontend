@@ -14,7 +14,7 @@ jobs:
           CLOUDFRONT_DISTRIBUTION_ID: E35JPYRACDTD7Z
           VITE_BACKEND_BASE_URL: https://api.mirhaadi.in
           VITE_RAZORPAY_KEY_ID: rzp_live_T7QqY1ykKdipTT
-          VITE_GOOGLE_CLIENT_ID: 594555697613-18p3s2o6hl7mvc3gj0o2a2bg7b27tj9m.apps.googleusercontent.com
+          VITE_GOOGLE_CLIENT_ID: 928415821707-pjr1i1oc0d6eaq2mh18n7t9gh6hvkjj6.apps.googleusercontent.com
 
         steps:
           - name: Clone frontend repository
