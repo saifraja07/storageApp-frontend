@@ -19,7 +19,7 @@ const UserSkeleton = memo(function UserSkeleton() {
               width: 34,
               height: 34,
               borderRadius: "50%",
-              background: "rgba(255,255,255,0.07)",
+              background: "var(--surface-tint-strong)",
               flexShrink: 0,
               animation: "skpulse 1.4s ease-in-out infinite",
             }}
@@ -28,7 +28,7 @@ const UserSkeleton = memo(function UserSkeleton() {
             style={{
               flex: 1,
               height: 10,
-              background: "rgba(255,255,255,0.07)",
+              background: "var(--surface-tint-strong)",
               borderRadius: 4,
               animation: "skpulse 1.4s ease-in-out infinite",
             }}

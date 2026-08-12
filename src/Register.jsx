@@ -177,7 +177,7 @@ export default function Register() {
   const inputStyle = {
     width: "100%",
     padding: "11px 14px",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--surface-tint)",
     border: "1px solid var(--border)",
     borderRadius: 8,
     color: "var(--text)",
@@ -282,7 +282,7 @@ export default function Register() {
               }
             />
             {errors.name && (
-              <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+              <p style={{ color: "var(--status-red-text)", fontSize: 12, marginTop: 4 }}>
                 {errors.name}
               </p>
             )}
@@ -365,7 +365,7 @@ export default function Register() {
               </button>
             </div>
             {errors.email && (
-              <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+              <p style={{ color: "var(--status-red-text)", fontSize: 12, marginTop: 4 }}>
                 {errors.email}
               </p>
             )}
@@ -376,7 +376,7 @@ export default function Register() {
               <label style={labelStyle}>
                 Verification code{" "}
                 {otpVerified && (
-                  <span style={{ color: "#34D399" }}>Verified</span>
+                  <span style={{ color: "var(--status-green-text)" }}>Verified</span>
                 )}
               </label>
               <div style={{ display: "flex", gap: 8 }}>
@@ -423,7 +423,7 @@ export default function Register() {
                       : "var(--primary)",
                     border: "none",
                     borderRadius: 8,
-                    color: otpVerified ? "#34D399" : "#fff",
+                    color: otpVerified ? "var(--status-green-text)" : "#fff",
                     fontSize: 13,
                     fontWeight: 600,
                     cursor:
@@ -450,7 +450,7 @@ export default function Register() {
                 </button>
               </div>
               {errors.otp && (
-                <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+                <p style={{ color: "var(--status-red-text)", fontSize: 12, marginTop: 4 }}>
                   {errors.otp}
                 </p>
               )}
@@ -458,7 +458,7 @@ export default function Register() {
           )}
 
           {!otpSent && errors.otp && (
-            <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+            <p style={{ color: "var(--status-red-text)", fontSize: 12, marginTop: 4 }}>
               {errors.otp}
             </p>
           )}
@@ -485,7 +485,7 @@ export default function Register() {
               }
             />
             {errors.password && (
-              <p style={{ color: "#FCA5A5", fontSize: 12, marginTop: 4 }}>
+              <p style={{ color: "var(--status-red-text)", fontSize: 12, marginTop: 4 }}>
                 {errors.password}
               </p>
             )}
@@ -499,7 +499,7 @@ export default function Register() {
                 borderRadius: 8,
                 padding: "10px 14px",
                 fontSize: 13,
-                color: "#FCA5A5",
+                color: "var(--status-red-text)",
               }}
             >
               {errors.general}
@@ -576,7 +576,7 @@ export default function Register() {
               borderRadius: 8,
               padding: "10px 14px",
               fontSize: 13,
-              color: "#FCA5A5",
+              color: "var(--status-red-text)",
               marginTop: 12,
             }}
           >

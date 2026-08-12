@@ -118,7 +118,7 @@ export const FileRow = memo(function FileRow({
             left: 0,
             right: 0,
             height: 2,
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--surface-tint-strong)",
           }}
         >
           <div
@@ -145,7 +145,7 @@ export const FileRow = memo(function FileRow({
             height: 16,
             borderRadius: 3,
             flexShrink: 0,
-            border: `2px solid ${selected ? "var(--primary)" : "rgba(255,255,255,0.3)"}`,
+            border: `2px solid ${selected ? "var(--primary)" : "var(--divider-strong)"}`,
             background: selected ? "var(--primary)" : "transparent",
             display: "flex",
             alignItems: "center",
@@ -285,7 +285,7 @@ export const FileCard = memo(function FileCard({
         !isLoading &&
         !isUploading &&
         ((e.currentTarget.style.background = "var(--surface-hover)"),
-        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.13)"))
+        (e.currentTarget.style.borderColor = "var(--divider-strong)"))
       }
       onMouseOut={(e) =>
         !selected &&
@@ -307,7 +307,7 @@ export const FileCard = memo(function FileCard({
             left: 0,
             right: 0,
             height: 3,
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--surface-tint-strong)",
           }}
         >
           <div
@@ -336,7 +336,7 @@ export const FileCard = memo(function FileCard({
             width: 18,
             height: 18,
             borderRadius: 4,
-            border: `2px solid ${selected ? "var(--primary)" : "rgba(255,255,255,0.3)"}`,
+            border: `2px solid ${selected ? "var(--primary)" : "var(--divider-strong)"}`,
             background: selected ? "var(--primary)" : "transparent",
             display: "flex",
             alignItems: "center",

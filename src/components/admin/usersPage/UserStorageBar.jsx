@@ -36,7 +36,7 @@ const UserStorageBar = memo(function UserStorageBar({ usedStorageInBytes, maxSto
         style={{
           height: 6,
           borderRadius: 999,
-          background: "rgba(255,255,255,0.08)",
+          background: "var(--surface-tint-strong)",
           overflow: "hidden",
         }}
       >

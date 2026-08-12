@@ -17,13 +17,13 @@ const DeleteUserModal = memo(function DeleteUserModal({ user, onClose, onConfirm
     >
       <div
         style={{
-          background: "#1a2433",
+          background: "var(--surface-elevated)",
           border: "1px solid var(--border)",
           borderRadius: 14,
           padding: "26px 28px",
           width: "100%",
           maxWidth: 400,
-          boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
+          boxShadow: "0 24px 64px var(--shadow-color)",
         }}
       >
         <h3
@@ -39,7 +39,7 @@ const DeleteUserModal = memo(function DeleteUserModal({ user, onClose, onConfirm
         <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>
           {user.email}
         </p>
-        <p style={{ fontSize: 12, color: "#F87171", marginBottom: 22, display: "flex", alignItems: "center", gap: 6 }}>
+        <p style={{ fontSize: 12, color: "var(--status-red-text-strong)", marginBottom: 22, display: "flex", alignItems: "center", gap: 6 }}>
           <TriangleAlert size={14} aria-hidden="true" /> Hard delete cannot be undone.
         </p>
         <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>

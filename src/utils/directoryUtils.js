@@ -79,7 +79,7 @@ export function inputStyle() {
   return {
     width: "100%",
     padding: "10px 14px",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--surface-tint)",
     border: "1px solid var(--border)",
     borderRadius: 8,
     color: "var(--text)",

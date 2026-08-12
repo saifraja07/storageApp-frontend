@@ -93,7 +93,7 @@ export default function UploadProgressBar() {
                 fontSize: 13,
                 fontWeight: 600,
                 color: isError
-                  ? "#F87171"
+                  ? "var(--status-red-text-strong)"
                   : display.failedFiles > 0
                     ? "#F59E0B"
                     : "#10B981",
@@ -199,7 +199,7 @@ export default function UploadProgressBar() {
                   flexShrink: 0,
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.color = "#F87171";
+                  e.currentTarget.style.color = "var(--status-red-text-strong)";
                   e.currentTarget.style.background = "rgba(239,68,68,.08)";
                 }}
                 onMouseOut={(e) => {
@@ -215,7 +215,7 @@ export default function UploadProgressBar() {
               style={{
                 height: 6,
                 borderRadius: 3,
-                background: "rgba(255,255,255,0.07)",
+                background: "var(--surface-tint-strong)",
                 overflow: "hidden",
                 marginBottom: 10,
               }}

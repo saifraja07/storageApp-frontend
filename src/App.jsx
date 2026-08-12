@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, memo } from "react";
+import { lazy, Suspense, memo } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -25,7 +25,7 @@ const PageSpinner = ({ message = "Loading…" }) => (
   <div
     style={{
       minHeight: "100vh",
-      background: "#0B1220",
+      background: "var(--bg)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -38,7 +38,7 @@ const PageSpinner = ({ message = "Loading…" }) => (
         width: 36,
         height: 36,
         border: "3px solid rgba(59,130,246,0.3)",
-        borderTopColor: "#3B82F6",
+        borderTopColor: "var(--primary)",
         borderRadius: "50%",
         animation: "spin 0.8s linear infinite",
       }}
@@ -46,7 +46,7 @@ const PageSpinner = ({ message = "Loading…" }) => (
 
     <p
       style={{
-        color: "rgba(147,197,253,0.7)",
+        color: "var(--muted)",
         fontSize: 14,
         fontWeight: 500,
         letterSpacing: "0.01em",

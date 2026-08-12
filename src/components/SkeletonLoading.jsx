@@ -2,7 +2,7 @@ export function SkeletonCard() {
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.04)",
+        background: "var(--surface-tint)",
         border: "1px solid var(--border)",
         borderRadius: 10,
         padding: 14,
@@ -13,7 +13,7 @@ export function SkeletonCard() {
         style={{
           width: 32,
           height: 32,
-          background: "rgba(255,255,255,0.07)",
+          background: "var(--surface-tint-strong)",
           borderRadius: 7,
           marginBottom: 10,
           animation: "skpulse 1.4s ease-in-out infinite",
@@ -22,7 +22,7 @@ export function SkeletonCard() {
       <div
         style={{
           height: 10,
-          background: "rgba(255,255,255,0.07)",
+          background: "var(--surface-tint-strong)",
           borderRadius: 4,
           marginBottom: 6,
           width: "75%",
@@ -32,7 +32,7 @@ export function SkeletonCard() {
       <div
         style={{
           height: 8,
-          background: "rgba(255,255,255,0.04)",
+          background: "var(--surface-tint)",
           borderRadius: 4,
           width: "50%",
           animation: "skpulse 1.4s ease-in-out infinite",
@@ -57,7 +57,7 @@ export function SkeletonRow() {
         style={{
           width: 20,
           height: 20,
-          background: "rgba(255,255,255,0.07)",
+          background: "var(--surface-tint-strong)",
           borderRadius: 4,
           flexShrink: 0,
           animation: "skpulse 1.4s ease-in-out infinite",
@@ -68,7 +68,7 @@ export function SkeletonRow() {
         style={{
           flex: 1,
           height: 10,
-          background: "rgba(255,255,255,0.07)",
+          background: "var(--surface-tint-strong)",
           borderRadius: 4,
           animation: "skpulse 1.4s ease-in-out infinite",
         }}
@@ -78,7 +78,7 @@ export function SkeletonRow() {
         style={{
           width: 60,
           height: 9,
-          background: "rgba(255,255,255,0.05)",
+          background: "var(--surface-tint)",
           borderRadius: 4,
           animation: "skpulse 1.4s ease-in-out infinite",
         }}
@@ -88,7 +88,7 @@ export function SkeletonRow() {
         style={{
           width: 90,
           height: 9,
-          background: "rgba(255,255,255,0.05)",
+          background: "var(--surface-tint)",
           borderRadius: 4,
           animation: "skpulse 1.4s ease-in-out infinite",
         }}

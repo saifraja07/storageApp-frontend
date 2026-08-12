@@ -65,7 +65,7 @@ export default function CreateFolderModal({
               fontFamily: "Inter,sans-serif",
               opacity: isLoading ? 0.5 : 1,
             }}
-            onMouseOver={(e) => !isLoading && (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+            onMouseOver={(e) => !isLoading && (e.currentTarget.style.background = "var(--surface-tint-strong)")}
             onMouseOut={(e) => (e.currentTarget.style.background = "var(--surface-hover)")}
           >
             Cancel

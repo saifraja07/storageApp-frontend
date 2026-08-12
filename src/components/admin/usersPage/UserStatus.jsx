@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 const UserStatus = memo(function UserStatus({ isDeleted, isLoggedIn }) {
-  const color = isDeleted ? "#F87171" : isLoggedIn ? "#34D399" : "#6B7280";
+  const color = isDeleted ? "var(--status-red-text-strong)" : isLoggedIn ? "var(--status-green-text)" : "#6B7280";
   const label = isDeleted ? "Deleted" : isLoggedIn ? "Online" : "Offline";
 
   return (

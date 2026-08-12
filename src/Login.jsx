@@ -62,7 +62,7 @@ export default function Login() {
   const inputStyle = (hasErr) => ({
     width: "100%",
     padding: "11px 14px",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--surface-tint)",
     border: `1px solid ${hasErr ? "#EF4444" : "var(--border)"}`,
     borderRadius: 8,
     color: "var(--text)",
@@ -196,7 +196,7 @@ export default function Login() {
                 borderRadius: 8,
                 padding: "10px 14px",
                 fontSize: 13,
-                color: "#FCA5A5",
+                color: "var(--status-red-text)",
               }}
             >
               {serverError}
@@ -269,7 +269,7 @@ export default function Login() {
               borderRadius: 8,
               padding: "10px 14px",
               fontSize: 13,
-              color: "#FCA5A5",
+              color: "var(--status-red-text)",
               marginTop: 12,
             }}
           >

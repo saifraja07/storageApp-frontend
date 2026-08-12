@@ -7,11 +7,11 @@ import UserActionsMenu from "./UserActionsMenu";
 // Badge defined here since it is only used inside UserRow
 function Badge({ children, color }) {
   const colors = {
-    green:  { bg: "rgba(16,185,129,0.15)",  text: "#34D399", border: "rgba(16,185,129,0.3)" },
-    red:    { bg: "rgba(239,68,68,0.15)",   text: "#F87171", border: "rgba(239,68,68,0.3)" },
-    blue:   { bg: "rgba(59,130,246,0.15)",  text: "#93C5FD", border: "rgba(59,130,246,0.3)" },
-    amber:  { bg: "rgba(245,158,11,0.15)",  text: "#FCD34D", border: "rgba(245,158,11,0.3)" },
-    gray:   { bg: "rgba(255,255,255,0.07)", text: "var(--muted)", border: "var(--border)" },
+    green:  { bg: "rgba(16,185,129,0.15)",  text: "var(--status-green-text)", border: "rgba(16,185,129,0.3)" },
+    red:    { bg: "rgba(239,68,68,0.15)",   text: "var(--status-red-text-strong)", border: "rgba(239,68,68,0.3)" },
+    blue:   { bg: "rgba(59,130,246,0.15)",  text: "var(--status-blue-text)", border: "rgba(59,130,246,0.3)" },
+    amber:  { bg: "rgba(245,158,11,0.15)",  text: "var(--status-amber-text)", border: "rgba(245,158,11,0.3)" },
+    gray:   { bg: "var(--surface-tint-strong)", text: "var(--muted)", border: "var(--border)" },
   };
   const c = colors[color] || colors.gray;
   return (
@@ -83,7 +83,7 @@ const UserRow = memo(function UserRow({
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>
             {u.name}{" "}
-            {isSelf && <span style={{ fontSize: 10, color: "#93C5FD" }}>(you)</span>}
+            {isSelf && <span style={{ fontSize: 10, color: "var(--status-blue-text)" }}>(you)</span>}
           </div>
           <div style={{ marginTop: 3 }}>
             <Badge

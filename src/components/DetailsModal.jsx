@@ -74,7 +74,7 @@ export default function DetailsModal({ item, breadcrumbs, onClose }) {
             display: "flex",
             justifyContent: "space-between",
             padding: "9px 0",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
+            borderBottom: "1px solid var(--surface-tint)",
           }}
         >
           <span style={{ fontSize: 13, color: "var(--muted)" }}>{label}</span>
@@ -100,7 +100,7 @@ export default function DetailsModal({ item, breadcrumbs, onClose }) {
           justifyContent: "space-between",
           gap: 16,
           padding: "9px 0",
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          borderBottom: "1px solid var(--surface-tint)",
         }}
       >
         <span

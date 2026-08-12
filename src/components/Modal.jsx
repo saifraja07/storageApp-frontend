@@ -10,13 +10,13 @@ export default function Modal({ title, onClose, children }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div style={{
-        background: "#1a2433",
+        background: "var(--surface-elevated)",
         border: "1px solid var(--border)",
         borderRadius: 14,
         padding: "26px 28px",
         width: "100%",
         maxWidth: 400,
-        boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
+        boxShadow: "0 24px 64px var(--shadow-color)",
       }}>
         <div style={{
           display: "flex", alignItems: "center",

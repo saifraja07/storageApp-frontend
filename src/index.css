@@ -8,15 +8,73 @@
   padding: 0;
 }
 
-:root {
+/* ── Theme variables ────────────────────────────────────────────────────
+   :root holds the dark palette as a safe fallback (matches the app's
+   original look) for the brief instant before the early theme-init
+   script in index.html sets data-theme on <html>. The [data-theme="..."]
+   blocks below are what actually drive the app once JS has run. ──────── */
+:root,
+:root[data-theme="dark"] {
   --bg: #0B1220;
   --surface: #111827;
   --surface-hover: #1F2937;
+  --surface-elevated: #1a2433;
+  --surface-tint: rgba(255,255,255,0.05);
+  --surface-tint-strong: rgba(255,255,255,0.08);
   --primary: #3B82F6;
   --primary-hover: #2563EB;
   --text: #F9FAFB;
   --muted: #94A3B8;
   --border: rgba(255,255,255,0.08);
+  --divider-strong: rgba(255,255,255,0.18);
+  --label-faint: rgba(255,255,255,0.28);
+  --scrollbar-thumb: rgba(255,255,255,0.15);
+  --shadow-color: rgba(0,0,0,0.5);
+
+  /* status/semantic text colors (used on top of translucent tinted badges) */
+  --status-red-text: #FCA5A5;
+  --status-red-text-strong: #F87171;
+  --status-green-text: #34D399;
+  --status-blue-text: #93C5FD;
+  --status-amber-text: #FCD34D;
+  --status-orange-text: #FB923C;
+  --status-purple-text: #8B5CF6;
+
+  /* landing page — translucent sticky nav backdrop, footer tint, and the
+     "Most Popular" pricing card's gradient background */
+  --landing-nav-bg: rgba(11, 18, 32, 0.92);
+  --landing-footer-bg: rgba(0, 0, 0, 0.25);
+  --landing-popular-card-bg: linear-gradient(145deg, #1a2433 0%, #0f1d32 100%);
+}
+
+:root[data-theme="light"] {
+  --bg: #F1F4F9;
+  --surface: #FFFFFF;
+  --surface-hover: #EDF1F7;
+  --surface-elevated: #FFFFFF;
+  --surface-tint: rgba(15,23,42,0.035);
+  --surface-tint-strong: rgba(15,23,42,0.06);
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
+  --text: #0F172A;
+  --muted: #5B6B82;
+  --border: rgba(15,23,42,0.10);
+  --divider-strong: rgba(15,23,42,0.16);
+  --label-faint: rgba(15,23,42,0.38);
+  --scrollbar-thumb: rgba(15,23,42,0.18);
+  --shadow-color: rgba(15,23,42,0.16);
+
+  --status-red-text: #DC2626;
+  --status-red-text-strong: #B91C1C;
+  --status-green-text: #059669;
+  --status-blue-text: #1D4ED8;
+  --status-amber-text: #B45309;
+  --status-orange-text: #C2410C;
+  --status-purple-text: #7C3AED;
+
+  --landing-nav-bg: rgba(241, 244, 249, 0.85);
+  --landing-footer-bg: rgba(15, 23, 42, 0.035);
+  --landing-popular-card-bg: linear-gradient(145deg, #EAF0FB 0%, #DCE7F8 100%);
 }
 
 body {
@@ -33,6 +91,25 @@ body {
   }
 }
 
+/* Subtle, instant-feeling transition when the theme changes. Disabled
+   during the very first paint (see .theme-init-pending) so the app never
+   visibly animates from one theme to another on initial load. */
+.theme-init-pending,
+.theme-init-pending * {
+  transition: none !important;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -40,6 +117,6 @@ body {
   background: var(--surface);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }

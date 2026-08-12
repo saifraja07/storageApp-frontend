@@ -8,7 +8,7 @@ export default function NotFoundPage() {
       alignItems: "center", justifyContent: "center", textAlign: "center", padding: 24,
     }}>
       <div style={{ fontSize: 72, marginBottom: 24, opacity: 0.8 }}>☁️</div>
-      <div style={{ fontSize: "clamp(64px,12vw,120px)", fontWeight: 800, color: "rgba(255,255,255,0.06)", lineHeight: 1, marginBottom: -20, letterSpacing: -4 }}>404</div>
+      <div style={{ fontSize: "clamp(64px,12vw,120px)", fontWeight: 800, color: "var(--surface-tint-strong)", lineHeight: 1, marginBottom: -20, letterSpacing: -4 }}>404</div>
       <h1 style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 700, marginBottom: 16, letterSpacing: "-0.5px" }}>Page Not Found</h1>
       <p style={{ fontSize: 16, color: "var(--muted)", marginBottom: 36, maxWidth: 400, lineHeight: 1.7 }}>
         The page you're looking for doesn't exist or may have been moved.

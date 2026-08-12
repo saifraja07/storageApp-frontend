@@ -95,13 +95,13 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
             position: "absolute",
             top: "calc(100% + 6px)",
             left: 0,
-            background: "#1a2433",
+            background: "var(--surface-elevated)",
             border: "1px solid var(--border)",
             borderRadius: 10,
             padding: 4,
             zIndex: 200,
             minWidth: 170,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            boxShadow: "0 8px 32px var(--shadow-color)",
           }}
         >
           {OPTIONS.map((opt) => {
@@ -122,7 +122,7 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
                   padding: "8px 12px",
                   background: active ? "rgba(59,130,246,0.12)" : "none",
                   border: "none",
-                  color: active ? "#93C5FD" : "var(--text)",
+                  color: active ? "var(--status-blue-text)" : "var(--text)",
                   fontSize: 13,
                   cursor: "pointer",
                   borderRadius: 6,
@@ -231,7 +231,7 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
                       background:
                         sortDir === dir ? "rgba(59,130,246,0.12)" : "none",
                       border: "none",
-                      color: sortDir === dir ? "#93C5FD" : "var(--muted)",
+                      color: sortDir === dir ? "var(--status-blue-text)" : "var(--muted)",
                       fontSize: 12,
                       cursor: "pointer",
                       borderRadius: 6,

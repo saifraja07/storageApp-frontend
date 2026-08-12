@@ -96,13 +96,13 @@ function ThreeDotMenu({ item, onRename, onDelete, onDetails, onDownload }) {
 
             ...(openUp ? { bottom: 34 } : { top: 34 }),
 
-            background: "#1a2433",
+            background: "var(--surface-elevated)",
             border: "1px solid var(--border)",
             borderRadius: 10,
             padding: 4,
             zIndex: 220,
             minWidth: 160,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            boxShadow: "0 8px 32px var(--shadow-color)",
           }}
         >
           {actions.map((a, i) =>
@@ -130,7 +130,7 @@ function ThreeDotMenu({ item, onRename, onDelete, onDetails, onDownload }) {
                   padding: "8px 12px",
                   background: "none",
                   border: "none",
-                  color: a.danger ? "#F87171" : "var(--text)",
+                  color: a.danger ? "var(--status-red-text-strong)" : "var(--text)",
                   fontSize: 13,
                   cursor: "pointer",
                   borderRadius: 6,

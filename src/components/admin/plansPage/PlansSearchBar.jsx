@@ -39,7 +39,7 @@ const PlansSearchBar = memo(function PlansSearchBar({
           style={{
             width: "100%",
             padding: "8px 12px 8px 32px",
-            background: "rgba(255,255,255,0.05)",
+            background: "var(--surface-tint)",
             border: "1px solid var(--border)",
             borderRadius: 8,
             color: "var(--text)",

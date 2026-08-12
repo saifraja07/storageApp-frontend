@@ -67,7 +67,7 @@ export default function ProfilePage() {
               <span
                 style={{
                   background: "rgba(59,130,246,0.15)",
-                  color: "#93C5FD",
+                  color: "var(--status-blue-text)",
                   padding: "3px 10px",
                   borderRadius: 100,
                   fontSize: 12,
@@ -166,7 +166,7 @@ export default function ProfilePage() {
           <div
             style={{
               height: 6,
-              background: "rgba(255,255,255,0.08)",
+              background: "var(--surface-tint-strong)",
               borderRadius: 3,
               overflow: "hidden",
               marginBottom: 8,

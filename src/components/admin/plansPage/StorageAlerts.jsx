@@ -57,7 +57,7 @@ const StorageAlerts = memo(function StorageAlerts({ loading, users }) {
               <div
                 key={u.id}
                 style={{
-                  background: "rgba(255,255,255,0.03)",
+                  background: "var(--surface-tint)",
                   border: "1px solid var(--border)",
                   borderRadius: 10,
                   padding: "12px 14px",
@@ -112,7 +112,7 @@ const StorageAlerts = memo(function StorageAlerts({ loading, users }) {
                   style={{
                     height: 6,
                     borderRadius: 999,
-                    background: "rgba(255,255,255,0.08)",
+                    background: "var(--surface-tint-strong)",
                     overflow: "hidden",
                     marginBottom: 6,
                   }}

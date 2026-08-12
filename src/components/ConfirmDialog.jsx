@@ -30,12 +30,12 @@ export default function ConfirmDialog({
     >
       <div
         style={{
-          background: "#1a2433",
+          background: "var(--surface-elevated)",
           border: "1px solid var(--border)",
           borderRadius: 16,
           padding: "28px 28px 24px",
           width: "100%", maxWidth: 400,
-          boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
+          boxShadow: "0 24px 64px var(--shadow-color)",
           animation: "cdSlideUp 0.18s ease",
         }}
       >
@@ -83,7 +83,7 @@ export default function ConfirmDialog({
                   cursor: "pointer", fontFamily: "Inter,sans-serif",
                   transition: "background 0.12s",
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+                onMouseOver={(e) => (e.currentTarget.style.background = "var(--surface-tint-strong)")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "var(--surface-hover)")}
               >
                 {cancelLabel}

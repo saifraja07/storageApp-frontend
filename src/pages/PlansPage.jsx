@@ -85,7 +85,7 @@ const PLAN_CATALOG = {
       storageBytes: 500 * 1024 ** 3,
       price: "₹499",
       period: "/mo",
-      color: "#8B5CF6",
+      color: "var(--status-purple-text)",
       emoji: Crown,
       badge: "Best Value",
       features: ["500 GB cloud storage", "Everything in Pro", "Access from up to 4 device", "Priority support", "Secure encrypted storage"],
@@ -118,7 +118,7 @@ const PLAN_CATALOG = {
       storageBytes: 500 * 1024 ** 3,
       price: "₹4,999",
       period: "/yr",
-      color: "#8B5CF6",
+      color: "var(--status-purple-text)",
       emoji: Crown,
       badge: "Best Value",
       features: ["500 GB cloud storage", "Everything in Pro", "Access from up to 4 device",  "Priority support", "Secure encrypted storage"],
@@ -184,7 +184,7 @@ function PaymentOverlay({ phase }) {
         background: "var(--surface)", border: "1px solid var(--border)",
         borderRadius: 16, padding: "32px 40px", maxWidth: 360,
         display: "flex", flexDirection: "column", alignItems: "center", gap: 16,
-        boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+        boxShadow: "0 20px 60px var(--shadow-color)",
       }}>
         <div style={{
           width: 40, height: 40,
@@ -216,13 +216,13 @@ function Spin({ size = 14 }) {
 
 function StatusBadge({ status }) {
   const map = {
-    active:        { bg: "rgba(52,211,153,0.15)",  text: "#34D399"  },
-    authenticated: { bg: "rgba(56,189,248,0.15)",  text: "#7DD3FC"  },
-    pending:       { bg: "rgba(245,158,11,0.15)",  text: "#FCD34D"  },
-    paused:        { bg: "rgba(234,179,8,0.15)",   text: "#FDE047"  },
-    cancelled:     { bg: "rgba(249,115,22,0.15)",  text: "#FB923C"  },
-    halted:        { bg: "rgba(239,68,68,0.15)",   text: "#FCA5A5"  },
-    expired:       { bg: "rgba(239,68,68,0.15)",   text: "#FCA5A5"  },
+    active:        { bg: "rgba(52,211,153,0.15)",  text: "var(--status-green-text)"  },
+    authenticated: { bg: "rgba(56,189,248,0.15)",  text: "var(--status-blue-text)"  },
+    pending:       { bg: "rgba(245,158,11,0.15)",  text: "var(--status-amber-text)"  },
+    paused:        { bg: "rgba(234,179,8,0.15)",   text: "var(--status-amber-text)"  },
+    cancelled:     { bg: "rgba(249,115,22,0.15)",  text: "var(--status-orange-text)"  },
+    halted:        { bg: "rgba(239,68,68,0.15)",   text: "var(--status-red-text)"  },
+    expired:       { bg: "rgba(239,68,68,0.15)",   text: "var(--status-red-text)"  },
     created:       { bg: "rgba(148,163,184,0.15)", text: "#94A3B8"  },
   };
   const c = map[status] || map.created;
@@ -247,31 +247,31 @@ function StateBanner({ subscription }) {
       text: <><strong>Subscription created.</strong> Complete checkout to activate your premium storage.</>,
     },
     active: {
-      color: "#34D399", bg: "rgba(52,211,153,0.08)", border: "rgba(52,211,153,0.2)",
+      color: "var(--status-green-text)", bg: "rgba(52,211,153,0.08)", border: "rgba(52,211,153,0.2)",
       text: <><strong>Premium storage is active.</strong> Next renewal: <strong>{endDate}</strong></>,
     },
     authenticated: {
-      color: "#7DD3FC", bg: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)",
+      color: "var(--status-blue-text)", bg: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)",
       text: <><strong>Payment mandate registered.</strong> Waiting for first charge — premium will activate automatically.</>,
     },
     pending: {
-      color: "#FCD34D", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)",
+      color: "var(--status-amber-text)", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)",
       text: <><strong>Renewal payment failed.</strong> Razorpay is retrying. Premium remains active until <strong>{endDate}</strong>.</>,
     },
     paused: {
-      color: "#FDE047", bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.2)",
+      color: "var(--status-amber-text)", bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.2)",
       text: <><strong>AutoPay paused.</strong> Premium remains active until <strong>{endDate}</strong>. Resume before then to avoid downgrade.</>,
     },
     cancelled: {
-      color: "#FB923C", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)",
+      color: "var(--status-orange-text)", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)",
       text: <><strong>Auto-renewal cancelled.</strong> Premium access until <strong>{endDate}</strong>. No further charges.</>,
     },
     halted: {
-      color: "#FCA5A5", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)",
+      color: "var(--status-red-text)", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)",
       text: <><strong>Subscription halted.</strong> All retries failed — premium storage has expired. Choose a plan to continue.</>,
     },
     expired: {
-      color: "#FCA5A5", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)",
+      color: "var(--status-red-text)", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)",
       text: <><strong>Subscription expired.</strong> Choose a plan to restore premium storage.</>,
     },
   };
@@ -342,8 +342,8 @@ function BillingDashboard({ subscription, premiumActive, onUpdatePayment, onCanc
   const gridItems = [
     { label: "Plan",           value: planName },
     { label: "Premium Access", value: premiumActive
-        ? <span style={{ color: "#34D399", fontWeight: 600 }}>Active until {fmtDate(currentEnd)}</span>
-        : <span style={{ color: "#FCA5A5", fontWeight: 600 }}>Expired</span> },
+        ? <span style={{ color: "var(--status-green-text)", fontWeight: 600 }}>Active until {fmtDate(currentEnd)}</span>
+        : <span style={{ color: "var(--status-red-text)", fontWeight: 600 }}>Expired</span> },
     { label: renewalLabel,     value: fmtDate(currentEnd) },
     { label: "Last Payment",   value: lastChargedAt ? fmtDate(lastChargedAt) : "—" },
     { label: "Payment Method", value: paymentMethod ?? "—" },
@@ -359,9 +359,9 @@ function BillingDashboard({ subscription, premiumActive, onUpdatePayment, onCanc
         cursor: disabled || loading ? "not-allowed" : "pointer",
         opacity: disabled || loading ? 0.6 : 1,
         fontFamily: "Inter,sans-serif", transition: "background 0.15s",
-        background: danger ? "rgba(239,68,68,0.12)" : "rgba(255,255,255,0.06)",
+        background: danger ? "rgba(239,68,68,0.12)" : "var(--surface-tint-strong)",
         border: `1px solid ${danger ? "rgba(239,68,68,0.3)" : "var(--border)"}`,
-        color: danger ? "#FCA5A5" : "var(--text)",
+        color: danger ? "var(--status-red-text)" : "var(--text)",
       }}
     >
       {loading && <Spin size={12} />}
@@ -425,7 +425,7 @@ function BillingDashboard({ subscription, premiumActive, onUpdatePayment, onCanc
                 </thead>
                 <tbody>
                   {payments.map((p, idx) => (
-                    <tr key={p.invoiceId ?? idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    <tr key={p.invoiceId ?? idx} style={{ borderBottom: "1px solid var(--surface-tint)" }}>
                       <td style={{ padding: "10px 16px", color: "var(--text)" }}>{fmtDate(p.createdAt)}</td>
                       <td style={{ padding: "10px 16px", fontWeight: 600, color: "var(--text)" }}>{fmtAmount(p.amount)}</td>
                       <td style={{ padding: "10px 16px", color: "var(--muted)", textTransform: "capitalize" }}>{p.paymentMethod ?? "—"}</td>
@@ -433,7 +433,7 @@ function BillingDashboard({ subscription, premiumActive, onUpdatePayment, onCanc
                         <span style={{
                           padding: "2px 8px", borderRadius: 100, fontSize: 11, fontWeight: 600,
                           background: p.status === "captured" ? "rgba(52,211,153,0.15)" : "rgba(239,68,68,0.15)",
-                          color: p.status === "captured" ? "#34D399" : "#FCA5A5",
+                          color: p.status === "captured" ? "var(--status-green-text)" : "var(--status-red-text)",
                         }}>
                           {p.status === "captured" ? "paid" : p.status}
                         </span>
@@ -565,7 +565,7 @@ function PlanCard({ plan, activeSubscription, premiumActive, onSelect, loadingId
         onClick={() => !ctaDisabled && onSelect(plan)}
         style={{
           width: "100%", padding: "11px 0",
-          background: ctaDisabled ? "rgba(255,255,255,0.06)" : plan.color,
+          background: ctaDisabled ? "var(--surface-tint-strong)" : plan.color,
           color: ctaDisabled ? "var(--muted)" : "#fff",
           border: ctaDisabled ? "1px solid var(--border)" : "none",
           borderRadius: 9, fontSize: 13, fontWeight: 700,
@@ -610,7 +610,7 @@ function StorageBar({ user, activeSubscription, premiumActive }) {
         <div style={{ fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 8 }}>
           Storage Usage
         </div>
-        <div style={{ height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden", marginBottom: 8 }}>
+        <div style={{ height: 6, background: "var(--surface-tint-strong)", borderRadius: 3, overflow: "hidden", marginBottom: 8 }}>
           <div style={{ width: `${pct}%`, height: "100%", background: storageColor, borderRadius: 3, transition: "width 0.5s" }} />
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
@@ -656,9 +656,9 @@ function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: "#0f1d32", border: "1px solid rgba(239,68,68,0.3)",
+          background: "var(--surface-elevated)", border: "1px solid rgba(239,68,68,0.3)",
           borderRadius: 18, padding: "28px 24px", maxWidth: 440, width: "100%",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+          boxShadow: "0 32px 80px var(--shadow-color)",
         }}
       >
         {/* Header */}
@@ -667,7 +667,7 @@ function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
             <TriangleAlert size={22} aria-hidden="true" />
           </div>
           <div>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: "#FCA5A5", marginBottom: 4 }}>Cancel Subscription?</h3>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: "var(--status-red-text)", marginBottom: 4 }}>Cancel Subscription?</h3>
             <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
               Before you proceed, here's what happens when you cancel your current plan:
             </p>
@@ -679,7 +679,7 @@ function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
           {consequences.map((c, i) => (
             <div key={i} style={{
               display: "flex", alignItems: "flex-start", gap: 10,
-              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+              background: "var(--surface-tint)", border: "1px solid var(--surface-tint-strong)",
               borderRadius: 10, padding: "10px 12px",
             }}>
               <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1, display: "flex" }}>
@@ -697,7 +697,7 @@ function CancelConfirmModal({ plan, endDate, onConfirm, onClose, loading }) {
             disabled={loading}
             style={{
               flex: 1, padding: "11px 16px", borderRadius: 10, fontSize: 14, fontWeight: 600,
-              background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)",
+              background: "var(--surface-tint-strong)", border: "1px solid var(--border)",
               color: "var(--text)", cursor: "pointer",
             }}
           >Keep My Plan</button>
@@ -750,11 +750,11 @@ export default function PlansPage() {
     if (type === "success") return toast.success(message);
     if (type === "error") return toast.error(message);
     return toast(message, {
-      icon: <TriangleAlert size={16} color="#FCD34D" aria-hidden="true" />,
+      icon: <TriangleAlert size={16} color="var(--status-amber-text)" aria-hidden="true" />,
       style: {
-        background: "#1F2937",
+        background: "var(--surface-hover)",
         border: "1px solid rgba(245,158,11,0.35)",
-        color: "#F9FAFB",
+        color: "var(--text)",
       },
     });
   }, []);
@@ -1038,7 +1038,7 @@ export default function PlansPage() {
             ["Is my payment secure?",
               "Payments are processed entirely by Razorpay. We never store your card details. All connections are encrypted."],
           ].map(([q, a]) => (
-            <div key={q} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            <div key={q} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: "1px solid var(--surface-tint)" }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginBottom: 4 }}>{q}</div>
               <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>{a}</div>
             </div>

@@ -37,7 +37,7 @@ function inputSx() {
   return {
     width: "100%",
     padding: "10px 14px",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--surface-tint)",
     border: "1px solid var(--border)",
     borderRadius: 8,
     color: "var(--text)",
@@ -224,7 +224,7 @@ export default function SettingsPage() {
                     borderRadius: 8,
                     padding: "10px 14px",
                     fontSize: 13,
-                    color: "#34D399",
+                    color: "var(--status-green-text)",
                     marginBottom: 16,
                   }}
                 >
@@ -239,7 +239,7 @@ export default function SettingsPage() {
                     borderRadius: 8,
                     padding: "10px 14px",
                     fontSize: 13,
-                    color: "#FCA5A5",
+                    color: "var(--status-red-text)",
                     marginBottom: 16,
                   }}
                 >
@@ -295,7 +295,7 @@ export default function SettingsPage() {
                   // background: "var(--primary)",
                   background:
                     !canSubmit || loading
-                      ? "rgba(255,255,255,0.08)"
+                      ? "var(--surface-tint-strong)"
                       : "var(--primary)",
                   color: !canSubmit || loading ? "var(--muted)" : "#fff",
                   // color: "#fff",
@@ -340,9 +340,9 @@ export default function SettingsPage() {
                 onClick={() => setLogoutAllConfirm(true)}
                 style={{
                   padding: "10px 20px",
-                  background: "rgba(200,68,68,0.12)",
+                  background: "rgba(239,68,68,0.12)",
                   border: "1px solid rgba(239,68,68,0.25)",
-                  color: "#fff",
+                  color: "var(--status-red-text-strong)",
                   borderRadius: 8,
                   fontSize: 14,
                   fontWeight: 600,
@@ -379,7 +379,7 @@ export default function SettingsPage() {
                   padding: "10px 20px",
                   background: "rgba(245,158,11,0.12)",
                   border: "1px solid rgba(245,158,11,0.25)",
-                  color: "#FBBF24",
+                  color: "var(--status-amber-text)",
                   borderRadius: 8,
                   fontSize: 14,
                   fontWeight: 600,
@@ -416,7 +416,7 @@ export default function SettingsPage() {
                   padding: "10px 20px",
                   background: "rgba(239,68,68,0.12)",
                   border: "1px solid rgba(239,68,68,0.25)",
-                  color: "#F87171",
+                  color: "var(--status-red-text-strong)",
                   borderRadius: 8,
                   fontSize: 14,
                   fontWeight: 600,
@@ -467,7 +467,7 @@ export default function SettingsPage() {
               <div
                 style={{
                   height: 8,
-                  background: "rgba(255,255,255,0.08)",
+                  background: "var(--surface-tint-strong)",
                   borderRadius: 4,
                   overflow: "hidden",
                   marginBottom: 16,
@@ -486,7 +486,7 @@ export default function SettingsPage() {
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                 {[
                   ["Used", formatStorage(used), storageColor],
-                  ["Available", formatStorage(max - used), "#34D399"],
+                  ["Available", formatStorage(max - used), "var(--status-green-text)"],
                   ["Total", formatStorage(max), "var(--muted)"],
                 ].map(([label, value, color]) => (
                   <div
@@ -494,7 +494,7 @@ export default function SettingsPage() {
                     style={{
                       flex: 1,
                       minWidth: 100,
-                      background: "rgba(255,255,255,0.04)",
+                      background: "var(--surface-tint)",
                       borderRadius: 8,
                       padding: "12px 16px",
                       border: "1px solid var(--border)",
@@ -544,7 +544,7 @@ export default function SettingsPage() {
                 <span
                   style={{
                     background: "rgba(59,130,246,0.2)",
-                    color: "#93C5FD",
+                    color: "var(--status-blue-text)",
                     padding: "4px 12px",
                     borderRadius: 100,
                     fontSize: 12,

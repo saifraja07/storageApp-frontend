@@ -18,13 +18,13 @@ export default function UploadZone({
     <div
       {...dragProps}
       style={{
-        border: `2px dashed ${isDragOver ? "#3B82F6" : "rgba(255,255,255,0.15)"}`,
+        border: `2px dashed ${isDragOver ? "#3B82F6" : "var(--divider-strong)"}`,
         borderRadius: 14,
         padding: "28px 20px",
         textAlign: "center",
         background: isDragOver
           ? "rgba(59,130,246,0.08)"
-          : "rgba(255,255,255,0.02)",
+          : "var(--surface-tint)",
         transition: "all 0.15s",
         marginBottom: 20,
         cursor: "default",
@@ -48,7 +48,7 @@ export default function UploadZone({
         style={{
           fontSize: 14,
           fontWeight: 600,
-          color: isDragOver ? "#93C5FD" : "var(--text)",
+          color: isDragOver ? "var(--status-blue-text)" : "var(--text)",
           marginBottom: 6,
         }}
       >

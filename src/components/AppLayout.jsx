@@ -11,11 +11,13 @@ import {
   ChevronDown,
   LogOut,
   CircleUserRound,
+  Loader2,
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { logoutUser } from "../api/userApi";
 import { formatStorage } from "../utils/directoryUtils";
 import { logError } from "../utils/logger";
+import ThemeSelector from "./ThemeSelector";
 
 // ── NavLink — memoized so it only re-renders when active state changes ───
 const NavLink = memo(function NavLink({ item, active }) {
@@ -30,7 +32,7 @@ const NavLink = memo(function NavLink({ item, active }) {
         borderRadius: 7,
         textDecoration: "none",
         background: active ? "rgba(59,130,246,0.15)" : "transparent",
-        color: active ? "#93C5FD" : "var(--muted)",
+        color: active ? "var(--status-blue-text)" : "var(--muted)",
         fontSize: 13,
         fontWeight: 500,
         transition: "all 0.12s",
@@ -66,7 +68,7 @@ const StorageWidget = memo(function StorageWidget({ used, max }) {
       style={{
         marginTop: "auto",
         padding: "14px 10px",
-        background: "rgba(255,255,255,0.04)",
+        background: "var(--surface-tint)",
         borderRadius: 9,
         border: "1px solid var(--border)",
       }}
@@ -96,7 +98,7 @@ const StorageWidget = memo(function StorageWidget({ used, max }) {
       <div
         style={{
           height: 4,
-          background: "rgba(255,255,255,0.07)",
+          background: "var(--surface-tint-strong)",
           borderRadius: 2,
           overflow: "hidden",
           marginBottom: 7,
@@ -114,7 +116,7 @@ const StorageWidget = memo(function StorageWidget({ used, max }) {
       </div>
       <div style={{ fontSize: 11, color: "var(--muted)" }}>
         {formatStorage(used)}{" "}
-        <span style={{ color: "rgba(255,255,255,0.18)" }}>/</span>{" "}
+        <span style={{ color: "var(--divider-strong)" }}>/</span>{" "}
         {formatStorage(max)}
       </div>
     </div>
@@ -228,7 +230,7 @@ const SidebarContent = memo(function SidebarContent({
                 padding: "0 10px",
                 fontSize: 10,
                 fontWeight: 700,
-                color: "rgba(255,255,255,0.25)",
+                color: "var(--label-faint)",
                 letterSpacing: 1,
                 textTransform: "uppercase",
               }}
@@ -261,6 +263,7 @@ export default function AppLayout({
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const userMenuRef = useRef(null);
 
   const used = user?.usedStorageInBytes || 0;
@@ -287,14 +290,17 @@ export default function AppLayout({
   }, [location.pathname]);
 
   const handleLogout = useCallback(async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
     try {
       await logoutUser();
       setUser(null);
       navigate("/login");
     } catch (e) {
       logError(e);
+      setIsLoggingOut(false);
     }
-  }, [setUser, navigate]);
+  }, [isLoggingOut, setUser, navigate]);
 
   const isActive = useCallback(
     (href) =>
@@ -318,7 +324,8 @@ export default function AppLayout({
     <div
       style={{
         display: "flex",
-        minHeight: "100vh",
+        height: "100dvh",
+        overflow: "hidden",
         background: "var(--bg)",
         fontFamily: "Inter,sans-serif",
         color: "var(--text)",
@@ -348,7 +355,7 @@ export default function AppLayout({
           background: "var(--surface)",
           position: "sticky",
           top: 0,
-          height: "100vh",
+          height: "100dvh",
           overflowY: "auto",
         }}
       >
@@ -362,7 +369,7 @@ export default function AppLayout({
           position: "fixed",
           top: 0,
           left: 0,
-          height: "100vh",
+          height: "100dvh",
           width: 230,
           background: "var(--surface)",
           borderRight: "1px solid var(--border)",
@@ -382,7 +389,7 @@ export default function AppLayout({
           display: "flex",
           flexDirection: "column",
           minWidth: 0,
-          overflowX: "auto",
+          minHeight: 0,
         }}
       >
         {/* Top Nav */}
@@ -449,6 +456,8 @@ export default function AppLayout({
               style={{ display: "none" }}
             />
 
+            <ThemeSelector />
+
             {/* User info + avatar */}
             <div ref={userMenuRef} style={{ position: "relative" }}>
               <button
@@ -457,7 +466,7 @@ export default function AppLayout({
                   display: "flex",
                   alignItems: "center",
                   gap: 9,
-                  background: "rgba(255,255,255,0.04)",
+                  background: "var(--surface-tint)",
                   border: "1px solid var(--border)",
                   borderRadius: 9,
                   padding: "5px 10px 5px 6px",
@@ -468,7 +477,7 @@ export default function AppLayout({
                   (e.currentTarget.style.background = "var(--surface-hover)")
                 }
                 onMouseOut={(e) =>
-                  (e.currentTarget.style.background = "rgba(255,255,255,0.04)")
+                  (e.currentTarget.style.background = "var(--surface-tint)")
                 }
               >
                 <div
@@ -549,11 +558,11 @@ export default function AppLayout({
                     right: 0,
                     top: "calc(100% + 8px)",
                     width: 230,
-                    background: "#1a2433",
+                    background: "var(--surface-elevated)",
                     border: "1px solid var(--border)",
                     borderRadius: 12,
                     overflow: "hidden",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
+                    boxShadow: "0 8px 32px var(--shadow-color)",
                     zIndex: 200,
                   }}
                 >
@@ -596,10 +605,10 @@ export default function AppLayout({
                                 : "rgba(59,130,246,0.12)",
                           color:
                             user.role === "Admin"
-                              ? "#F87171"
+                              ? "var(--status-red-text-strong)"
                               : user.role === "Manager"
-                                ? "#FCD34D"
-                                : "#93C5FD",
+                                ? "var(--status-amber-text)"
+                                : "var(--status-blue-text)",
                         }}
                       >
                         {user.role}
@@ -635,25 +644,29 @@ export default function AppLayout({
                   <div style={{ borderTop: "1px solid var(--border)" }}>
                     <button
                       onClick={handleLogout}
+                      disabled={isLoggingOut}
                       style={{
                         width: "100%",
                         padding: "9px 16px",
                         background: "none",
                         border: "none",
-                        color: "#F87171",
+                        color: "var(--status-red-text-strong)",
                         fontSize: 13,
                         textAlign: "left",
-                        cursor: "pointer",
+                        cursor: isLoggingOut ? "not-allowed" : "pointer",
+                        opacity: isLoggingOut ? 0.7 : 1,
                         fontFamily: "Inter,sans-serif",
 
                         display: "flex",
                         alignItems: "center",
                         gap: 10,
                       }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.background =
-                          "rgba(239,68,68,0.08)")
-                      }
+                      onMouseOver={(e) => {
+                        if (!isLoggingOut) {
+                          e.currentTarget.style.background =
+                            "rgba(239,68,68,0.08)";
+                        }
+                      }}
                       onMouseOut={(e) =>
                         (e.currentTarget.style.background = "none")
                       }
@@ -661,6 +674,21 @@ export default function AppLayout({
                       <>
                         <LogOut size={16} aria-hidden="true" />
                         <span>Sign Out</span>
+                        {isLoggingOut && (
+                          <span
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              marginLeft: 2,
+                            }}
+                          >
+                            <Loader2
+                              size={14}
+                              aria-hidden="true"
+                              className="signout-spinner"
+                            />
+                          </span>
+                        )}
                       </>
                     </button>
                   </div>
@@ -670,7 +698,7 @@ export default function AppLayout({
           </div>
         </header>
 
-        <main style={{ flex: 1, overflowX: "auto", overflowY: "auto" }}>
+        <main style={{ flex: 1, minHeight: 0, overflowX: "auto", overflowY: "auto" }}>
           <div style={{ minWidth: 320 }}>{children}</div>
         </main>
       </div>
@@ -687,6 +715,13 @@ export default function AppLayout({
         @media (max-width: 520px) {
           .nav-user-info { display: none !important; }
           .nav-breadcrumb { display: none !important; }
+        }
+        @keyframes signout-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .signout-spinner {
+          animation: signout-spin 0.7s linear infinite;
         }
       `}</style>
     </div>

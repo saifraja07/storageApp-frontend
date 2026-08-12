@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
+import { useTheme } from "../hooks/useTheme";
 import {
   Folder,
   Cloud,
@@ -18,7 +19,8 @@ import {
 } from "lucide-react";
 import "../landing.css";
 
-import dashboardPreview from "../assets/dashboard-preview.webp";
+import dashboardPreviewDark from "../assets/dashboard-preview.webp";
+import dashboardPreviewLight from "../assets/dashboard-preview-light.webp";
 
 const features = [
   {
@@ -113,7 +115,10 @@ const plansRedirect = encodeURIComponent("/subscription");
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useUser();
+  const { resolvedTheme } = useTheme();
   const navigate = useNavigate();
+  const dashboardPreview =
+    resolvedTheme === "light" ? dashboardPreviewLight : dashboardPreviewDark;
 
   function handlePricingClick(e) {
     e.preventDefault();
@@ -153,12 +158,14 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <button
-            className="landing-mobile-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
-          </button>
+          <div className="landing-mobile-actions">
+            <button
+              className="landing-mobile-btn"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+            </button>
+          </div>
         </div>
 
         {menuOpen && (
@@ -286,7 +293,7 @@ export default function LandingPage() {
                 className="landing-plan-card"
                 style={{
                   background: isPopular
-                    ? "linear-gradient(145deg,#1a2433 0%,#0f1d32 100%)"
+                    ? "var(--landing-popular-card-bg)"
                     : "var(--surface)",
                   border: isPopular
                     ? `1px solid ${plan.color}55`

@@ -26,7 +26,7 @@ const PlanStats = memo(function PlanStats({ summary, loading }) {
 
   const cards = [
     { label: "Total Users", value: (summary.totalUsers ?? 0).toLocaleString(), icon: User, color: "#3B82F6" },
-    { label: "Premium Users", value: (summary.premiumUsers ?? 0).toLocaleString(), icon: Crown, color: "#8B5CF6" },
+    { label: "Premium Users", value: (summary.premiumUsers ?? 0).toLocaleString(), icon: Crown, color: "var(--status-purple-text)" },
     { label: "Monthly Revenue", value: formatINR(summary.monthlyRevenue), icon: IndianRupee, color: "#10B981" },
     { label: "Yearly Revenue", value: formatINR(summary.yearlyRevenue), icon: TrendingUp, color: "#F59E0B" },
   ];
