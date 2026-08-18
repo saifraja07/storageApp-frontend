@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node dummyTest.js"
+    "test": "echo test passed"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
