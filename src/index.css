@@ -8,11 +8,11 @@
   padding: 0;
 }
 
-/* ── Theme variables ────────────────────────────────────────────────────
+/* â”€â”€ Theme variables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    :root holds the dark palette as a safe fallback (matches the app's
    original look) for the brief instant before the early theme-init
    script in index.html sets data-theme on <html>. The [data-theme="..."]
-   blocks below are what actually drive the app once JS has run. ──────── */
+   blocks below are what actually drive the app once JS has run. â”€â”€â”€â”€â”€â”€â”€â”€ */
 :root,
 :root[data-theme="dark"] {
   --bg: #0B1220;
@@ -40,7 +40,7 @@
   --status-orange-text: #FB923C;
   --status-purple-text: #8B5CF6;
 
-  /* landing page — translucent sticky nav backdrop, footer tint, and the
+  /* landing page â€” translucent sticky nav backdrop, footer tint, and the
      "Most Popular" pricing card's gradient background */
   --landing-nav-bg: rgba(11, 18, 32, 0.92);
   --landing-footer-bg: rgba(0, 0, 0, 0.25);
@@ -87,6 +87,32 @@ body {
 
 @media (max-width: 435px) {
   .desktop-only {
+    display: none;
+  }
+}
+
+@media (max-width: 550px) {
+  .profile-card {
+    display: grid !important;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "avatar info"
+      "edit info";
+    align-items: start !important;
+    row-gap: 10px !important;
+  }
+  .profile-avatar {
+    grid-area: avatar;
+  }
+  .profile-info {
+    grid-area: info;
+  }
+  .profile-edit-btn {
+    grid-area: edit;
+    margin-left: 0 !important;
+    justify-self: start;
+  }
+  .edit-profile-text {
     display: none;
   }
 }

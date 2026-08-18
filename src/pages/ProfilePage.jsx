@@ -2,7 +2,7 @@ import AppLayout from "../components/AppLayout";
 import { useUser } from "../context/UserContext";
 import { Link } from "react-router-dom";
 import { formatStorage } from "../utils/directoryUtils";
-import { User } from "lucide-react";
+import { User, Pencil } from "lucide-react";
 
 export default function ProfilePage() {
   const { user } = useUser();
@@ -19,6 +19,7 @@ export default function ProfilePage() {
 
         {/* Avatar card */}
         <div
+          className="profile-card"
           style={{
             background: "var(--surface)",
             border: "1px solid var(--border)",
@@ -32,9 +33,10 @@ export default function ProfilePage() {
           }}
         >
           <div
+            className="profile-avatar"
             style={{
-              width: 72,
-              height: 72,
+              width: 84,
+              height: 84,
               borderRadius: "50%",
               background: "var(--primary)",
               display: "flex",
@@ -43,7 +45,6 @@ export default function ProfilePage() {
               fontSize: 30,
               flexShrink: 0,
               overflow: "hidden",
-              border: "3px solid rgba(59,130,246,0.3)",
             }}
           >
             {user?.picture ? (
@@ -56,7 +57,7 @@ export default function ProfilePage() {
               <User size={32} color="#fff" aria-hidden="true" />
             )}
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="profile-info" style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 4 }}>
               {user?.name || "User"}
             </div>
@@ -78,6 +79,29 @@ export default function ProfilePage() {
               </span>
             </div>
           </div>
+          <Link
+            to="/settings?tab=profile"
+            className="profile-edit-btn"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "8px 16px",
+              background: "rgba(59,130,246,0.12)",
+              border: "1px solid rgba(59,130,246,0.25)",
+              color: "var(--status-blue-text)",
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 600,
+              textDecoration: "none",
+              fontFamily: "Inter,sans-serif",
+              flexShrink: 0,
+              marginLeft: "auto",
+            }}
+          >
+            <Pencil size={14} aria-hidden="true" />
+            Edit<span className="edit-profile-text"> Profile</span>
+          </Link>
         </div>
 
         {/* Info */}
@@ -102,8 +126,8 @@ export default function ProfilePage() {
           </div>
           <div style={{ padding: "4px 24px" }}>
             {[
-              ["User Name", user?.name || "—"],
-              ["Email", user?.email || "—"],
+              ["User Name", user?.name || "Ã¢â‚¬â€"],
+              ["Email", user?.email || "Ã¢â‚¬â€"],
               [
                 "Member Since",
                 user?.createdAt
@@ -112,10 +136,10 @@ export default function ProfilePage() {
                       day: "numeric",
                       year: "numeric",
                     })
-                  : "—",
+                  : "Ã¢â‚¬â€",
               ],
               ["Account Type", "Personal"],
-               ["Account ID", user?.id || "—"],
+               ["Account ID", user?.id || "Ã¢â‚¬â€"],
             ].map(([label, value]) => (
               <div
                 key={label}

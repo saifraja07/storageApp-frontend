@@ -1,11 +1,22 @@
-import { useState } from "react";
-import { Lock, TriangleAlert, Pause, Trash2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Lock, TriangleAlert, Pause, Trash2, User } from "lucide-react";
+import toast from "react-hot-toast";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 import { useUser } from "../context/UserContext";
-import { changePassword, deleteAccount, disableAccount, logoutAllSessions } from "../api/userApi";
-import { formatStorage } from "../utils/directoryUtils";
+import {
+  changePassword,
+  deleteAccount,
+  disableAccount,
+  logoutAllSessions,
+  updateProfile,
+} from "../api/userApi";
+import { formatStorage, getErr } from "../utils/directoryUtils";
+
+const VALID_TABS = ["profile", "security", "storage"];
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 
 function Section({ title, children }) {
   return (
@@ -28,6 +39,7 @@ function Section({ title, children }) {
           {title}
         </h3>
       </div>
+
       <div style={{ padding: "20px 24px" }}>{children}</div>
     </div>
   );
@@ -51,29 +63,171 @@ function inputSx() {
 export default function SettingsPage() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("security");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialTab = VALID_TABS.includes(searchParams.get("tab"))
+    ? searchParams.get("tab")
+    : "profile";
+
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [logoutAllConfirm, setLogoutAllConfirm] = useState(false);
   const [errorAlert, setErrorAlert] = useState("");
-  const [pwForm, setPwForm] = useState({ current: "", newPw: "", confirm: "" });
+  const [pwForm, setPwForm] = useState({
+    current: "",
+    newPw: "",
+    confirm: "",
+  });
   const [pwError, setPwError] = useState("");
   const [pwSuccess, setPwSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [disableAccountConfirm, setDisableAccountConfirm] = useState(false);
   const [deleteAccountConfirm, setDeleteAccountConfirm] = useState(false);
 
+  // Profile tab state
+  const [profileName, setProfileName] = useState(user?.name || "");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const profileFileInputRef = useRef(null);
+
+  // Keep activeTab in sync when the URL's ?tab= param changes externally.
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+
+    if (tab && VALID_TABS.includes(tab) && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Revoke the local preview URL whenever it changes or the component unmounts.
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  const handleTabClick = (id) => {
+    setActiveTab(id);
+    setSearchParams({ tab: id }, { replace: true });
+  };
+
+  const handleProfileImageSelect = (e) => {
+    const file = e.target.files?.[0];
+
+    // Allow selecting the same file again later.
+    e.target.value = "";
+
+    if (!file) return;
+
+    setProfileError("");
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setProfileError("Please select a valid image.");
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      setProfileError("Image must be smaller than 5MB.");
+      return;
+    }
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    setSelectedImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const trimmedProfileName = profileName.trim();
+
+  // A profile is considered changed only when:
+  // 1. The name is not empty, AND
+  // 2. The name changed or a new image was selected.
+  //
+  // This also keeps the Save button disabled when the name is empty.
+  const hasProfileChanges =
+    !!trimmedProfileName &&
+    (trimmedProfileName !== (user?.name || "") || !!selectedImage);
+
+  const handleSaveProfile = async () => {
+    // Prevent unnecessary API calls.
+    if (!hasProfileChanges || profileSaving) return;
+
+    setProfileError("");
+
+    // Defensive validation in case this function is called from somewhere else.
+    if (!trimmedProfileName) {
+      setProfileError("Name cannot be empty.");
+      return;
+    }
+
+    const nameChanged = trimmedProfileName !== (user?.name || "");
+    const imageChanged = !!selectedImage;
+
+    // Nothing actually changed.
+    if (!nameChanged && !imageChanged) {
+      return;
+    }
+
+    try {
+      setProfileSaving(true);
+
+      const formData = new FormData();
+
+      formData.append("name", trimmedProfileName);
+
+      if (selectedImage) {
+        formData.append("picture", selectedImage);
+      }
+
+      const { user: updatedUser } = await updateProfile(formData);
+
+      setUser(updatedUser);
+      setSelectedImage(null);
+
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+
+      setPreviewUrl(null);
+
+      toast.success("Profile updated");
+    } catch (err) {
+      setProfileError(getErr(err));
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   const used = user?.usedStorageInBytes || 0;
   const max = user?.maxStorageInBytes || 1;
+
   const pct = Math.min((used / max) * 100, 100);
+
   const storageColor =
-    pct >= 90 ? "#EF4444" : pct >= 70 ? "#F59E0B" : "var(--primary)";
+    pct >= 90
+      ? "#EF4444"
+      : pct >= 70
+        ? "#F59E0B"
+        : "var(--primary)";
+
   const hasPassword = !!user?.hasPassword;
 
   const canSubmit =
-    pwForm.newPw && pwForm.confirm && (!hasPassword || pwForm.current);
+    pwForm.newPw &&
+    pwForm.confirm &&
+    (!hasPassword || pwForm.current);
 
   const handleLogoutAll = async () => {
     try {
       await logoutAllSessions();
+
       setUser(null);
       navigate("/login");
     } catch {
@@ -128,7 +282,9 @@ export default function SettingsPage() {
           : "Password set successfully.",
       );
     } catch (err) {
-      setPwError(err.response?.data?.error || "Something went wrong.");
+      setPwError(
+        err.response?.data?.error || "Something went wrong.",
+      );
     } finally {
       setLoading(false);
     }
@@ -137,6 +293,7 @@ export default function SettingsPage() {
   const handleDisableAccount = async () => {
     try {
       await disableAccount();
+
       setUser(null);
       navigate("/login");
     } catch {
@@ -147,12 +304,14 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     try {
       await deleteAccount();
+
       setUser(null);
       navigate("/");
     } catch {
       setErrorAlert("Something went wrong. Please try again.");
     }
   };
+
   const passwordFields = hasPassword
     ? [
         ["Current Password", "current", "Enter current password"],
@@ -165,14 +324,27 @@ export default function SettingsPage() {
       ];
 
   const tabs = [
+    { id: "profile", label: "Profile" },
     { id: "security", label: "Security" },
     { id: "storage", label: "Storage" },
   ];
 
   return (
     <AppLayout>
-      <div style={{ padding: "24px", maxWidth: 700, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24 }}>
+      <div
+        style={{
+          padding: "24px",
+          maxWidth: 700,
+          margin: "0 auto",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: 22,
+            fontWeight: 700,
+            marginBottom: 24,
+          }}
+        >
           Settings
         </h1>
 
@@ -180,6 +352,7 @@ export default function SettingsPage() {
         <div
           style={{
             display: "flex",
+            flexWrap: "wrap",
             gap: 4,
             marginBottom: 28,
             background: "var(--surface)",
@@ -192,7 +365,7 @@ export default function SettingsPage() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabClick(tab.id)}
               style={{
                 padding: "7px 18px",
                 borderRadius: 7,
@@ -200,8 +373,13 @@ export default function SettingsPage() {
                 fontSize: 13,
                 fontWeight: 600,
                 background:
-                  activeTab === tab.id ? "var(--primary)" : "transparent",
-                color: activeTab === tab.id ? "#fff" : "var(--muted)",
+                  activeTab === tab.id
+                    ? "var(--primary)"
+                    : "transparent",
+                color:
+                  activeTab === tab.id
+                    ? "#fff"
+                    : "var(--muted)",
                 cursor: "pointer",
                 fontFamily: "Inter,sans-serif",
                 transition: "all 0.15s",
@@ -212,15 +390,248 @@ export default function SettingsPage() {
           ))}
         </div>
 
+        {/* Profile Tab */}
+        {activeTab === "profile" && (
+          <Section title="Profile Settings">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                marginBottom: 24,
+                flexWrap: "wrap",
+              }}
+            >
+              <div
+                style={{
+                  width: 84,
+                  height: 84,
+                  borderRadius: "50%",
+                  background: "var(--primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                {previewUrl || user?.picture ? (
+                  <img
+                    src={previewUrl || user.picture}
+                    alt=""
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <User
+                    size={26}
+                    color="#fff"
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+
+              <div>
+                <input
+                  ref={profileFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfileImageSelect}
+                  disabled={profileSaving}
+                  style={{ display: "none" }}
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    profileFileInputRef.current?.click()
+                  }
+                  disabled={profileSaving}
+                  style={{
+                    padding: "8px 16px",
+                    background: "var(--surface-tint)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text)",
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: profileSaving
+                      ? "not-allowed"
+                      : "pointer",
+                    fontFamily: "Inter,sans-serif",
+                  }}
+                >
+                  Change Photo
+                </button>
+
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "var(--muted)",
+                    marginTop: 6,
+                  }}
+                >
+                  Select image · 5MB max.
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gap: 14,
+                marginBottom: 16,
+              }}
+            >
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: "var(--muted)",
+                    marginBottom: 6,
+                    textTransform: "uppercase",
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  Full Name
+                </label>
+
+                <input
+                  type="text"
+                  value={profileName}
+                  disabled={profileSaving}
+                  onChange={(e) => {
+                    setProfileName(e.target.value);
+                    setProfileError("");
+                  }}
+                  style={inputSx()}
+                  onFocus={(e) =>
+                    (e.target.style.borderColor =
+                      "var(--primary)")
+                  }
+                  onBlur={(e) =>
+                    (e.target.style.borderColor =
+                      "var(--border)")
+                  }
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: "var(--muted)",
+                    marginBottom: 6,
+                    textTransform: "uppercase",
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  Email
+                </label>
+
+                <input
+                  type="text"
+                  value={user?.email || ""}
+                  disabled
+                  style={{
+                    ...inputSx(),
+                    opacity: 0.6,
+                    cursor: "not-allowed",
+                  }}
+                />
+
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "var(--muted)",
+                    marginTop: 4,
+                  }}
+                >
+                  Email cannot be changed.
+                </div>
+              </div>
+            </div>
+
+            {profileError && (
+              <div
+                style={{
+                  background: "rgba(239,68,68,0.1)",
+                  border: "1px solid rgba(239,68,68,0.25)",
+                  borderRadius: 8,
+                  padding: "10px 14px",
+                  fontSize: 13,
+                  color: "var(--status-red-text)",
+                  marginBottom: 16,
+                }}
+              >
+                {profileError}
+              </div>
+            )}
+
+            <button
+              onClick={handleSaveProfile}
+              disabled={!hasProfileChanges || profileSaving}
+              style={{
+                padding: "10px 20px",
+                background:
+                  !hasProfileChanges || profileSaving
+                    ? "var(--surface-tint-strong)"
+                    : "var(--primary)",
+                color:
+                  !hasProfileChanges || profileSaving
+                    ? "var(--muted)"
+                    : "#fff",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor:
+                  !hasProfileChanges || profileSaving
+                    ? "not-allowed"
+                    : "pointer",
+                fontFamily: "Inter,sans-serif",
+              }}
+              onMouseOver={(e) => {
+                if (!hasProfileChanges || profileSaving) return;
+
+                e.currentTarget.style.background =
+                  "var(--primary-hover)";
+              }}
+              onMouseOut={(e) => {
+                if (!hasProfileChanges || profileSaving) return;
+
+                e.currentTarget.style.background =
+                  "var(--primary)";
+              }}
+            >
+              {profileSaving ? "Saving..." : "Save Changes"}
+            </button>
+          </Section>
+        )}
+
         {/* Security Tab */}
         {activeTab === "security" && (
           <>
-            <Section title={hasPassword ? "Change Password" : "Set Password"}>
+            <Section
+              title={
+                hasPassword
+                  ? "Change Password"
+                  : "Set Password"
+              }
+            >
               {pwSuccess && (
                 <div
                   style={{
                     background: "rgba(52,211,153,0.1)",
-                    border: "1px solid rgba(52,211,153,0.25)",
+                    border:
+                      "1px solid rgba(52,211,153,0.25)",
                     borderRadius: 8,
                     padding: "10px 14px",
                     fontSize: 13,
@@ -231,11 +642,13 @@ export default function SettingsPage() {
                   {pwSuccess}
                 </div>
               )}
+
               {pwError && (
                 <div
                   style={{
                     background: "rgba(239,68,68,0.1)",
-                    border: "1px solid rgba(239,68,68,0.25)",
+                    border:
+                      "1px solid rgba(239,68,68,0.25)",
                     borderRadius: 8,
                     padding: "10px 14px",
                     fontSize: 13,
@@ -246,7 +659,13 @@ export default function SettingsPage() {
                   {pwError}
                 </div>
               )}
-              <div style={{ display: "grid", gap: 14 }}>
+
+              <div
+                style={{
+                  display: "grid",
+                  gap: 14,
+                }}
+              >
                 {passwordFields.map(([label, key, ph]) => (
                   <div key={key}>
                     <label
@@ -262,6 +681,7 @@ export default function SettingsPage() {
                     >
                       {label}
                     </label>
+
                     <input
                       type="password"
                       placeholder={ph}
@@ -278,42 +698,53 @@ export default function SettingsPage() {
                       }}
                       style={inputSx()}
                       onFocus={(e) =>
-                        (e.target.style.borderColor = "var(--primary)")
+                        (e.target.style.borderColor =
+                          "var(--primary)")
                       }
                       onBlur={(e) =>
-                        (e.target.style.borderColor = "var(--border)")
+                        (e.target.style.borderColor =
+                          "var(--border)")
                       }
                     />
                   </div>
                 ))}
               </div>
+
               <button
                 onClick={handlePasswordSubmit}
                 style={{
                   marginTop: 16,
                   padding: "10px 20px",
-                  // background: "var(--primary)",
                   background:
                     !canSubmit || loading
                       ? "var(--surface-tint-strong)"
                       : "var(--primary)",
-                  color: !canSubmit || loading ? "var(--muted)" : "#fff",
-                  // color: "#fff",
+                  color:
+                    !canSubmit || loading
+                      ? "var(--muted)"
+                      : "#fff",
                   border: "none",
                   borderRadius: 8,
                   fontSize: 14,
                   fontWeight: 600,
-                  cursor: !canSubmit || loading ? "not-allowed" : "pointer",
+                  cursor:
+                    !canSubmit || loading
+                      ? "not-allowed"
+                      : "pointer",
                   fontFamily: "Inter,sans-serif",
                 }}
                 disabled={!canSubmit || loading}
                 onMouseOver={(e) => {
                   if (!canSubmit || loading) return;
-                  e.currentTarget.style.background = "var(--primary-hover)";
+
+                  e.currentTarget.style.background =
+                    "var(--primary-hover)";
                 }}
                 onMouseOut={(e) => {
                   if (!canSubmit || loading) return;
-                  e.currentTarget.style.background = "var(--primary)";
+
+                  e.currentTarget.style.background =
+                    "var(--primary)";
                 }}
               >
                 {loading
@@ -333,15 +764,18 @@ export default function SettingsPage() {
                   lineHeight: 1.6,
                 }}
               >
-                Sign out of all devices where you're currently logged in. You'll
-                need to sign in again on each device.
+                Sign out of all devices where you're currently
+                logged in. You'll need to sign in again on each
+                device.
               </p>
+
               <button
                 onClick={() => setLogoutAllConfirm(true)}
                 style={{
                   padding: "10px 20px",
                   background: "rgba(239,68,68,0.12)",
-                  border: "1px solid rgba(239,68,68,0.25)",
+                  border:
+                    "1px solid rgba(239,68,68,0.25)",
                   color: "var(--status-red-text-strong)",
                   borderRadius: 8,
                   fontSize: 14,
@@ -350,10 +784,12 @@ export default function SettingsPage() {
                   fontFamily: "Inter,sans-serif",
                 }}
                 onMouseOver={(e) =>
-                  (e.currentTarget.style.background = "rgba(239,68,68,0.2)")
+                  (e.currentTarget.style.background =
+                    "rgba(239,68,68,0.2)")
                 }
                 onMouseOut={(e) =>
-                  (e.currentTarget.style.background = "rgba(239,68,68,0.12)")
+                  (e.currentTarget.style.background =
+                    "rgba(239,68,68,0.12)")
                 }
               >
                 Sign Out All Devices
@@ -369,16 +805,20 @@ export default function SettingsPage() {
                   lineHeight: 1.6,
                 }}
               >
-                Your account will be disabled and you won't be able to sign in
-                until it is restored. Your files and data will be preserved.
+                Your account will be disabled and you won't be
+                able to sign in until it is restored. Your files
+                and data will be preserved.
               </p>
 
               <button
-                onClick={() => setDisableAccountConfirm(true)}
+                onClick={() =>
+                  setDisableAccountConfirm(true)
+                }
                 style={{
                   padding: "10px 20px",
                   background: "rgba(245,158,11,0.12)",
-                  border: "1px solid rgba(245,158,11,0.25)",
+                  border:
+                    "1px solid rgba(245,158,11,0.25)",
                   color: "var(--status-amber-text)",
                   borderRadius: 8,
                   fontSize: 14,
@@ -387,10 +827,12 @@ export default function SettingsPage() {
                   fontFamily: "Inter,sans-serif",
                 }}
                 onMouseOver={(e) =>
-                  (e.currentTarget.style.background = "rgba(245,158,11,0.2)")
+                  (e.currentTarget.style.background =
+                    "rgba(245,158,11,0.2)")
                 }
                 onMouseOut={(e) =>
-                  (e.currentTarget.style.background = "rgba(245,158,11,0.12)")
+                  (e.currentTarget.style.background =
+                    "rgba(245,158,11,0.12)")
                 }
               >
                 Disable Account
@@ -406,16 +848,20 @@ export default function SettingsPage() {
                   lineHeight: 1.6,
                 }}
               >
-                Permanently delete your account and all associated files,
-                folders, and data. This action cannot be undone.
+                Permanently delete your account and all
+                associated files, folders, and data. This action
+                cannot be undone.
               </p>
 
               <button
-                onClick={() => setDeleteAccountConfirm(true)}
+                onClick={() =>
+                  setDeleteAccountConfirm(true)
+                }
                 style={{
                   padding: "10px 20px",
                   background: "rgba(239,68,68,0.12)",
-                  border: "1px solid rgba(239,68,68,0.25)",
+                  border:
+                    "1px solid rgba(239,68,68,0.25)",
                   color: "var(--status-red-text-strong)",
                   borderRadius: 8,
                   fontSize: 14,
@@ -424,10 +870,12 @@ export default function SettingsPage() {
                   fontFamily: "Inter,sans-serif",
                 }}
                 onMouseOver={(e) =>
-                  (e.currentTarget.style.background = "rgba(239,68,68,0.2)")
+                  (e.currentTarget.style.background =
+                    "rgba(239,68,68,0.2)")
                 }
                 onMouseOut={(e) =>
-                  (e.currentTarget.style.background = "rgba(239,68,68,0.12)")
+                  (e.currentTarget.style.background =
+                    "rgba(239,68,68,0.12)")
                 }
               >
                 Delete Account Permanently
@@ -450,20 +898,36 @@ export default function SettingsPage() {
               >
                 <div>
                   <div
-                    style={{ fontSize: 28, fontWeight: 700, marginBottom: 4 }}
+                    style={{
+                      fontSize: 28,
+                      fontWeight: 700,
+                      marginBottom: 4,
+                    }}
                   >
                     {formatStorage(used)}
                   </div>
-                  <div style={{ fontSize: 13, color: "var(--muted)" }}>
+
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: "var(--muted)",
+                    }}
+                  >
                     of {formatStorage(max)} used
                   </div>
                 </div>
+
                 <div
-                  style={{ fontSize: 24, fontWeight: 700, color: storageColor }}
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 700,
+                    color: storageColor,
+                  }}
                 >
                   {Math.round(pct)}%
                 </div>
               </div>
+
               <div
                 style={{
                   height: 8,
@@ -483,10 +947,21 @@ export default function SettingsPage() {
                   }}
                 />
               </div>
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: 16,
+                  flexWrap: "wrap",
+                }}
+              >
                 {[
                   ["Used", formatStorage(used), storageColor],
-                  ["Available", formatStorage(max - used), "var(--status-green-text)"],
+                  [
+                    "Available",
+                    formatStorage(max - used),
+                    "var(--status-green-text)",
+                  ],
                   ["Total", formatStorage(max), "var(--muted)"],
                 ].map(([label, value, color]) => (
                   <div
@@ -511,7 +986,14 @@ export default function SettingsPage() {
                     >
                       {label}
                     </div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color }}>
+
+                    <div
+                      style={{
+                        fontSize: 15,
+                        fontWeight: 700,
+                        color,
+                      }}
+                    >
                       {value}
                     </div>
                   </div>
@@ -527,20 +1009,32 @@ export default function SettingsPage() {
                   justifyContent: "space-between",
                   padding: "14px 16px",
                   background: "rgba(59,130,246,0.08)",
-                  border: "1px solid rgba(59,130,246,0.2)",
+                  border:
+                    "1px solid rgba(59,130,246,0.2)",
                   borderRadius: 10,
                 }}
               >
                 <div>
                   <div
-                    style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 14,
+                      marginBottom: 2,
+                    }}
                   >
                     Personal Plan
                   </div>
-                  <div style={{ fontSize: 12, color: "var(--muted)" }}>
+
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color: "var(--muted)",
+                    }}
+                  >
                     {formatStorage(max)} total storage
                   </div>
                 </div>
+
                 <span
                   style={{
                     background: "rgba(59,130,246,0.2)",
@@ -558,6 +1052,7 @@ export default function SettingsPage() {
           </>
         )}
       </div>
+
       <ConfirmDialog
         open={logoutAllConfirm}
         icon={<Lock size={32} aria-hidden="true" />}
@@ -571,9 +1066,15 @@ export default function SettingsPage() {
         }}
         onCancel={() => setLogoutAllConfirm(false)}
       />
+
       <ConfirmDialog
         open={!!errorAlert}
-        icon={<TriangleAlert size={32} aria-hidden="true" />}
+        icon={
+          <TriangleAlert
+            size={32}
+            aria-hidden="true"
+          />
+        }
         title="Something went wrong"
         message={errorAlert}
         confirmLabel="OK"
@@ -581,6 +1082,7 @@ export default function SettingsPage() {
         onConfirm={() => setErrorAlert("")}
         onCancel={() => setErrorAlert("")}
       />
+
       <ConfirmDialog
         open={disableAccountConfirm}
         icon={<Pause size={32} aria-hidden="true" />}
@@ -594,9 +1096,15 @@ export default function SettingsPage() {
         }}
         onCancel={() => setDisableAccountConfirm(false)}
       />
+
       <ConfirmDialog
         open={deleteAccountConfirm}
-        icon={<Trash2 size={32} aria-hidden="true" />}
+        icon={
+          <Trash2
+            size={32}
+            aria-hidden="true"
+          />
+        }
         title="Delete your account permanently?"
         message="This will permanently delete your account, all folders, files, and other data. This action cannot be undone."
         confirmLabel="Delete Permanently"
