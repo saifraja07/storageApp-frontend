@@ -10,12 +10,11 @@ jobs:
     deploy-frontend:
         runs-on: ubuntu-latest
         env:
-          S3_BUCKET_NAME: storage-app-frontend
-          CLOUDFRONT_DISTRIBUTION_ID: E35JPYRACDTD7Z
-          VITE_BACKEND_BASE_URL: https://api.mirhaadi.in
-          VITE_RAZORPAY_KEY_ID: rzp_live_T7QqY1ykKdipTT
-          VITE_GOOGLE_CLIENT_ID: 928415821707-pjr1i1oc0d6eaq2mh18n7t9gh6hvkjj6.apps.googleusercontent.com
-
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          VITE_BACKEND_BASE_URL: ${{ secrets.VITE_BACKEND_BASE_URL }}
+          VITE_RAZORPAY_KEY_ID: ${{ secrets.VITE_RAZORPAY_KEY_ID }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         steps:
           - name: Clone frontend repository
             uses: actions/checkout@v4
