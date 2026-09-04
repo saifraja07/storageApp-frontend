@@ -481,9 +481,10 @@ export default function AppLayout({
                 }
               >
                 <div
+                  className="nav-user-avatar"
                   style={{
-                    width: 28,
-                    height: 28,
+                    width: 32,
+                    height: 32,
                     borderRadius: "50%",
                     border: "2px solid var(--border)",
                     background: "var(--surface-hover)",
@@ -698,7 +699,14 @@ export default function AppLayout({
           </div>
         </header>
 
-        <main style={{ flex: 1, minHeight: 0, overflowX: "auto", overflowY: "auto" }}>
+        <main
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflowX: "auto",
+            overflowY: "auto",
+          }}
+        >
           <div style={{ minWidth: 320 }}>{children}</div>
         </main>
       </div>
@@ -715,6 +723,10 @@ export default function AppLayout({
         @media (max-width: 520px) {
           .nav-user-info { display: none !important; }
           .nav-breadcrumb { display: none !important; }
+          .nav-user-avatar {
+            width: 28px !important;
+            height: 28px !important;
+          }
         }
         @keyframes signout-spin {
           from { transform: rotate(0deg); }

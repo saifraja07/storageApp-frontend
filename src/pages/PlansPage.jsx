@@ -1032,7 +1032,7 @@ export default function PlansPage() {
             ["Can I cancel at any time?",
               "Yes — cancel from the billing dashboard. You keep premium access until the end of the current billing period. No hidden fees."],
             ["What happens to my files if I downgrade?",
-              "If your usage exceeds 1 GB after downgrading, your oldest files will be deleted to bring you within the free limit. Download anything important first."],
+              "If your usage exceeds 512 MB after downgrading, your oldest files will be deleted to bring you within the free limit. Download anything important first."],
             ["When does my storage upgrade?",
               "Storage upgrades automatically within seconds of a successful payment — confirmed by our webhook from Razorpay. No manual action needed."],
             ["Is my payment secure?",
