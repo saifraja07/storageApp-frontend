@@ -37,9 +37,9 @@ export default function SettingsDialogs({ logoutAllConfirm, setLogoutAllConfirm,
       <ConfirmDialog
         open={disableAccountConfirm}
         icon={<Pause size={32} aria-hidden="true" />}
-        title="Disable your account?"
+        title="Deactivate your account?"
         message="You'll be signed out immediately and won't be able to sign in again until your account is restored by admin. Your files and data will be kept."
-        confirmLabel="Disable Account"
+        confirmLabel="Deactivate Account"
         confirmDanger
         onConfirm={() => {
           setDisableAccountConfirm(false);

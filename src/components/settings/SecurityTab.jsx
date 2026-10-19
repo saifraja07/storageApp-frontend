@@ -181,7 +181,7 @@ export default function SecurityTab({ hasPassword, pwSuccess, pwError, passwordF
               </button>
             </Section>
 
-            <Section title="Disable Account">
+            <Section title="Deactivate Account">
               <p
                 style={{
                   fontSize: 14,
@@ -190,7 +190,7 @@ export default function SecurityTab({ hasPassword, pwSuccess, pwError, passwordF
                   lineHeight: 1.6,
                 }}
               >
-                Your account will be disabled and you won't be
+                Your account will be deactivated and you won't be
                 able to sign in until it is restored. Your files
                 and data will be preserved.
               </p>
@@ -220,7 +220,7 @@ export default function SecurityTab({ hasPassword, pwSuccess, pwError, passwordF
                     "rgba(245,158,11,0.12)")
                 }
               >
-                Disable Account
+                Deactivate Account
               </button>
             </Section>
 
