@@ -255,7 +255,7 @@ export default function useSettings() {
 
   const handleDeleteAccount = async () => {
     try {
-      await deleteAccount();
+      await disableAccount();
 
       setUser(null);
       navigate("/");
