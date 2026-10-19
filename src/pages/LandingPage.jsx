@@ -217,7 +217,7 @@ export default function LandingPage() {
           simple cloud storage experience.
         </p>
         <div className="landing-hero-btns">
-          <Link to="/register" className="landing-btn-primary">
+          <Link to="/login" className="landing-btn-primary">
             Get Started — Free
           </Link>
           <a href="#pricing" className="landing-btn-secondary">
