@@ -103,8 +103,8 @@ export default function UploadProgressBar() {
             >
               <span style={{ display: "flex" }}>
                 {isError || display.failedFiles ? (
-                //   <TriangleAlert size={15} />
-                // ) : display.failedFiles > 0 ? (
+                  //   <TriangleAlert size={15} />
+                  // ) : display.failedFiles > 0 ? (
                   <TriangleAlert size={15} />
                 ) : (
                   <Check size={15} />
@@ -163,7 +163,9 @@ export default function UploadProgressBar() {
                   gap: 6,
                   minWidth: 0,
                   flex: 1,
-                  fontSize: 13,
+                  flexWrap: "nowrap",
+                  whiteSpace: "nowrap",
+                  fontSize: 12,
                   fontWeight: 600,
                   color: "var(--text)",
                 }}
@@ -174,6 +176,8 @@ export default function UploadProgressBar() {
                   style={{
                     color: "var(--muted)",
                     fontWeight: 500,
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
                   }}
                 >
                   {Math.min(display.completedFiles, display.totalFiles)} of{" "}
