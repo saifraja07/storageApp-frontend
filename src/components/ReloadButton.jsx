@@ -18,17 +18,6 @@ function useMediaQuery(query) {
 
 /**
  * Shared reload button: icon + text, collapsing to icon-only on screens <= 600px.
- *
- * - `loading`  → icon spins, button is disabled and marked aria-busy.
- *                The spin always finishes at least one full turn, so even a
- *                very fast response still shows feedback instead of a blink.
- * - `disabled` → extra reasons to disable (e.g. the page's first load)
- * - `label`    → tooltip + accessible name ("Refresh users")
- * - `text`     → visible text beside the icon (default "Refresh"); hidden on small
- *                screens, or pass null for icon-only everywhere
- * - `style`    → layout tweaks from the parent. Margins and padding must be
- *                inline: index.css has an unlayered `* { margin: 0; padding: 0 }`
- *                reset, which beats Tailwind's margin/padding utilities.
  */
 const ReloadButton = memo(function ReloadButton({
   onClick,
