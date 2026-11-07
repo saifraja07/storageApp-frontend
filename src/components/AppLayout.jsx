@@ -6,6 +6,7 @@ import {
   Settings,
   Users,
   ChartColumn,
+  Database,
   Menu,
   User,
   ChevronDown,
@@ -132,6 +133,7 @@ const NAV_ITEMS = [
 const ADMIN_ITEMS = [
   { label: "Users", icon: Users, href: "/admin/users" },
   { label: "Plans", icon: ChartColumn, href: "/admin/plans" },
+  { label: "Storage", icon: Database, href: "/admin/storage/usage", adminOnly: true },
 ];
 
 const USER_MENU_ITEMS = [
@@ -156,6 +158,7 @@ const USER_MENU_ITEMS = [
 function getPageTitle(pathname) {
   if (pathname.startsWith("/admin/users")) return "User Management";
   if (pathname.startsWith("/admin/plans")) return "Plan Management";
+  if (pathname.startsWith("/admin/storage/usage")) return "R2 Storage Usage";
   if (pathname.startsWith("/subscription")) return "Subscription";
   if (pathname.startsWith("/settings")) return "Settings";
   if (pathname.startsWith("/profile")) return "Profile";
@@ -173,6 +176,7 @@ function getNavBreadcrumb(pathname) {
 const SidebarContent = memo(function SidebarContent({
   isActive,
   showAdmin,
+  canSeeAdminOnly,
   adminLabel,
   used,
   max,
@@ -237,7 +241,7 @@ const SidebarContent = memo(function SidebarContent({
             >
               {adminLabel}
             </div>
-            {ADMIN_ITEMS.map((item) => (
+            {ADMIN_ITEMS.filter((item) => !item.adminOnly || canSeeAdminOnly).map((item) => (
               <NavLink
                 key={item.href}
                 item={item}
@@ -318,7 +322,8 @@ export default function AppLayout({
   const pageTitle = getPageTitle(location.pathname);
   const navBreadcrumb = getNavBreadcrumb(location.pathname);
 
-  const sidebarProps = { isActive, showAdmin, adminLabel, used, max };
+  const canSeeAdminOnly = isSuperAdmin || isAdmin;
+  const sidebarProps = { isActive, showAdmin, canSeeAdminOnly, adminLabel, used, max };
 
   return (
     <div

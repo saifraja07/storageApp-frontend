@@ -60,7 +60,7 @@ export default function AdminUsersPage() {
       setListRefreshing(true);
       const data = await fetchAllUsers();
       setUsers(data);
-      // toast.success("Users refreshed");
+      toast.success("Users refreshed");
     } catch (err) {
       toast.error(getErr(err));
     } finally {

@@ -20,6 +20,7 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const PlansPage = lazy(() => import("./pages/PlansPage"));
 const AdminPlansPage = lazy(() => import("./pages/AdminPlansPage"));
 const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage"));
+const AdminStoragePage = lazy(() => import("./pages/AdminStoragePage"));
 
 const PageSpinner = ({ message = "Loading…" }) => (
   <div
@@ -89,6 +90,16 @@ const AdminRoute = memo(function AdminRoute({ children }) {
     user.role !== "Admin" &&
     user.role !== "Manager"
   )
+    return <Navigate to="/directory" replace />;
+  return children;
+});
+
+// Same as AdminRoute but excludes Managers (the R2 usage API requires Admin+).
+const SeniorAdminRoute = memo(function SeniorAdminRoute({ children }) {
+  const { user, loading } = useUser();
+  if (loading) return <PageSpinner message="Checking Authentication…" />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "SuperAdmin" && user.role !== "Admin")
     return <Navigate to="/directory" replace />;
   return children;
 });
@@ -191,6 +202,16 @@ const router = createBrowserRouter([
           <AdminPlansPage />
         </Suspense>
       </AdminRoute>
+    ),
+  },
+  {
+    path: "/admin/storage/usage",
+    element: (
+      <SeniorAdminRoute>
+        <Suspense fallback={<PageSpinner />}>
+          <AdminStoragePage />
+        </Suspense>
+      </SeniorAdminRoute>
     ),
   },
   {

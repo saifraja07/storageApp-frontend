@@ -45,3 +45,13 @@ export const updateUserRoleByAdmin = async (id, role) => {
   );
   return data;
 };
+
+export const fetchR2Usage = async () => {
+  const { data } = await axiosWithCreds.get("/admin/storage/usage");
+  return data;
+};
+
+export const refreshR2Usage = async () => {
+  const { data } = await axiosWithCreds.post("/admin/storage/usage/refresh");
+  return data;
+};
