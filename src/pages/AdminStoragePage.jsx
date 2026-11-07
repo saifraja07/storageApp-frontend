@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Database, RefreshCw, TriangleAlert } from "lucide-react";
+import { Database, TriangleAlert } from "lucide-react";
 import toast from "react-hot-toast";
 import AppLayout from "../components/AppLayout";
+import ReloadButton from "../components/ReloadButton";
 import R2AccountCard from "../components/admin/storagePage/R2AccountCard";
 import R2UsageSkeleton from "../components/admin/storagePage/R2UsageSkeleton";
 import { latestSync } from "../components/admin/storagePage/r2UsageUtils";
@@ -64,7 +65,6 @@ export default function AdminR2UsagePage() {
   }
 
   const lastSynced = latestSync(accounts);
-  const busy = loading || refreshing;
 
   const gridStyle = {
     display: "grid",
@@ -107,37 +107,16 @@ export default function AdminR2UsagePage() {
               flexWrap: "wrap",
             }}
           >
-            <button
-              type="button"
-              onClick={handleRefresh}
-              disabled={busy}
-              aria-busy={refreshing}
-              style={{
-                padding: "8px 14px",
-                background: "#3B82F6",
-                border: "none",
-                borderRadius: 8,
-                color: "#fff",
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: busy ? "not-allowed" : "pointer",
-                opacity: busy ? 0.7 : 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-              }}
-            >
-              {refreshing ? (
-                "Refreshing..."
-              ) : (
-                <>
-                  <RefreshCw size={14} aria-hidden="true" /> Refresh
-                </>
-              )}
-            </button>
             <div style={{ fontSize: 12, color: "var(--muted)" }} aria-live="polite">
               Last synced: {lastSynced ? formatDate(lastSynced) : "—"}
             </div>
+            <ReloadButton
+              onClick={handleRefresh}
+              loading={refreshing}
+              disabled={loading}
+              label="Refresh R2 usage"
+              style={{ marginLeft: "auto" }}
+            />
           </div>
 
           {/* Body */}

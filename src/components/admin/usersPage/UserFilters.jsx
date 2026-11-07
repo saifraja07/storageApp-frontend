@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { Search, RefreshCw } from "lucide-react";
+import { Search } from "lucide-react";
+import ReloadButton from "../../ReloadButton";
 
 const UserFilters = memo(function UserFilters({
   searchQ,
@@ -56,74 +57,57 @@ const UserFilters = memo(function UserFilters({
         />
       </div>
 
-      {/* Role filter */}
-      <select
-        value={filterRole}
-        onChange={(e) => setFilterRole(e.target.value)}
-        style={{
-          padding: "8px 32px 8px 12px",
-          background: "var(--surface-hover)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          color: "var(--text)",
-          fontSize: 13,
-          outline: "none",
-          fontFamily: "Inter,sans-serif",
-          appearance: "none",
-          WebkitAppearance: "none",
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 10px center",
-          cursor: "pointer",
-        }}
-      >
-        <option value="all">All Roles</option>
-        <option value="SuperAdmin">SuperAdmin</option>
-        <option value="Admin">Admin</option>
-        <option value="Manager">Manager</option>
-        <option value="User">User</option>
-      </select>
+      {/* Role filter + count: one unit, so they wrap onto a new line together */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <select
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+          style={{
+            padding: "8px 32px 8px 12px",
+            background: "var(--surface-hover)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            color: "var(--text)",
+            fontSize: 13,
+            outline: "none",
+            fontFamily: "Inter,sans-serif",
+            appearance: "none",
+            WebkitAppearance: "none",
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E\")",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 10px center",
+            cursor: "pointer",
+          }}
+        >
+          <option value="all">All Roles</option>
+          <option value="SuperAdmin">SuperAdmin</option>
+          <option value="Admin">Admin</option>
+          <option value="Manager">Manager</option>
+          <option value="User">User</option>
+        </select>
 
-      {/* Count */}
-      <div
-        style={{
-          fontSize: 12,
-          color: "var(--muted)",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        {filteredCount} of {totalCount} users
+        {/* Count */}
+        <div
+          style={{
+            fontSize: 12,
+            color: "var(--muted)",
+            whiteSpace: "nowrap",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {filteredCount} of {totalCount} users
+        </div>
       </div>
 
       {/* Refresh */}
-      <button
+      <ReloadButton
         onClick={onRefresh}
-        disabled={listRefreshing}
-        style={{
-          padding: "8px 14px",
-          background: "#3B82F6",
-          border: "none",
-          borderRadius: 8,
-          color: "#fff",
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: listRefreshing ? "not-allowed" : "pointer",
-          opacity: listRefreshing ? 0.7 : 1,
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-        }}
-      >
-        {listRefreshing ? (
-          "Refreshing..."
-        ) : (
-          <>
-            <RefreshCw size={14} aria-hidden="true" /> Refresh
-          </>
-        )}
-      </button>
+        loading={listRefreshing}
+        label="Refresh users"
+        style={{ marginLeft: "auto" }}
+      />
     </div>
   );
 });
