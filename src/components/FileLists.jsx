@@ -10,6 +10,7 @@ import {
 } from "../utils/directoryUtils";
 import { subscribeItem, getItemProgress } from "../utils/uploadManager";
 import ThreeDotMenu from "./ThreeDotMenu";
+import { useLongPress } from "../hooks/useLongPress";
 
 // ── Live progress for a single temp (uploading) item ───────────────────────
 function useItemProgress(id, active) {
@@ -65,6 +66,7 @@ export const FileRow = memo(function FileRow({
   toggleSelect,
   selectionMode,
   loadingItems,
+  onGestureSelect,
 }) {
   const ext = getExt(item.name);
   const emoji = item.isDirectory ? "📁" : getFileEmoji(ext);
@@ -74,13 +76,31 @@ export const FileRow = memo(function FileRow({
     typeof item.id === "string" && item.id.startsWith("temp-");
   const uploadPct = useItemProgress(item.id, isUploading);
   const disabled = isLoading || isUploading;
+  // Touch long-press → enter selection mode with this item selected
+  const press = useLongPress(() => {
+    if (!disabled) onGestureSelect(item);
+  });
 
   return (
     <div
-      onClick={() => !disabled && handleItemClick(item)}
-      onContextMenu={(e) => {
-        if (isUploading) e.preventDefault();
+      onClick={() => {
+        // swallow the click that can follow a long-press on the same gesture
+        if (press.shouldIgnoreClick()) return;
+        if (!disabled) handleItemClick(item);
       }}
+      onContextMenu={(e) => {
+        if (isUploading) {
+          e.preventDefault();
+          return;
+        }
+        if (disabled) return;
+        // keep the native menu on the item's own ⋮ button / menu
+        if (e.target instanceof Element && e.target.closest("button, [role='menu']")) return;
+        // right-click (desktop) → enter selection mode with this item selected
+        e.preventDefault();
+        onGestureSelect(item);
+      }}
+      {...press.handlers}
       style={{
         display: "flex",
         alignItems: "center",
@@ -92,6 +112,9 @@ export const FileRow = memo(function FileRow({
         transition: "background 0.1s",
         position: "relative",
         opacity: isLoading ? 0.7 : isUploading ? 0.6 : 1,
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        WebkitTouchCallout: "none",
       }}
       onMouseOver={(e) =>
         !selected &&
@@ -252,6 +275,7 @@ export const FileCard = memo(function FileCard({
   toggleSelect,
   selectionMode,
   loadingItems,
+  onGestureSelect,
 }) {
   const ext = getExt(item.name);
   const emoji = item.isDirectory ? "📁" : getFileEmoji(ext);
@@ -261,13 +285,31 @@ export const FileCard = memo(function FileCard({
     typeof item.id === "string" && item.id.startsWith("temp-");
   const uploadPct = useItemProgress(item.id, isUploading);
   const disabled = isLoading || isUploading;
+  // Touch long-press → enter selection mode with this item selected
+  const press = useLongPress(() => {
+    if (!disabled) onGestureSelect(item);
+  });
 
   return (
     <div
-      onClick={() => !disabled && handleItemClick(item)}
-      onContextMenu={(e) => {
-        if (isUploading) e.preventDefault();
+      onClick={() => {
+        // swallow the click that can follow a long-press on the same gesture
+        if (press.shouldIgnoreClick()) return;
+        if (!disabled) handleItemClick(item);
       }}
+      onContextMenu={(e) => {
+        if (isUploading) {
+          e.preventDefault();
+          return;
+        }
+        if (disabled) return;
+        // keep the native menu on the item's own ⋮ button / menu
+        if (e.target instanceof Element && e.target.closest("button, [role='menu']")) return;
+        // right-click (desktop) → enter selection mode with this item selected
+        e.preventDefault();
+        onGestureSelect(item);
+      }}
+      {...press.handlers}
       style={{
         background: selected ? "rgba(59,130,246,0.12)" : "var(--surface)",
         border: `1px solid ${selected ? "rgba(59,130,246,0.45)" : isUploading ? "rgba(59,130,246,0.3)" : "var(--border)"}`,
@@ -279,6 +321,9 @@ export const FileCard = memo(function FileCard({
         display: "flex",
         flexDirection: "column",
         opacity: isLoading ? 0.75 : isUploading ? 0.6 : 1,
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        WebkitTouchCallout: "none",
       }}
       onMouseOver={(e) =>
         !selected &&

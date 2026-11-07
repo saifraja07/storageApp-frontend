@@ -14,12 +14,33 @@ const DirectoryGrid = memo(function DirectoryGrid({
 }) {
   return (
     <>
-      {/* Item count */}
+      {/* Item count (left) + selected count while in selection mode (right) */}
       {!loading && (
-        <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 10 }}>
-          {q
-            ? `${sorted.length} result${sorted.length !== 1 ? "s" : ""} for "${q}"`
-            : `${totalItems} item${totalItems !== 1 ? "s" : ""}`}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            gap: 12,
+            fontSize: 12,
+            color: "var(--muted)",
+            marginBottom: 10,
+          }}
+        >
+          <span>
+            {q
+              ? `${sorted.length} result${sorted.length !== 1 ? "s" : ""} for "${q}"`
+              : `${totalItems} item${totalItems !== 1 ? "s" : ""}`}
+          </span>
+          {itemProps.selectionMode && (
+            <span
+              aria-live="polite"
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+            >
+              {itemProps.selectedIds.size} selected file
+              {itemProps.selectedIds.size !== 1 ? "s" : ""}
+            </span>
+          )}
         </div>
       )}
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useBlocker } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import AppLayout from "./components/AppLayout";
 import { useUser } from "./context/UserContext";
@@ -503,18 +503,78 @@ export default function DirectoryView() {
     [selectedItems],
   );
 
+  // Latest selection, readable from stable callbacks without re-creating them.
+  const selectedItemsRef = useRef(selectedItems);
+  useEffect(() => {
+    selectedItemsRef.current = selectedItems;
+  }, [selectedItems]);
+
   const toggleSelect = useCallback((item) => {
-    setSelectedItems((prev) => {
-      const exists = prev.some(
-        (i) => String(i._id || i.id) === String(item._id || item.id),
-      );
-      return exists
-        ? prev.filter(
-            (i) => String(i._id || i.id) !== String(item._id || item.id),
-          )
-        : [...prev, item];
-    });
+    const id = String(item._id || item.id);
+    const prev = selectedItemsRef.current;
+    const exists = prev.some((i) => String(i._id || i.id) === id);
+    const next = exists
+      ? prev.filter((i) => String(i._id || i.id) !== id)
+      : [...prev, item];
+    selectedItemsRef.current = next;
+    setSelectedItems(next);
+    // Deselecting the last selected item leaves selection mode.
+    if (exists && next.length === 0) setSelectionMode(false);
   }, []);
+
+  // Right-click (desktop) / long-press (touch): enter selection mode with this
+  // item selected. Never toggles — repeating the gesture on a selected item
+  // keeps it selected.
+  const selectViaGesture = useCallback((item) => {
+    const id = String(item._id || item.id);
+    setSelectionMode(true);
+    setSelectedItems((prev) =>
+      prev.some((i) => String(i._id || i.id) === id) ? prev : [...prev, item],
+    );
+  }, []);
+
+  const exitSelection = useCallback(() => {
+    setSelectionMode(false);
+    setSelectedItems([]);
+  }, []);
+
+  const handleRefresh = useCallback(
+    () => loadDirectory({ force: true, silent: true }),
+    [loadDirectory],
+  );
+
+  // ── leaving selection mode: Escape + browser/Android Back ─────────────────
+  const anyModalOpen =
+    bulkConfirm || showCreateDir || showRename || !!deleteItem || !!detailsItem;
+
+  // One keydown listener, attached only while selection mode is on.
+  useEffect(() => {
+    if (!selectionMode || anyModalOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key !== "Escape" || e.defaultPrevented) return; // open ⋯ menu handles it first
+      const t = e.target;
+      if (t instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      exitSelection();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [selectionMode, anyModalOpen, exitSelection]);
+
+  // Back/Forward (POP) while selecting: stay on the page, leave selection mode.
+  // Normal navigation (links, folders, breadcrumbs = PUSH) and Back with
+  // selection OFF are never blocked.
+  const blocker = useBlocker(
+    useCallback(
+      ({ historyAction }) => selectionMode && historyAction === "POP",
+      [selectionMode],
+    ),
+  );
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      blocker.reset();
+      exitSelection();
+    }
+  }, [blocker, exitSelection]);
 
   const handleItemClick = useCallback(
     (item) => {
@@ -623,6 +683,7 @@ export default function DirectoryView() {
       setDeleteItem,
       setDetailsItem,
       loadingItems,
+      onGestureSelect: selectViaGesture,
     }),
     [
       selectionMode,
@@ -633,6 +694,7 @@ export default function DirectoryView() {
       setDeleteItem,
       setDetailsItem,
       loadingItems,
+      selectViaGesture,
     ],
   );
 
@@ -694,6 +756,10 @@ export default function DirectoryView() {
             realItems={realItems}
             bulkLoading={bulkLoading}
             onBulkConfirm={() => setBulkConfirm(true)}
+            loading={loading}
+            listRefreshing={listRefreshing}
+            onRefresh={handleRefresh}
+            onCancelSelection={exitSelection}
           />
 
           <Breadcrumbs breadcrumbs={breadcrumbs} />

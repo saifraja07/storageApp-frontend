@@ -1,6 +1,9 @@
 import { memo } from "react";
-import { Search, LayoutGrid, List as ListIcon } from "lucide-react";
+import { Search, X } from "lucide-react";
 import SortDropdown from "../SortDropdown";
+import ReloadButton from "../ReloadButton";
+import DirectoryActionsMenu from "./DirectoryActionsMenu";
+import ViewToggle from "./ViewToggle";
 
 const DirectoryToolbar = memo(function DirectoryToolbar({
   searchQuery,
@@ -19,6 +22,10 @@ const DirectoryToolbar = memo(function DirectoryToolbar({
   realItems,
   bulkLoading,
   onBulkConfirm,
+  loading,
+  listRefreshing,
+  onRefresh,
+  onCancelSelection,
 }) {
   const isTempItem = (item) =>
     typeof item.id === "string" && item.id.startsWith("temp-");
@@ -29,124 +36,94 @@ const DirectoryToolbar = memo(function DirectoryToolbar({
     selectedItems.length === totalCount && totalCount > 0;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        marginBottom: 16,
-        flexWrap: "wrap",
-      }}
-    >
-      {/* Search */}
-      <div style={{ position: "relative", flex: "1 1 200px", maxWidth: 340 }}>
-        <span
-          style={{
-            position: "absolute", left: 10, top: "50%",
-            transform: "translateY(-50%)", color: "var(--muted)", fontSize: 14,
-            display: "flex",
-          }}
-        >
-          <Search size={14} aria-hidden="true" />
-        </span>
-        <input
-          type="text"
-          placeholder="Search files and folders…"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            width: "100%", padding: "8px 12px 8px 32px",
-            background: "var(--surface-tint)",
-            border: "1px solid var(--border)", borderRadius: 8,
-            color: "var(--text)", fontSize: 13, outline: "none",
-            fontFamily: "Inter,sans-serif",
-          }}
-          onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
-          onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
-        />
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: "auto", flexWrap: "wrap" }}>
-        <SortDropdown sortBy={sortBy} sortDir={sortDir} onSort={onSort} />
-
-        {/* View toggle */}
-        <div style={{ display: "flex", gap: 3 }}>
-          {[["grid", LayoutGrid], ["list", ListIcon]].map(([mode, Icon]) => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              aria-label={mode === "grid" ? "Grid view" : "List view"}
-              style={{
-                width: 32, height: 32, borderRadius: 6,
-                border: "1px solid var(--border)",
-                background: viewMode === mode ? "var(--primary)" : "var(--surface-hover)",
-                color: viewMode === mode ? "#fff" : "var(--muted)",
-                cursor: "pointer", fontSize: 15,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}
-            >
-              <Icon size={16} aria-hidden="true" />
-            </button>
-          ))}
-        </div>
-
-        {/* Select / Bulk */}
-        {!selectionMode ? (
-          <button
-            onClick={() => setSelectionMode(true)}
+    // `@container`: the layout below reacts to the toolbar's own width (not the
+    // viewport), so it also behaves with the desktop sidebar open.
+    <div className="@container" style={{ marginBottom: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 10,
+        }}
+      >
+        {/* Search — grows up to 340px; own full-width row on narrow toolbars */}
+        <div className="relative min-w-0 max-w-85 flex-[1_1_160px] @max-[480px]:max-w-none @max-[480px]:basis-full">
+          <span
             style={{
-              padding: "6px 12px", background: "var(--surface-hover)",
-              border: "1px solid var(--border)", borderRadius: 6,
-              color: "var(--muted)", fontSize: 12, cursor: "pointer",
+              position: "absolute", left: 10, top: "50%",
+              transform: "translateY(-50%)", color: "var(--muted)", fontSize: 14,
+              display: "flex", pointerEvents: "none",
+            }}
+          >
+            <Search size={14} aria-hidden="true" />
+          </span>
+          <input
+            type="text"
+            placeholder="Search files and folders…"
+            aria-label="Search files and folders"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%", height: 32,
+              padding: searchQuery ? "0 30px 0 32px" : "0 12px 0 32px",
+              background: "var(--surface-tint)",
+              border: "1px solid var(--border)", borderRadius: 8,
+              color: "var(--text)", fontSize: 13, outline: "none",
               fontFamily: "Inter,sans-serif",
             }}
-            onMouseOver={(e) => (e.currentTarget.style.color = "var(--text)")}
-            onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}
-          >
-            Select
-          </button>
-        ) : (
-          <>
+            onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
+            onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+          />
+          {searchQuery && (
             <button
-              onClick={() => selectedItems.length && onBulkConfirm()}
-              disabled={!selectedItems.length || bulkLoading}
-              style={{
-                padding: "6px 12px",
-                background: selectedItems.length && !bulkLoading ? "#EF4444" : "rgba(239,68,68,0.3)",
-                border: "none", borderRadius: 6,
-                color: "#fff", fontSize: 12, fontWeight: 600,
-                cursor: selectedItems.length && !bulkLoading ? "pointer" : "not-allowed",
-                fontFamily: "Inter,sans-serif",
-                display: "flex", alignItems: "center", gap: 6,
-              }}
+              type="button"
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
+              title="Clear search"
+              className="absolute right-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-(--muted) transition-colors hover:bg-(--surface-tint-strong) hover:text-(--text) focus-visible:outline-2 focus-visible:outline-(--primary)"
             >
-              {bulkLoading && <span className="btn-spinner" />}
-              Delete ({selectedItems.length})
+              <X size={13} aria-hidden="true" />
             </button>
-            <button
-              onClick={() => setSelectedItems(allSelected ? [] : selectableRealItems)}
-              style={{
-                padding: "6px 12px", background: "var(--surface-hover)",
-                border: "1px solid var(--border)", borderRadius: 6,
-                color: "var(--muted)", fontSize: 12, cursor: "pointer",
-                fontFamily: "Inter,sans-serif",
-              }}
-            >
-              {allSelected ? "Unselect All" : "Select All"}
-            </button>
-            <button
-              onClick={() => { setSelectionMode(false); setSelectedItems([]); }}
-              style={{
-                padding: "6px 12px", background: "var(--surface-hover)",
-                border: "1px solid var(--border)", borderRadius: 6,
-                color: "var(--muted)", fontSize: 12, cursor: "pointer",
-                fontFamily: "Inter,sans-serif",
-              }}
-            >
-              Cancel
-            </button>
-          </>
-        )}
+          )}
+        </div>
+
+        {/* Controls — pushed right; when stacked, Sort sits left and the rest
+            right so the row spans the full width */}
+        <div
+          className="flex flex-wrap items-center gap-1.5 @max-[480px]:w-full @max-[480px]:justify-between"
+          style={{ marginLeft: "auto" }}
+        >
+          <SortDropdown sortBy={sortBy} sortDir={sortDir} onSort={onSort} />
+
+          <div className="flex items-center gap-1.5" style={{ marginLeft: "auto" }}>
+            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+
+            {/* Refresh — reuses DirectoryView's forced silent reload */}
+            <ReloadButton
+              onClick={onRefresh}
+              loading={listRefreshing}
+              disabled={loading}
+              label="Refresh"
+              text={null}
+            />
+
+            {/* ⋯ menu: "Select files" (off) / selection actions (on) */}
+            <DirectoryActionsMenu
+              selectionMode={selectionMode}
+              selectedCount={selectedItems.length}
+              allSelected={allSelected}
+              canSelect={selectableRealItems.length > 0}
+              bulkLoading={bulkLoading}
+              onStartSelection={() => setSelectionMode(true)}
+              onToggleSelectAll={() =>
+                setSelectedItems(allSelected ? [] : selectableRealItems)
+              }
+              onDelete={() => selectedItems.length && onBulkConfirm()}
+              onCancelSelection={onCancelSelection}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
