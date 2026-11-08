@@ -102,7 +102,7 @@ export default function TermsPage() {
         <div className="legal-intro-box">
           <p className="legal-intro-text">
             Please read these Terms of Service carefully. They govern your use
-            of Haadi Cloud's personal cloud storage service — including
+            of Haadi Cloud&apos;s personal cloud storage service — including
             uploading and organising files, managing subscriptions, and
             accessing files across devices.
           </p>

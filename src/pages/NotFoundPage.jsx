@@ -11,7 +11,7 @@ export default function NotFoundPage() {
       <div style={{ fontSize: "clamp(64px,12vw,120px)", fontWeight: 800, color: "var(--surface-tint-strong)", lineHeight: 1, marginBottom: -20, letterSpacing: -4 }}>404</div>
       <h1 style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 700, marginBottom: 16, letterSpacing: "-0.5px" }}>Page Not Found</h1>
       <p style={{ fontSize: 16, color: "var(--muted)", marginBottom: 36, maxWidth: 400, lineHeight: 1.7 }}>
-        The page you're looking for doesn't exist or may have been moved.
+        The page you&apos;re looking for doesn&apos;t exist or may have been moved.
       </p>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
         <Link to="/" style={{

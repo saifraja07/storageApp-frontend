@@ -60,7 +60,7 @@ export default function AdminUsersPage() {
       setListRefreshing(true);
       const data = await fetchAllUsers();
       setUsers(data);
-      toast.success("Users refreshed");
+      // toast.success("Users refreshed");
     } catch (err) {
       toast.error(getErr(err));
     } finally {
@@ -70,6 +70,8 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     fetchUsers();
+    // Intentionally runs once on mount (loader identity changes every render).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

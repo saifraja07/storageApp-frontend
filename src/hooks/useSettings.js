@@ -255,7 +255,7 @@ export default function useSettings() {
 
   const handleDeleteAccount = async () => {
     try {
-      await disableAccount();
+      await deleteAccount();
 
       setUser(null);
       navigate("/");
@@ -266,14 +266,14 @@ export default function useSettings() {
 
   const passwordFields = hasPassword
     ? [
-        ["Current Password", "current", "Enter current password"],
-        ["New Password", "newPw", "Enter new password"],
-        ["Confirm New Password", "confirm", "Confirm new password"],
-      ]
+      ["Current Password", "current", "Enter current password"],
+      ["New Password", "newPw", "Enter new password"],
+      ["Confirm New Password", "confirm", "Confirm new password"],
+    ]
     : [
-        ["New Password", "newPw", "Enter new password"],
-        ["Confirm New Password", "confirm", "Confirm new password"],
-      ];
+      ["New Password", "newPw", "Enter new password"],
+      ["Confirm New Password", "confirm", "Confirm new password"],
+    ];
 
   return {
     user,

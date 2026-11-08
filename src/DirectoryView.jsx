@@ -94,14 +94,18 @@ function uploadFileToR2({ item, fileId, uploadUrl }) {
       } else {
         try {
           await uploadCancel({ fileId });
-        } catch {}
+        } catch {
+          // best-effort cleanup; the original error is reported below
+        }
         reject(new Error("Upload failed"));
       }
     };
     xhr.onerror = async () => {
       try {
         await uploadCancel({ fileId });
-      } catch {}
+      } catch {
+        // best-effort cleanup; the original error is reported below
+      }
       reject(new Error("Network error"));
     };
     xhr.onabort = () => reject(new Error("Upload cancelled"));
@@ -217,21 +221,24 @@ export default function DirectoryView() {
 
   const previousUserId = useRef();
 
+  const hasUser = Boolean(user);
+  const userId = user?.id;
+
   useEffect(() => {
-    if (!user) {
+    if (!hasUser) {
       dirCache.clear();
       previousUserId.current = undefined;
       return;
     }
 
-    if (previousUserId.current !== user.id) {
+    if (previousUserId.current !== userId) {
       dirCache.clear();
-      previousUserId.current = user.id;
+      previousUserId.current = userId;
     }
     loadDirectory();
     setSelectedItems([]);
     setSelectionMode(false);
-  }, [dirId, user?.id, loadDirectory]);
+  }, [dirId, hasUser, userId, loadDirectory]);
 
   useEffect(() => {
     localStorage.setItem("viewMode", viewMode);
@@ -326,7 +333,9 @@ export default function DirectoryView() {
               if (uploadManager.isCancelled(item.id)) {
                 try {
                   await uploadCancel({ fileId: data.fileId });
-                } catch {}
+                } catch {
+                  // best-effort cleanup; the original error is reported below
+                }
                 throw new Error("Upload cancelled");
               }
               await uploadFileToR2({

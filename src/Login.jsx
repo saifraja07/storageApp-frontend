@@ -20,7 +20,6 @@ export default function Login() {
   const [serverError, setServerError] = useState("");
   const [googleError, setGoogleError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { refreshUser } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,7 +48,7 @@ export default function Login() {
     }
     setIsLoading(true);
     try {
-      await loginUser({...formData, email: trimmedEmail});
+      await loginUser({ ...formData, email: trimmedEmail });
       await refreshUser();
       navigate(redirectTo, { replace: true });
     } catch (err) {
@@ -164,9 +163,9 @@ export default function Login() {
               style={inputStyle(!!serverError)}
               onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
               onBlur={(e) =>
-                (e.target.style.borderColor = serverError
-                  ? "#EF4444"
-                  : "var(--border)")
+              (e.target.style.borderColor = serverError
+                ? "#EF4444"
+                : "var(--border)")
               }
             />
           </div>
@@ -182,9 +181,9 @@ export default function Login() {
               style={inputStyle(!!serverError)}
               onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
               onBlur={(e) =>
-                (e.target.style.borderColor = serverError
-                  ? "#EF4444"
-                  : "var(--border)")
+              (e.target.style.borderColor = serverError
+                ? "#EF4444"
+                : "var(--border)")
               }
             />
           </div>
@@ -322,7 +321,7 @@ export default function Login() {
             marginTop: 24,
           }}
         >
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             to="/register"
             style={{

@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
     "lint": "eslint .",
+    "build": "vite build",
     "preview": "vite preview",
-    "test": "echo test passed"
+    "test": "npm run lint && npm run build"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",

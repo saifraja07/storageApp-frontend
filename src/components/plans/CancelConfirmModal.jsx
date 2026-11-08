@@ -31,7 +31,7 @@ export default function CancelConfirmModal({ endDate, onConfirm, onClose, loadin
           <div>
             <h3 style={{ fontSize: 17, fontWeight: 700, color: "var(--status-red-text)", marginBottom: 4 }}>Cancel Subscription?</h3>
             <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>
-              Before you proceed, here's what happens when you cancel your current plan:
+              Before you proceed, here&apos;s what happens when you cancel your current plan:
             </p>
           </div>
         </div>

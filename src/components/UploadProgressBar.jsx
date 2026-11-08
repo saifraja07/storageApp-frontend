@@ -8,7 +8,7 @@ export default function UploadProgressBar() {
   const state = useSyncExternalStore(subscribe, getSnapshot);
   const [mounted, setMounted] = useState(false);
   const [entered, setEntered] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [, setDismissed] = useState(false);
   const hideTimerRef = useRef(null);
   // Freeze the last non-idle snapshot so the exit fade shows the final
   // progress/complete/error state instead of flashing back to 0 while

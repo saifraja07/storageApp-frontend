@@ -1,5 +1,5 @@
 import { memo, useCallback, useSyncExternalStore } from "react";
-import { Folder, Check, Upload } from "lucide-react";
+import { Check, Upload } from "lucide-react";
 import { BASE_URL } from "../api/axiosInstances";
 import {
   formatDate,
@@ -15,7 +15,7 @@ import { useLongPress } from "../hooks/useLongPress";
 // ── Live progress for a single temp (uploading) item ───────────────────────
 function useItemProgress(id, active) {
   const subscribeFn = useCallback(
-    (cb) => (active ? subscribeItem(id, cb) : () => {}),
+    (cb) => (active ? subscribeItem(id, cb) : () => { }),
     [id, active],
   );
   const getSnap = useCallback(
@@ -330,14 +330,14 @@ export const FileCard = memo(function FileCard({
         !isLoading &&
         !isUploading &&
         ((e.currentTarget.style.background = "var(--surface-hover)"),
-        (e.currentTarget.style.borderColor = "var(--divider-strong)"))
+          (e.currentTarget.style.borderColor = "var(--divider-strong)"))
       }
       onMouseOut={(e) =>
         !selected &&
         ((e.currentTarget.style.background = "var(--surface)"),
-        (e.currentTarget.style.borderColor = isUploading
-          ? "rgba(59,130,246,0.3)"
-          : "var(--border)"))
+          (e.currentTarget.style.borderColor = isUploading
+            ? "rgba(59,130,246,0.3)"
+            : "var(--border)"))
       }
     >
       {/* Inline spinner overlay for this card */}
