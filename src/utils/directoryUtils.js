@@ -23,7 +23,6 @@ export function formatSpeed(bytesPerSec) {
 }
 
 export function getFolderMeta(item) {
-  const count = item.fileCount ?? item.itemCount ?? item.itemsCount ?? 0;
   const size = item.size ?? item.totalSize ?? item.totalSizeInBytes;
   return size ? `${formatSize(size)}` : "0 kb";
 }
@@ -43,17 +42,17 @@ export function formatDate(d) {
 
 // Defined at module level — created once, not on every call
 const FILE_EMOJI_MAP = {
-    pdf: "📄",
-    png: "🖼️", jpg: "🖼️", jpeg: "🖼️", gif: "🖼️", webp: "🖼️",
-    mp4: "🎬", mov: "🎬", avi: "🎬",
-    zip: "📦", rar: "📦", "7z": "📦",
-    js: "⚡", jsx: "⚛️", ts: "⚡", tsx: "⚛️",
-    html: "🌐", css: "🎨",
-    py: "🐍", java: "☕",
-    doc: "📝", docx: "📝", txt: "📝",
-    mp3: "🎵", wav: "🎵",
-    xls: "📊", xlsx: "📊", csv: "📊",
-    ppt: "📽️", pptx: "📽️",
+  pdf: "📄",
+  png: "🖼️", jpg: "🖼️", jpeg: "🖼️", gif: "🖼️", webp: "🖼️",
+  mp4: "🎬", mov: "🎬", avi: "🎬",
+  zip: "📦", rar: "📦", "7z": "📦",
+  js: "⚡", jsx: "⚛️", ts: "⚡", tsx: "⚛️",
+  html: "🌐", css: "🎨",
+  py: "🐍", java: "☕",
+  doc: "📝", docx: "📝", txt: "📝",
+  mp3: "🎵", wav: "🎵",
+  xls: "📊", xlsx: "📊", csv: "📊",
+  ppt: "📽️", pptx: "📽️",
 };
 
 export function getFileEmoji(ext) {

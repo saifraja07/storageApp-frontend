@@ -59,6 +59,8 @@ export default function AdminPlansPage() {
 
   useEffect(() => {
     loadDashboard();
+    // Intentionally runs once on mount (loader identity changes every render).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredPlans = data.activePlans.filter((p) => {
