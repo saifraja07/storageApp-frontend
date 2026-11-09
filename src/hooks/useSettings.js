@@ -184,8 +184,10 @@ export default function useSettings() {
 
       setUser(null);
       navigate("/login");
+      return true;
     } catch {
       setErrorAlert("Something went wrong. Please try again.");
+      return false;
     }
   };
 
@@ -250,8 +252,10 @@ export default function useSettings() {
 
       setUser(null);
       navigate("/login");
+      return true;
     } catch {
       setErrorAlert("Something went wrong. Please try again.");
+      return false;
     }
   };
 
@@ -261,8 +265,10 @@ export default function useSettings() {
 
       setUser(null);
       navigate("/");
+      return true;
     } catch {
       setErrorAlert("Something went wrong. Please try again.");
+      return false;
     }
   };
 

@@ -1,3 +1,5 @@
+import ButtonSpinner from "./ButtonSpinner";
+
 export default function ConfirmDialog({
   open,
   icon,
@@ -7,6 +9,8 @@ export default function ConfirmDialog({
   cancelLabel = "Cancel",
   confirmDanger = false,
   alertOnly = false,
+  isLoading = false,
+  loadingLabel = "Processing...",
   onConfirm,
   onCancel,
   children,          // optional extra content (e.g. soft/hard delete buttons)
@@ -19,7 +23,7 @@ export default function ConfirmDialog({
 
   return (
     <div
-      onClick={(e) => e.target === e.currentTarget && onCancel?.()}
+      onClick={(e) => e.target === e.currentTarget && !isLoading && onCancel?.()}
       style={{
         position: "fixed", inset: 0, zIndex: 400,
         background: "rgba(0,0,0,0.65)",
@@ -74,13 +78,15 @@ export default function ConfirmDialog({
             {!alertOnly && (
               <button
                 onClick={onCancel}
+                disabled={isLoading}
                 style={{
                   flex: 1, padding: "10px 0",
                   background: "var(--surface-hover)",
                   border: "1px solid var(--border)",
                   borderRadius: 9, color: "var(--text)",
                   fontSize: 14, fontWeight: 500,
-                  cursor: "pointer", fontFamily: "Inter,sans-serif",
+                  cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "Inter,sans-serif",
+                  opacity: isLoading ? 0.55 : 1,
                   transition: "background 0.12s",
                 }}
                 onMouseOver={(e) => (e.currentTarget.style.background = "var(--surface-tint-strong)")}
@@ -90,19 +96,27 @@ export default function ConfirmDialog({
               </button>
             )}
             <button
-              onClick={onConfirm}
+              onClick={isLoading ? undefined : onConfirm}
+              disabled={isLoading}
+              aria-busy={isLoading}
               style={{
                 flex: 1, padding: "10px 0",
                 background: confirmBg.normal,
                 border: "none", borderRadius: 9,
                 color: "#fff", fontSize: 14, fontWeight: 600,
-                cursor: "pointer", fontFamily: "Inter,sans-serif",
+                cursor: isLoading ? "wait" : "pointer", fontFamily: "Inter,sans-serif",
+                opacity: isLoading ? 0.9 : 1,
                 transition: "background 0.12s",
               }}
               onMouseOver={(e) => (e.currentTarget.style.background = confirmBg.hover)}
               onMouseOut={(e) => (e.currentTarget.style.background = confirmBg.normal)}
             >
-              {confirmLabel}
+              {isLoading ? (
+                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <ButtonSpinner />
+                  {loadingLabel}
+                </span>
+              ) : confirmLabel}
             </button>
           </div>
         )}

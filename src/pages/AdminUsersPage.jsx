@@ -41,6 +41,8 @@ export default function AdminUsersPage() {
   const userEmail = currentLoggedUser?.email;
   const canManageUsers = isSuperAdmin || isAdmin;
   const [logoutTarget, setLogoutTarget] = useState(null);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(null);
 
   async function fetchUsers() {
     try {
@@ -86,7 +88,8 @@ export default function AdminUsersPage() {
   };
 
   const confirmLogout = async () => {
-    if (!logoutTarget) return;
+    if (!logoutTarget || logoutLoading) return;
+    setLogoutLoading(true);
     const isSelf = logoutTarget.id === currentLoggedUser.id;
 
     try {
@@ -98,24 +101,29 @@ export default function AdminUsersPage() {
       }
       await refreshUsers();
       toast.success(`${logoutTarget.email} logged out`);
+      setLogoutTarget(null);
     } catch (err) {
       logError(err);
       toast.error(getErr(err));
     } finally {
-      setLogoutTarget(null);
+      setLogoutLoading(false);
     }
   };
 
   const handleDelete = async (type) => {
+    if (!deleteTarget || deleteLoading) return;
+    setDeleteLoading(type);
     try {
       if (type === "soft") await softDeleteUserByAdmin(deleteTarget.id);
       else await hardDeleteUserByAdmin(deleteTarget.id);
       setDeleteTarget(null);
       await refreshUsers();
-      toast.success("User deleted successfully");
+      toast.success(type === "soft" ? "User deactivated successfully" : "User deleted permanently");
     } catch (err) {
       logError(err);
       toast.error(getErr(err));
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
@@ -227,6 +235,7 @@ export default function AdminUsersPage() {
           user={deleteTarget}
           onClose={() => setDeleteTarget(null)}
           onConfirm={handleDelete}
+          loadingAction={deleteLoading}
         />
       )}
       {logoutTarget && (
@@ -240,9 +249,11 @@ export default function AdminUsersPage() {
               : `You're about to log out ${logoutTarget.email} from all active sessions.`
           }
           confirmLabel="Log Out"
+          loadingLabel="Logging out..."
+          isLoading={logoutLoading}
           confirmDanger
           onConfirm={confirmLogout}
-          onCancel={() => setLogoutTarget(null)}
+          onCancel={() => !logoutLoading && setLogoutTarget(null)}
         />
       )}
 
