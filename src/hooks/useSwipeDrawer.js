@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
 // Uses touch events rather than pointer events (unlike useLongPress): once
 // the browser takes over a pan, pointer events are cancelled mid-gesture,
 // while touchmove keeps flowing for a horizontal swipe.
-const OPEN_ZONE = 1 / 3; // an opening swipe must start in the left third
+const OPEN_ZONE = 2 / 3; // an opening swipe must start in the left third
 const DISTANCE = 60; // px of horizontal travel that counts as a swipe
 const RATIO = 2; // …and it must be at least this much more horizontal than vertical
 const LOCK_AFTER = 12; // px of vertical travel after which it's a scroll, not a swipe
@@ -43,6 +43,8 @@ export function useSwipeDrawer({ enabled, isOpen, onOpen, onClose }) {
     const onTouchStart = (e) => {
       origin = null;
       if (e.touches.length !== 1) return; // ignore pinch / multi-touch
+      // Elements that handle their own swipes (e.g. toasts) opt out, open or closed
+      if (e.target instanceof Element && e.target.closest("[data-no-drawer-swipe]")) return;
       const touch = e.touches[0];
       if (!latest.current.isOpen) {
         if (touch.clientX > window.innerWidth * OPEN_ZONE) return;
