@@ -709,7 +709,11 @@ export default function DirectoryView() {
 
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <AppLayout fileInputRef={fileInputRef} handleFileSelect={handleFileSelect}>
+    <AppLayout
+      fileInputRef={fileInputRef}
+      handleFileSelect={handleFileSelect}
+      disableSidebarSwipe={selectionMode}
+    >
       <div
         style={{
           minWidth: 0,

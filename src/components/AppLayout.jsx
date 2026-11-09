@@ -18,6 +18,8 @@ import { useUser } from "../context/UserContext";
 import { logoutUser } from "../api/authApi";
 import { formatStorage } from "../utils/directoryUtils";
 import { logError } from "../utils/logger";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { useSwipeDrawer } from "../hooks/useSwipeDrawer";
 import ThemeSelector from "./ThemeSelector";
 
 // ── NavLink — memoized so it only re-renders when active state changes ───
@@ -261,6 +263,7 @@ export default function AppLayout({
   children,
   fileInputRef,
   handleFileSelect,
+  disableSidebarSwipe = false,
 }) {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
@@ -292,6 +295,17 @@ export default function AppLayout({
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
+
+  // Mobile: swipe right from the left side opens the drawer, swipe left closes it
+  const isMobile = useIsMobile();
+  const openSidebar = useCallback(() => setSidebarOpen(true), []);
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+  useSwipeDrawer({
+    enabled: isMobile && !disableSidebarSwipe,
+    isOpen: sidebarOpen,
+    onOpen: openSidebar,
+    onClose: closeSidebar,
+  });
 
   const handleLogout = useCallback(async () => {
     if (isLoggingOut) return;
