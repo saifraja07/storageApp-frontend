@@ -1,6 +1,6 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
-import { axiosWithCreds } from "../api/axiosInstances";
+import { loginWithGoogle } from "../api/authApi";
 import { getErr } from "../utils/directoryUtils";
 
 // ─── SVG Google "G" logo ────────────────────────────────────────────────────
@@ -72,10 +72,7 @@ export default function GoogleAuthButton({
     onSuccess: async (codeResponse) => {
       try {
         setIsLoading(true);
-        const { data } = await axiosWithCreds.post("/auth/google", {
-          code: codeResponse.code,
-        });
-
+        const data = await loginWithGoogle(codeResponse.code);
         onSuccess?.(data);
       } catch (err) {
         onError?.(getErr(err) || "Google sign-in failed");

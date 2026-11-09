@@ -15,7 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
-import { logoutUser } from "../api/userApi";
+import { logoutUser } from "../api/authApi";
 import { formatStorage } from "../utils/directoryUtils";
 import { logError } from "../utils/logger";
 import ThemeSelector from "./ThemeSelector";

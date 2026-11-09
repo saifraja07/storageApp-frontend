@@ -251,7 +251,7 @@ export const FileRow = memo(function FileRow({
             onDetails={() => setDetailsItem(item)}
             onDownload={() => {
               const a = document.createElement("a");
-              a.href = `${BASE_URL}/file/${item._id || item.id}?action=download`;
+              a.href = `${BASE_URL}/files/${item._id || item.id}?action=download`;
               a.download = item.name || "";
               document.body.appendChild(a);
               a.click();
@@ -412,7 +412,7 @@ export const FileCard = memo(function FileCard({
             onDetails={() => setDetailsItem(item)}
             onDownload={() => {
               const a = document.createElement("a");
-              a.href = `${BASE_URL}/file/${item._id || item.id}?action=download`;
+              a.href = `${BASE_URL}/files/${item._id || item.id}?action=download`;
               a.download = item.name || "";
               document.body.appendChild(a);
               a.click();

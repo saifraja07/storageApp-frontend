@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { sendOtp, verifyOtp } from "./api/authApi";
-import { registerUser } from "./api/userApi";
+import { registerUser } from "./api/authApi";
 import { UserContext } from "./context/UserContext";
 import GoogleAuthButton from "./components/GoogleAuthButton";
 

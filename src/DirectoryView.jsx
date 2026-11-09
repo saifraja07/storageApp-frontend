@@ -594,7 +594,7 @@ export default function DirectoryView() {
       if (item.isDirectory) navigate(`/directory/${item._id || item.id}`);
       else
         window.open(
-          `${BASE_URL}/file/${item._id || item.id}`,
+          `${BASE_URL}/files/${item._id || item.id}`,
           "_blank",
           "noopener,noreferrer",
         );

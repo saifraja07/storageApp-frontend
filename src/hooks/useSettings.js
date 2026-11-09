@@ -4,9 +4,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import {
   changePassword,
+  logoutAllSessions,
+} from "../api/authApi";
+import {
   deleteAccount,
   disableAccount,
-  logoutAllSessions,
   updateProfile,
 } from "../api/userApi";
 import { getErr } from "../utils/directoryUtils";
