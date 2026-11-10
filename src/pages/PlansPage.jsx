@@ -7,6 +7,7 @@ import {
   CancelConfirmModal,
   PaymentOverlay,
   PlanCard,
+  PlanChangeNote,
   PlansFAQ,
   PlansHeader,
   Spin,
@@ -24,11 +25,14 @@ export default function PlansPage() {
     loadingId,
     overlayPhase,
     activeSubscription,
+    activationPending,
     premiumActive,
     cancelLoading,
     showCancelModal,
     setShowCancelModal,
     subLoading,
+    subError,
+    retryLoadSubscription,
     showToast,
     handleSelect,
     handleCancelPlan,
@@ -37,6 +41,8 @@ export default function PlansPage() {
   } = useSubscription();
 
   const plans = PLAN_CATALOG[mode];
+  // Until we know the user's real subscription, no card may claim to be (or offer to be) anything
+  const locked = subLoading || subError;
 
   return (
     <AppLayout>
@@ -69,16 +75,34 @@ export default function PlansPage() {
           </div>
         )}
 
+        {/* Couldn't load — don't let a paying user look like they're on Free */}
+        {subError && !subLoading && (
+          <div role="alert" style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap",
+            padding: "12px 16px", borderRadius: 10, marginBottom: 20,
+            background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
+          }}>
+            <span style={{ fontSize: 13, color: "var(--text)" }}>We couldn&apos;t load your subscription.</span>
+            <button
+              onClick={retryLoadSubscription}
+              style={{
+                padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer",
+                background: "var(--surface-tint-strong)", border: "1px solid var(--border)", color: "var(--text)",
+                fontFamily: "Inter,sans-serif",
+              }}
+            >Retry</button>
+          </div>
+        )}
+
         {/* State banner */}
         {!subLoading && activeSubscription && (
           <SubscriptionBanner subscription={activeSubscription} />
         )}
 
         {/* Billing dashboard */}
-        {!subLoading && activeSubscription && (
+        {!subLoading && activeSubscription && !activationPending && (
           <BillingDashboard
             subscription={activeSubscription}
-            premiumActive={premiumActive}
             onUpdatePayment={handleUpdatePayment}
             onCancel={handleCancelPlan}
             cancelLoading={cancelLoading}
@@ -87,6 +111,10 @@ export default function PlansPage() {
         )}
 
         <BillingToggle mode={mode} onModeChange={setMode} />
+
+        {!locked && activeSubscription && premiumActive && (
+          <PlanChangeNote subscription={activeSubscription} />
+        )}
 
         {/* Plan cards — 2 column on desktop (Free + Pro + Premium = 3 per tab) */}
         <div style={{
@@ -98,9 +126,11 @@ export default function PlansPage() {
             <PlanCard
               key={`${mode}-${plan.id}`}
               plan={plan}
-              activeSubscription={activeSubscription}
+              subscription={activeSubscription}
               premiumActive={premiumActive}
+              locked={locked}
               onSelect={handleSelect}
+              onDowngrade={handleCancelPlan}
               loadingId={loadingId}
             />
           ))}

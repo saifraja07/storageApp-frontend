@@ -10,7 +10,8 @@ function loadRazorpaySDK() {
     script.id = "razorpay-script";
     script.async = true;
     script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
+    // Don't cache a failure: a dropped connection must not disable checkout until a full reload
+    script.onerror = () => { script.remove(); sdkPromise = null; resolve(false); };
     document.body.appendChild(script);
   });
   return sdkPromise;
@@ -22,20 +23,25 @@ function openRazorpayCheckout({ subscriptionId, plan, onSuccess, onDismiss, onFa
     return;
   }
 
+  // Once the payment handler has fired the checkout is "settled": closing the modal
+  // afterwards must never be reported as "Payment cancelled".
+  let settled = false;
+
   const rzp = new window.Razorpay({
-    key:             import.meta.env.VITE_RAZORPAY_KEY_ID,
-    name:            "Storage App",
-    description:     `${plan.name} Plan — ${plan.storage} Storage`,
+    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+    name: "Haadi Storage App",
+    description: `${plan.name} Plan — ${plan.storage} Storage`,
     subscription_id: subscriptionId,
-    theme:           { color: "#3B82F6" },
+    theme: { color: "#3B82F6" },
 
     handler(response) {
+      settled = true;
       onSuccess(response);
     },
 
     modal: {
-      ondismiss:    onDismiss,
-      escape:       false,
+      ondismiss() { if (!settled) onDismiss(); },
+      escape: false,
       backdropclose: false,
     },
   });
