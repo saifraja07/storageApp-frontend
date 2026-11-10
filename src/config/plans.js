@@ -2,9 +2,11 @@ import { Gift, Zap, Crown } from "lucide-react";
 
 // ─── Plan catalogue ───────────────────────────────────────────────────────────
 // Only 4 real Razorpay plans. Free cards are informational only.
+// `cycle` ("monthly" | "yearly") says which billing tab a plan belongs to.
 
 const FREE_PLAN_MONTHLY = {
   id: "free-monthly",
+  cycle: "monthly",
   razorpayId: null,
   name: "Free",
   tagline: "Always free",
@@ -20,6 +22,7 @@ const FREE_PLAN_MONTHLY = {
 
 const FREE_PLAN_YEARLY = {
   id: "free-yearly",
+  cycle: "yearly",
   razorpayId: null,
   name: "Free",
   tagline: "Always free",
@@ -38,6 +41,7 @@ const PLAN_CATALOG = {
     FREE_PLAN_MONTHLY,
     {
       id: "plan_T7QOKw1SWn3YA9",
+      cycle: "monthly",
       razorpayId: "plan_T7QOKw1SWn3YA9",
       name: "Pro",
       tagline: "Great for individuals",
@@ -53,6 +57,7 @@ const PLAN_CATALOG = {
     },
     {
       id: "plan_T7QTobe7VSThyp",
+      cycle: "monthly",
       razorpayId: "plan_T7QTobe7VSThyp",
       name: "Premium",
       tagline: "For creators & teams",
@@ -71,6 +76,7 @@ const PLAN_CATALOG = {
     FREE_PLAN_YEARLY,
     {
       id: "plan_T7QPutFKX9ueS5",
+      cycle: "yearly",
       razorpayId: "plan_T7QPutFKX9ueS5",
       name: "Pro",
       tagline: "Great for individuals",
@@ -86,6 +92,7 @@ const PLAN_CATALOG = {
     },
     {
       id: "plan_T7QV7r2nId24Vo",
+      cycle: "yearly",
       razorpayId: "plan_T7QV7r2nId24Vo",
       name: "Premium",
       tagline: "For creators & teams",

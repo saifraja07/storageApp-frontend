@@ -1,41 +1,37 @@
+import { PLAN_BY_ID } from "../../config/plans";
 import { fmtDate } from "../../utils/subscriptionUtils";
 
+// Only states that need the user's attention get a banner. A plain active plan
+// is the normal case — the billing card below already says everything.
 export default function SubscriptionBanner({ subscription }) {
   const { status, currentEnd } = subscription;
   const endDate = fmtDate(currentEnd);
+  const planName = PLAN_BY_ID[subscription.planId]?.name ?? "paid";
 
   const banners = {
-    created: {
-      color: "#94A3B8", bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.2)",
-      text: <><strong>Subscription created.</strong> Complete checkout to activate your premium storage.</>,
-    },
-    active: {
-      color: "var(--status-green-text)", bg: "rgba(52,211,153,0.08)", border: "rgba(52,211,153,0.2)",
-      text: <><strong>Premium storage is active.</strong> Next renewal: <strong>{endDate}</strong></>,
-    },
     authenticated: {
       color: "var(--status-blue-text)", bg: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)",
-      text: <><strong>Payment mandate registered.</strong> Waiting for first charge — premium will activate automatically.</>,
+      text: <><strong>Payment received.</strong> We&apos;re activating your {planName} plan — this can take a few minutes. You don&apos;t need to pay again.</>,
     },
     pending: {
       color: "var(--status-amber-text)", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)",
-      text: <><strong>Renewal payment failed.</strong> Razorpay is retrying. Premium remains active until <strong>{endDate}</strong>.</>,
+      text: <><strong>We couldn&apos;t process your last payment.</strong> We&apos;ll retry automatically. Your plan stays active until <strong>{endDate}</strong> — update your payment method to avoid losing it.</>,
     },
     paused: {
       color: "var(--status-amber-text)", bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.2)",
-      text: <><strong>AutoPay paused.</strong> Premium remains active until <strong>{endDate}</strong>. Resume before then to avoid downgrade.</>,
+      text: <><strong>Auto-renewal is paused.</strong> Your plan stays active until <strong>{endDate}</strong>.</>,
     },
     cancelled: {
       color: "var(--status-orange-text)", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)",
-      text: <><strong>Auto-renewal cancelled.</strong> Premium access until <strong>{endDate}</strong>. No further charges.</>,
+      text: <><strong>Your plan is cancelled.</strong> You keep {planName} until <strong>{endDate}</strong>, then move to the Free plan. You won&apos;t be charged again.</>,
     },
     halted: {
       color: "var(--status-red-text)", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)",
-      text: <><strong>Subscription halted.</strong> All retries failed — premium storage has expired. Choose a plan to continue.</>,
+      text: <><strong>Your plan has expired.</strong> Choose a plan to get your storage back.</>,
     },
     expired: {
       color: "var(--status-red-text)", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)",
-      text: <><strong>Subscription expired.</strong> Choose a plan to restore premium storage.</>,
+      text: <><strong>Your plan has expired.</strong> Choose a plan to get your storage back.</>,
     },
   };
 

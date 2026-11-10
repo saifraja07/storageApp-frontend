@@ -1,47 +1,28 @@
 import { Check } from "lucide-react";
 import Spin from "./Spin";
+import { getPlanCardState } from "../../utils/planState";
 
-export default function PlanCard({ plan, activeSubscription, premiumActive, onSelect, loadingId }) {
-  const isCurrentPaid = !plan.isFree && activeSubscription?.planId === plan.razorpayId;
+export default function PlanCard({ plan, subscription, premiumActive, locked, onSelect, onDowngrade, loadingId }) {
+  const { highlight, badge, cta } = getPlanCardState({ plan, subscription, premiumActive, locked });
 
-  // Free card shows "Current Plan" when user has no active paid subscription
-  const isFreeCurrentPlan = plan.isFree && !premiumActive &&
-    (!activeSubscription || !["active", "authenticated", "pending", "paused"].includes(activeSubscription?.status));
+  // `loadingId` starts as null and the Free plan's razorpayId is null too, so a bare
+  // `loadingId === plan.razorpayId` was true on the Free card (a spinner that never stopped).
+  const isLoading = !!loadingId && loadingId === plan.razorpayId;
+  const ctaDisabled = cta.disabled || !!loadingId;
 
-  const isCurrent = isCurrentPaid && premiumActive;
-  const isDowngrade = plan.isFree && premiumActive;
-  const isLoading = loadingId === plan.razorpayId;
-  const isBlocked = premiumActive && !plan.isFree && !isCurrentPaid;
-
-  // Determine badge text on the card (not top badge — that's plan.badge)
-  let cardStatusLabel = null;
-  if (isFreeCurrentPlan)  cardStatusLabel = { text: "Current Plan", color: "#6B7280" };
-  if (isCurrent) {
-    const labels = {
-      active:        "Current Plan",
-      pending:       "Renewal Pending",
-      paused:        "Paused",
-      cancelled:     "Auto-renew Off",
-      authenticated: "Awaiting Payment",
-    };
-    cardStatusLabel = { text: labels[activeSubscription.status] || "Current Plan", color: plan.color };
+  function handleClick() {
+    if (ctaDisabled) return;
+    if (cta.action === "checkout") onSelect(plan);
+    else if (cta.action === "downgrade") onDowngrade();
   }
-
-  // CTA label
-  let ctaLabel = `Upgrade to ${plan.name}`;
-  if (plan.isFree)       ctaLabel = isDowngrade ? "Downgrade" : "Current Plan";
-  if (isCurrent)         ctaLabel = cardStatusLabel?.text || "Current Plan";
-  if (isBlocked)         ctaLabel = "Not Available";
-
-  const ctaDisabled = plan.isFree || isCurrent || isBlocked || !!loadingId;
 
   return (
     <div style={{
-      background: isCurrent ? `${plan.color}0D` : "var(--surface)",
-      border: `1px solid ${isCurrent ? `${plan.color}55` : "var(--border)"}`,
+      background: highlight ? `color-mix(in srgb, ${plan.color} 5%, transparent)` : "var(--surface)",
+      border: `1px solid ${highlight ? `color-mix(in srgb, ${plan.color} 33%, transparent)` : "var(--border)"}`,
       borderRadius: 16, padding: "22px 20px",
       position: "relative", display: "flex", flexDirection: "column",
-      boxShadow: isCurrent ? `0 0 0 1px ${plan.color}33` : "none",
+      boxShadow: highlight ? `0 0 0 1px color-mix(in srgb, ${plan.color} 20%, transparent)` : "none",
       transition: "border-color 0.15s",
     }}>
       {/* Top badge (Most Popular / Best Value) */}
@@ -54,21 +35,21 @@ export default function PlanCard({ plan, activeSubscription, premiumActive, onSe
         }}>{plan.badge}</div>
       )}
 
-      {/* Card status label (Current Plan, Paused, etc.) */}
-      {cardStatusLabel && (
+      {/* Card status label (Current plan, Paused, Ends 12 Dec, etc.) */}
+      {badge && (
         <div style={{
           position: "absolute", top: 14, right: 16,
-          fontSize: 10, fontWeight: 700, color: cardStatusLabel.color,
-          background: `${cardStatusLabel.color}22`,
+          fontSize: 10, fontWeight: 700, color: plan.color,
+          background: `color-mix(in srgb, ${plan.color} 14%, transparent)`,
           padding: "2px 8px", borderRadius: 100,
-        }}>{cardStatusLabel.text}</div>
+        }}>{badge}</div>
       )}
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <div style={{
           width: 36, height: 36, borderRadius: 10,
-          background: `${plan.color}22`,
+          background: `color-mix(in srgb, ${plan.color} 13%, transparent)`,
           display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
         }}><plan.emoji size={18} aria-hidden="true" /></div>
         <div>
@@ -99,7 +80,7 @@ export default function PlanCard({ plan, activeSubscription, premiumActive, onSe
       {/* CTA */}
       <button
         disabled={ctaDisabled}
-        onClick={() => !ctaDisabled && onSelect(plan)}
+        onClick={handleClick}
         style={{
           width: "100%", padding: "11px 0",
           background: ctaDisabled ? "var(--surface-tint-strong)" : plan.color,
@@ -115,7 +96,7 @@ export default function PlanCard({ plan, activeSubscription, premiumActive, onSe
         onMouseOut={(e) => { e.currentTarget.style.opacity = "1"; }}
       >
         {isLoading && <Spin />}
-        {ctaLabel}
+        {cta.label}
       </button>
     </div>
   );

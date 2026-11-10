@@ -1,29 +1,30 @@
 import { useState } from "react";
-import { PLAN_BY_ID } from "../../config/plans";
-import { fmtDate } from "../../utils/subscriptionUtils";
+import { fmtDate, fmtMethod } from "../../utils/subscriptionUtils";
+import { CANCELLABLE_STATUSES, describePlan } from "../../utils/planState";
 import { getPaymentHistory } from "../../api/subscriptionApi";
 import Spin from "./Spin";
 import StatusBadge from "./StatusBadge";
 import PaymentHistory from "./PaymentHistory";
 
-export default function BillingDashboard({ subscription, premiumActive, onUpdatePayment, onCancel, cancelLoading, showToast }) {
+export default function BillingDashboard({ subscription, onUpdatePayment, onCancel, cancelLoading, showToast }) {
   const [payments, setPayments] = useState(null);
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
 
   const { status, currentEnd, lastChargedAt, paymentMethod } = subscription;
-  const planObj = PLAN_BY_ID[subscription.planId];
-  const planName = planObj ? `${planObj.name} (${planObj.storage})` : subscription.planId;
+  const info = describePlan(subscription);
 
-  const showCancelBtn       = ["active", "authenticated"].includes(status);
-  const showUpdatePaymentBtn = ["active", "authenticated", "pending", "paused", "cancelled"].includes(status);
+  const showCancelBtn = CANCELLABLE_STATUSES.includes(status);
+  const showUpdatePaymentBtn = ["active", "authenticated", "pending", "paused"].includes(status);
 
-  const renewalLabel = {
-    active: "Next Renewal", pending: "Premium Until", paused: "Premium Until",
-    cancelled: "Premium Until", authenticated: "First Charge",
-    halted: "Halted On", expired: "Expired On",
-  }[status] ?? "Billing Until";
+  // One date, labelled for what it actually means in this state
+  const dateLabel = {
+    active: "Renews on", pending: "Access until", paused: "Access until",
+    cancelled: "Access until", authenticated: "Activation",
+    halted: "Ended on", expired: "Ended on",
+  }[status] ?? "Billing until";
+  const dateValue = status === "authenticated" && !currentEnd ? "In progress" : fmtDate(currentEnd);
 
   async function handleLoadHistory() {
     if (payments !== null) { setShowHistory((v) => !v); return; }
@@ -53,13 +54,12 @@ export default function BillingDashboard({ subscription, premiumActive, onUpdate
   }
 
   const gridItems = [
-    { label: "Plan",           value: planName },
-    { label: "Premium Access", value: premiumActive
-        ? <span style={{ color: "var(--status-green-text)", fontWeight: 600 }}>Active until {fmtDate(currentEnd)}</span>
-        : <span style={{ color: "var(--status-red-text)", fontWeight: 600 }}>Expired</span> },
-    { label: renewalLabel,     value: fmtDate(currentEnd) },
-    { label: "Last Payment",   value: lastChargedAt ? fmtDate(lastChargedAt) : "—" },
-    { label: "Payment Method", value: paymentMethod ?? "—" },
+    { label: "Plan", value: info ? info.name : "—" },
+    { label: "Billing", value: info ? info.cycleLabel : "—" },
+    { label: "Price", value: info ? info.priceLabel : "—" },
+    { label: dateLabel, value: dateValue },
+    { label: "Last Payment", value: lastChargedAt ? fmtDate(lastChargedAt) : "—" },
+    { label: "Payment Method", value: fmtMethod(paymentMethod) },
   ];
 
   const actionBtn = (label, onClick, disabled, loading, danger = false) => (
@@ -92,14 +92,14 @@ export default function BillingDashboard({ subscription, premiumActive, onUpdate
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "16px 20px", borderBottom: "1px solid var(--border)",
       }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Current Subscription</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{info ? `${info.name} plan` : "Your plan"}</span>
         <StatusBadge status={status} />
       </div>
 
       {/* Details grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "1px", background: "var(--border)" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1px", background: "var(--border)" }}>
         {gridItems.map((item) => (
-          <div key={item.label} style={{ background: "var(--surface)", padding: "12px 16px" }}>
+          <div key={item.label} style={{ background: "var(--surface)", padding: "12px 16px", flex: "1 1 150px" }}>
             <p style={{ fontSize: 11, color: "var(--muted)", marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.4 }}>{item.label}</p>
             <p style={{ fontSize: 13, fontWeight: 500, color: "var(--text)" }}>{item.value}</p>
           </div>
@@ -112,7 +112,7 @@ export default function BillingDashboard({ subscription, premiumActive, onUpdate
         {actionBtn(showHistory ? "Hide History" : "Payment History", handleLoadHistory, false, paymentsLoading)}
         {showCancelBtn && (
           <div style={{ marginLeft: "auto" }}>
-            {actionBtn(cancelLoading ? "Cancelling…" : "Cancel Subscription", onCancel, false, cancelLoading, true)}
+            {actionBtn(cancelLoading ? "Cancelling…" : "Cancel plan", onCancel, false, cancelLoading, true)}
           </div>
         )}
       </div>

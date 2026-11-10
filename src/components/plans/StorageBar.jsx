@@ -1,5 +1,6 @@
 import { formatStorage } from "../../utils/directoryUtils";
 import { PLAN_BY_ID } from "../../config/plans";
+import { fmtDate } from "../../utils/subscriptionUtils";
 
 export default function StorageBar({ user, activeSubscription, premiumActive }) {
   const used = user?.usedStorageInBytes || 0;
@@ -45,6 +46,11 @@ export default function StorageBar({ user, activeSubscription, premiumActive }) 
           background: currentPlanColor, padding: "4px 14px", borderRadius: 20,
           display: "inline-block",
         }}>{currentPlanName}</span>
+        {premiumActive && activeSubscription?.status === "cancelled" && (
+          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 6 }}>
+            Ends {fmtDate(activeSubscription.currentEnd)}
+          </div>
+        )}
       </div>
     </div>
   );

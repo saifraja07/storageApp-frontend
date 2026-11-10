@@ -4,6 +4,7 @@ export { default as CancelConfirmModal } from "./CancelConfirmModal";
 export { default as PaymentHistory } from "./PaymentHistory";
 export { default as PaymentOverlay } from "./PaymentOverlay";
 export { default as PlanCard } from "./PlanCard";
+export { default as PlanChangeNote } from "./PlanChangeNote";
 export { default as PlansFAQ } from "./PlansFAQ";
 export { default as PlansHeader } from "./PlansHeader";
 export { default as Spin } from "./Spin";
