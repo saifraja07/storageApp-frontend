@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Clock, Inbox } from "lucide-react";
 import { SkeletonRow } from "../../SkeletonLoading.jsx";
-import { formatDate } from "../../../utils/directoryUtils.js";
+import { fmtDay } from "./money";
 import StatusBadge from "./StatusBadge";
 
 const TABLE_COLUMNS = "minmax(160px,2fr) 110px 110px 130px";
@@ -109,9 +109,12 @@ const RecentSubscriptions = memo(function RecentSubscriptions({ loading, subscri
                   {s.planName} <span style={{ color: "var(--muted)", fontWeight: 400 }}>· {s.cycle}</span>
                 </div>
                 <div>
-                  <StatusBadge status={s.status} />
+                  <StatusBadge
+                    status={s.displayStatus ?? s.status}
+                    label={s.displayLabel}
+                  />
                 </div>
-                <div style={{ fontSize: 12, color: "var(--muted)" }}>{formatDate(s.createdAt)}</div>
+                <div style={{ fontSize: 12, color: "var(--muted)" }}>{fmtDay(s.createdAt)}</div>
               </div>
             ))}
         </div>

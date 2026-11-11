@@ -6,6 +6,7 @@ import { useUser } from "../context/UserContext";
 import { fetchPlansDashboard } from "../api/adminApi";
 import { getErr } from "../utils/directoryUtils";
 import toast from "react-hot-toast";
+import ReloadButton from "../components/ReloadButton";
 import PlanStats from "../components/admin/plansPage/PlanStats";
 import PlansSearchBar from "../components/admin/plansPage/PlansSearchBar";
 import ActivePlansTable from "../components/admin/plansPage/ActivePlansTable";
@@ -16,8 +17,16 @@ const EMPTY_DASHBOARD = {
   summary: {
     totalUsers: 0,
     premiumUsers: 0,
-    monthlyRevenue: 0,
-    yearlyRevenue: 0,
+    payingSubscribers: 0,
+    cancellingUsers: 0,
+    pastDueUsers: 0,
+    expiringSoon: 0,
+    revenueThisMonth: 0,
+    revenueLastMonth: 0,
+    revenueThisYear: 0,
+    lifetimeRevenue: 0,
+    refundedTotal: 0,
+    mrr: 0,
   },
   activePlans: [],
   storageAlerts: [],
@@ -30,6 +39,7 @@ export default function AdminPlansPage() {
 
   const [data, setData] = useState(EMPTY_DASHBOARD);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchQ, setSearchQ] = useState("");
 
   useEffect(() => {
@@ -57,6 +67,22 @@ export default function AdminPlansPage() {
     }
   }
 
+  // Same behaviour as the Storage page: keep the numbers on screen, spin the icon, toast the result.
+  async function handleRefresh() {
+    if (refreshing) return;
+    try {
+      setRefreshing(true);
+      setData(await fetchPlansDashboard());
+      toast.success("Plan data refreshed");
+    } catch (err) {
+      if (err.response?.status === 403) navigate("/directory");
+      else if (err.response?.status === 401) navigate("/login");
+      else toast.error(getErr(err));
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
   useEffect(() => {
     loadDashboard();
     // Intentionally runs once on mount (loader identity changes every render).
@@ -76,24 +102,32 @@ export default function AdminPlansPage() {
       <div style={{ padding: "24px 24px", minWidth: 0 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           {/* Header */}
-          <div style={{ marginBottom: 24 }}>
-            <h1
-              style={{
-                fontSize: 22,
-                fontWeight: 700,
-                color: "var(--text)",
-                marginBottom: 4,
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              <ChartColumn size={20} aria-hidden="true" /> Plan Management
-            </h1>
-            <p style={{ fontSize: 13, color: "var(--muted)" }}>
-              Monitor subscriptions, revenue, and storage usage across all
-              users.
-            </p>
+          <div style={{ marginBottom: 24, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <h1
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "var(--text)",
+                  marginBottom: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <ChartColumn size={20} aria-hidden="true" /> Plan Management
+              </h1>
+              <p style={{ fontSize: 13, color: "var(--muted)" }}>
+                Monitor subscriptions, revenue, and storage usage across all
+                users.
+              </p>
+            </div>
+            <ReloadButton
+              onClick={handleRefresh}
+              loading={refreshing}
+              disabled={loading}
+              label="Refresh plan data"
+            />
           </div>
 
           {/* Summary cards */}

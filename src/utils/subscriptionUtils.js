@@ -26,4 +26,15 @@ function getVisibleSubscription(subscription) {
   return subscription;
 }
 
-export { fmtDate, fmtAmount, fmtMethod, getVisibleSubscription };
+// Whole days from now until `iso` (0 once it has passed).
+function daysUntil(iso) {
+  if (!iso) return 0;
+  return Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000));
+}
+
+function fmtDaysLeft(days) {
+  if (days <= 0) return "Ends today";
+  return days === 1 ? "1 day left" : `${days} days left`;
+}
+
+export { fmtDate, fmtAmount, fmtMethod, getVisibleSubscription, daysUntil, fmtDaysLeft };

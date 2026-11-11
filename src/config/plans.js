@@ -103,7 +103,7 @@ const PLAN_CATALOG = {
       color: "var(--status-purple-text)",
       emoji: Crown,
       badge: "Best Value",
-      features: ["500 GB cloud storage", "Everything in Pro", "Access from up to 4 device",  "Priority support", "Secure encrypted storage"],
+      features: ["500 GB cloud storage", "Everything in Pro", "Access from up to 4 device", "Priority support", "Secure encrypted storage"],
       isFree: false,
     },
   ],
@@ -115,7 +115,11 @@ const PLAN_BY_ID = Object.fromEntries(
   ALL_PLANS.filter((p) => p.razorpayId).map((p) => [p.razorpayId, p])
 );
 
+// What a user keeps when no paid plan is running.
+const FREE_STORAGE_BYTES = FREE_PLAN_MONTHLY.storageBytes;
+
 export {
+  FREE_STORAGE_BYTES,
   FREE_PLAN_MONTHLY,
   FREE_PLAN_YEARLY,
   PLAN_CATALOG,

@@ -1,5 +1,5 @@
 import { PLAN_BY_ID } from "../config/plans";
-import { fmtDate } from "./subscriptionUtils";
+import { fmtDate, fmtMethod, daysUntil } from "./subscriptionUtils";
 
 // ─── Plan card state ──────────────────────────────────────────────────────────
 // Decides what every plan card says and does for the user's current subscription,
@@ -81,4 +81,56 @@ export function describePlan(subscription) {
     cycleLabel: plan.cycle === "yearly" ? "Yearly" : "Monthly",
     priceLabel: `${plan.price}${plan.period}`,
   };
+}
+
+/**
+ * What the billing card says for a running subscription: one headline, one
+ * supporting line, and how worrying it is. Everything else on the card follows
+ * from this, so it can never contradict itself.
+ *
+ * `tone`: green = fine, blue = in progress, amber = needs attention, orange = ending.
+ * `ending`: the plan will drop to Free on `endDate` without the user doing anything.
+ */
+export function getBillingSummary(subscription) {
+  const info = describePlan(subscription);
+  const name = info?.name ?? "paid";
+  const endDate = fmtDate(subscription.currentEnd);
+  const price = info ? info.priceLabel : null;
+  const method = subscription.paymentMethod ? fmtMethod(subscription.paymentMethod) : null;
+  const days = daysUntil(subscription.currentEnd);
+
+  switch (subscription.status) {
+    case "active":
+      return {
+        tone: "green", label: "Active", ending: false, days,
+        headline: `Renews on ${endDate}`,
+        detail: `${price ?? "Your plan price"} is charged automatically${method ? ` via ${method}` : ""}.`,
+      };
+    case "authenticated":
+      return {
+        tone: "blue", label: "Activating", ending: false, days,
+        headline: "Activating your plan…",
+        detail: "Payment received. This takes a few minutes — you don't need to pay again.",
+      };
+    case "pending":
+      return {
+        tone: "amber", label: "Payment failed", ending: false, days,
+        headline: "We couldn't renew your plan",
+        detail: `We'll retry automatically. You keep ${name} until ${endDate} — update your payment method to avoid losing it.`,
+      };
+    case "paused":
+      return {
+        tone: "amber", label: "Paused", ending: true, days,
+        headline: `Auto-renewal is paused`,
+        detail: `You keep ${name} until ${endDate}, then move to Free.`,
+      };
+    case "cancelled":
+      return {
+        tone: "orange", label: "Cancelling", ending: true, days,
+        headline: `Ends on ${endDate}`,
+        detail: `You keep ${name} until then and won't be charged again.`,
+      };
+    default:
+      return { tone: "amber", label: subscription.status, ending: false, days, headline: "Your plan", detail: "" };
+  }
 }
