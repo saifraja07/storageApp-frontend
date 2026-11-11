@@ -35,3 +35,8 @@ export const getPaymentHistory = async (subscriptionId) => {
   );
   return data;
 };
+
+export const getMyPayments = async () => {
+  const { data } = await axiosWithCreds.get("/subscriptions/payments");
+  return data;
+};

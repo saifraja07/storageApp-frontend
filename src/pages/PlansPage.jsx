@@ -1,10 +1,14 @@
 import AppLayout from "../components/AppLayout";
 import { PLAN_CATALOG } from "../config/plans";
 import useSubscription from "../hooks/useSubscription";
+import { describePlan } from "../utils/planState";
+import { fmtDate } from "../utils/subscriptionUtils";
 import {
   BillingDashboard,
+  BillingHistory,
   BillingToggle,
   CancelConfirmModal,
+  EndedPlanBanner,
   PaymentOverlay,
   PlanCard,
   PlanChangeNote,
@@ -25,6 +29,7 @@ export default function PlansPage() {
     loadingId,
     overlayPhase,
     activeSubscription,
+    endedSubscription,
     activationPending,
     premiumActive,
     cancelLoading,
@@ -44,12 +49,18 @@ export default function PlansPage() {
   // Until we know the user's real subscription, no card may claim to be (or offer to be) anything
   const locked = subLoading || subError;
 
+  function scrollToPlans() {
+    document.getElementById("plan-cards")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <AppLayout>
       {overlayPhase && <PaymentOverlay phase={overlayPhase} />}
       {showCancelModal && (
         <CancelConfirmModal
-          endDate={activeSubscription?.currentEnd ? new Date(activeSubscription.currentEnd).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : null}
+          endDate={activeSubscription?.currentEnd ? fmtDate(activeSubscription.currentEnd) : null}
+          planName={describePlan(activeSubscription)?.name}
+          usedBytes={user?.usedStorageInBytes ?? 0}
           onConfirm={confirmCancelPlan}
           onClose={() => !cancelLoading && setShowCancelModal(false)}
           loading={cancelLoading}
@@ -94,15 +105,21 @@ export default function PlansPage() {
           </div>
         )}
 
-        {/* State banner */}
+        {/* Right after paying, before the plan exists */}
         {!subLoading && activeSubscription && (
           <SubscriptionBanner subscription={activeSubscription} />
+        )}
+
+        {/* A plan ended and nothing replaced it: say why they're on Free */}
+        {!subLoading && !subError && !activeSubscription && endedSubscription && (
+          <EndedPlanBanner key={endedSubscription.subscriptionId} ended={endedSubscription} onChoosePlan={scrollToPlans} />
         )}
 
         {/* Billing dashboard */}
         {!subLoading && activeSubscription && !activationPending && (
           <BillingDashboard
             subscription={activeSubscription}
+            usedBytes={user?.usedStorageInBytes ?? 0}
             onUpdatePayment={handleUpdatePayment}
             onCancel={handleCancelPlan}
             cancelLoading={cancelLoading}
@@ -110,7 +127,12 @@ export default function PlansPage() {
           />
         )}
 
-        <BillingToggle mode={mode} onModeChange={setMode} />
+        {/* No current plan (never subscribed, or it ended) — past receipts stay reachable */}
+        {!subLoading && !subError && !activeSubscription && <BillingHistory />}
+
+        <div id="plan-cards" style={{ scrollMarginTop: 16 }}>
+          <BillingToggle mode={mode} onModeChange={setMode} />
+        </div>
 
         {!locked && activeSubscription && premiumActive && (
           <PlanChangeNote subscription={activeSubscription} />

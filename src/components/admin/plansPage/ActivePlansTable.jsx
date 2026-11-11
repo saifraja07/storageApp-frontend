@@ -1,10 +1,11 @@
 import { memo } from "react";
 import { Crown, User } from "lucide-react";
 import { SkeletonRow } from "../../SkeletonLoading";
-import { formatStorage, formatDate } from "../../../utils/directoryUtils.js";
+import { formatStorage } from "../../../utils/directoryUtils.js";
+import { fmtDay } from "./money";
 import StatusBadge from "./StatusBadge";
 
-const TABLE_COLUMNS = "minmax(170px,1.8fr) minmax(200px,2fr) 100px 110px 180px 140px";
+const TABLE_COLUMNS = "minmax(170px,1.8fr) minmax(200px,2fr) 130px 150px 150px 170px";
 
 const ActivePlansTable = memo(function ActivePlansTable({ loading, plans }) {
   return (
@@ -36,7 +37,7 @@ const ActivePlansTable = memo(function ActivePlansTable({ loading, plans }) {
           <span>Plan</span>
           <span>Status</span>
           <span>Storage Used</span>
-          <span>Renewal / Expiry</span>
+          <span>Renews / Access until</span>
         </div>
 
         {/* Loading */}
@@ -135,7 +136,10 @@ const ActivePlansTable = memo(function ActivePlansTable({ loading, plans }) {
 
                 {/* Status */}
                 <div>
-                  <StatusBadge status={p.status} />
+                  <StatusBadge
+                    status={p.displayStatus ?? p.status}
+                    label={p.displayLabel}
+                  />
                 </div>
 
                 {/* Storage used */}
@@ -145,7 +149,16 @@ const ActivePlansTable = memo(function ActivePlansTable({ loading, plans }) {
                 </div>
 
                 {/* Renewal date */}
-                <div style={{ fontSize: 12, color: "var(--text)" }}>{formatDate(p.renewalDate)}</div>
+                <div
+                  style={{ fontSize: 12, color: "var(--text)" }}
+                  title={p.cancelledAt ? `Cancelled on ${fmtDay(p.cancelledAt)}` : undefined}
+                >
+                  {/* Only a healthy renewing plan "renews"; anything else just has paid access until a date */}
+                  <span style={{ color: "var(--muted)" }}>
+                    {p.displayStatus === "active" ? "Renews " : "Until "}
+                  </span>
+                  {fmtDay(p.renewalDate)}
+                </div>
               </div>
             );
           })}

@@ -28,6 +28,8 @@ export default function useSubscription() {
   const [loadingId, setLoadingId] = useState(null);
   const [overlayPhase, setOverlayPhase] = useState(null);
   const [activeSubscription, setActiveSubscription] = useState(null);
+  // What ended last (when there is no current plan) — drives the "your plan ended" notice
+  const [endedSubscription, setEndedSubscription] = useState(null);
   const [premiumActive, setPremiumActive] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -73,6 +75,7 @@ export default function useSubscription() {
       const subscription = getVisibleSubscription(data.subscription);
       if (mounted.current) {
         setActiveSubscription(subscription);
+        setEndedSubscription(subscription ? null : (data.ended ?? null));
         setPremiumActive(subscription ? (data.isPremiumActive ?? false) : false);
         setSubError(false);
       }
@@ -89,6 +92,20 @@ export default function useSubscription() {
     setSubLoading(true);
     await refreshSubscription();
     if (mounted.current) setSubLoading(false);
+  }, [refreshSubscription]);
+
+  // Coming back to this tab (after paying, updating a card, or acting elsewhere)
+  // shows the truth straight away instead of a stale plan. Throttled.
+  const lastFocusRefresh = useRef(0);
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - lastFocusRefresh.current < 10_000) return;
+      lastFocusRefresh.current = Date.now();
+      refreshSubscription();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, [refreshSubscription]);
 
   // Fetch subscription + preload Razorpay SDK on mount
@@ -296,7 +313,11 @@ export default function useSubscription() {
     try {
       await cancelSubscription(activeSubscription.subscriptionId);
       setShowCancelModal(false);
-      showToast("success", "Subscription cancelled. You keep premium access until the end of your billing period.");
+      // Show the new state at once; the refresh below confirms it with the server.
+      setActiveSubscription((sub) =>
+        sub ? { ...sub, status: "cancelled", cancelAtPeriodEnd: true, cancelledAt: new Date().toISOString() } : sub,
+      );
+      showToast("success", "Plan cancelled. You keep access until the end of your billing period.");
       // Refresh immediately so UI reflects new state without needing a page reload
       await refreshSubscription();
     } catch (err) {
@@ -318,6 +339,7 @@ export default function useSubscription() {
     loadingId,
     overlayPhase,
     activeSubscription: shownSubscription,
+    endedSubscription,
     activationPending: !!shownSubscription?.pendingOnly,
     premiumActive,
     cancelLoading,

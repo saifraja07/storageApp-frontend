@@ -1,6 +1,8 @@
 export { default as BillingDashboard } from "./BillingDashboard";
+export { default as BillingHistory } from "./BillingHistory";
 export { default as BillingToggle } from "./BillingToggle";
 export { default as CancelConfirmModal } from "./CancelConfirmModal";
+export { default as EndedPlanBanner } from "./EndedPlanBanner";
 export { default as PaymentHistory } from "./PaymentHistory";
 export { default as PaymentOverlay } from "./PaymentOverlay";
 export { default as PlanCard } from "./PlanCard";
