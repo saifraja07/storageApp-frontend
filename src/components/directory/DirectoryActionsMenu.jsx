@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Ellipsis, ListChecks, CheckCheck, ListX, Trash2, X } from "lucide-react";
+import { Ellipsis, ListChecks, CheckCheck, ListX, Trash2, X, Info } from "lucide-react";
 
 // ── Toolbar ⋯ menu ────────────────────────────────────────────────────────
 // One trigger, two menus:
@@ -25,6 +25,7 @@ const DirectoryActionsMenu = memo(function DirectoryActionsMenu({
   onStartSelection,
   onToggleSelectAll,
   onDelete,
+  onProperties,
   onCancelSelection,
 }) {
   const [open, setOpen] = useState(false);
@@ -155,6 +156,17 @@ const DirectoryActionsMenu = memo(function DirectoryActionsMenu({
                   <CheckCheck size={15} aria-hidden="true" />
                 )}
                 {allSelected ? "Deselect all" : "Select all"}
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                disabled={selectedCount === 0}
+                onClick={run(onProperties)}
+                className={`${ITEM_CLASS} text-(--text)`}
+                style={{ padding: "9px 12px" }}
+              >
+                <Info size={15} aria-hidden="true" />
+                Properties
               </button>
               <button
                 type="button"
