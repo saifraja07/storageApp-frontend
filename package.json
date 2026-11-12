@@ -1,8 +1,10 @@
 {
   "name": "storageApp frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "author": "Saif Ali Raja",
+  "description": "Frontend application for Haadi Cloud, a secure cloud storage platform.",
   "scripts": {
     "dev": "vite --host",
     "lint": "eslint .",
