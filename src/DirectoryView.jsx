@@ -543,6 +543,7 @@ export default function DirectoryView() {
   }, []);
 
   const exitSelection = useCallback(() => {
+    selectedItemsRef.current = [];
     setSelectionMode(false);
     setSelectedItems([]);
   }, []);
@@ -551,23 +552,6 @@ export default function DirectoryView() {
     () => loadDirectory({ force: true, silent: true }),
     [loadDirectory],
   );
-
-  // ── leaving selection mode: Escape + browser/Android Back ─────────────────
-  const anyModalOpen =
-    bulkConfirm || showCreateDir || showRename || !!deleteItem || !!detailsItem;
-
-  // One keydown listener, attached only while selection mode is on.
-  useEffect(() => {
-    if (!selectionMode || anyModalOpen) return;
-    const onKeyDown = (e) => {
-      if (e.key !== "Escape" || e.defaultPrevented) return; // open ⋯ menu handles it first
-      const t = e.target;
-      if (t instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
-      exitSelection();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [selectionMode, anyModalOpen, exitSelection]);
 
   // Back/Forward (POP) while selecting: stay on the page, leave selection mode.
   // Normal navigation (links, folders, breadcrumbs = PUSH) and Back with
@@ -640,6 +624,73 @@ export default function DirectoryView() {
     ],
     [directoriesList, filesList],
   );
+
+  const selectAllItems = useCallback(() => {
+    // Match the existing toolbar's Select All behavior: select real items in
+    // the current directory, excluding temporary uploads.
+    const selectableItems = realItems.filter(
+      (item) => !(typeof item.id === "string" && item.id.startsWith("temp-")),
+    );
+    if (!selectableItems.length) return;
+
+    selectedItemsRef.current = selectableItems;
+    setSelectedItems(selectableItems);
+    setSelectionMode(true);
+  }, [realItems]);
+
+  // ── directory keyboard shortcuts ──────────────────────────────────────────
+  const anyModalOpen =
+    bulkConfirm || showCreateDir || showRename || !!deleteItem || !!detailsItem;
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.defaultPrevented || e.altKey) return;
+
+      const target = e.target;
+      const isTextEntry =
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName) ||
+          target.getAttribute("role") === "textbox");
+
+      // Leave browser and form-control shortcuts alone while typing or while
+      // an application dialog/menu is active.
+      if (isTextEntry || anyModalOpen) return;
+
+      // Ctrl/Cmd + A selects all non-temporary items in this directory.
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
+        if (!realItems.length) return;
+        e.preventDefault();
+        selectAllItems();
+        return;
+      }
+
+      if (e.repeat) return;
+
+      // Escape exits selection mode and clears the current selection.
+      if (e.key === "Escape" && selectionMode) {
+        exitSelection();
+        return;
+      }
+
+      // Delete opens the existing bulk-delete confirmation; it never deletes
+      // selected items immediately.
+      if (e.key === "Delete" && selectionMode && selectedItemsRef.current.length) {
+        e.preventDefault();
+        if (!bulkLoading) setBulkConfirm(true);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [
+    anyModalOpen,
+    bulkLoading,
+    exitSelection,
+    realItems,
+    selectAllItems,
+    selectionMode,
+  ]);
 
   const q = searchQuery.trim().toLowerCase();
 
