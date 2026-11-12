@@ -30,6 +30,7 @@ import RenameModal from "./components/RenameModal";
 import DeleteModal from "./components/DeleteModal";
 import DetailsModal from "./components/DetailsModal";
 import UploadZone from "./components/UploadZone";
+import SelectionPropertiesModal from "./components/SelectionPropertiesModal";
 import UploadProgressBar from "./components/UploadProgressBar";
 import DirectoryToolbar from "./components/directory/DirectoryToolbar";
 import MobileActionBar from "./components/directory/MobileActionBar";
@@ -166,6 +167,7 @@ export default function DirectoryView() {
 
   const [deleteItem, setDeleteItem] = useState(null);
   const [detailsItem, setDetailsItem] = useState(null);
+  const [showSelectionProperties, setShowSelectionProperties] = useState(false);
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -640,11 +642,12 @@ export default function DirectoryView() {
 
   // ── directory keyboard shortcuts ──────────────────────────────────────────
   const anyModalOpen =
-    bulkConfirm || showCreateDir || showRename || !!deleteItem || !!detailsItem;
+    bulkConfirm || showCreateDir || showRename || !!deleteItem || !!detailsItem || showSelectionProperties;
+
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.defaultPrevented || e.altKey) return;
+      if (e.defaultPrevented) return;
 
       const target = e.target;
       const isTextEntry =
@@ -653,9 +656,22 @@ export default function DirectoryView() {
           /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName) ||
           target.getAttribute("role") === "textbox");
 
-      // Leave browser and form-control shortcuts alone while typing or while
-      // an application dialog/menu is active.
+      // Leave shortcuts alone while typing or while an application dialog is active.
       if (isTextEntry || anyModalOpen) return;
+
+      // Alt + Enter opens Properties for the current selection.
+      if (e.altKey) {
+        if (
+          e.key === "Enter" &&
+          !e.repeat &&
+          selectionMode &&
+          selectedItemsRef.current.length > 0
+        ) {
+          e.preventDefault();
+          setShowSelectionProperties(true);
+        }
+        return;
+      }
 
       // Ctrl/Cmd + A selects all non-temporary items in this directory.
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
@@ -673,9 +689,12 @@ export default function DirectoryView() {
         return;
       }
 
-      // Delete opens the existing bulk-delete confirmation; it never deletes
-      // selected items immediately.
-      if (e.key === "Delete" && selectionMode && selectedItemsRef.current.length) {
+      // Delete opens the existing bulk-delete confirmation.
+      if (
+        e.key === "Delete" &&
+        selectionMode &&
+        selectedItemsRef.current.length
+      ) {
         e.preventDefault();
         if (!bulkLoading) setBulkConfirm(true);
       }
@@ -691,6 +710,7 @@ export default function DirectoryView() {
     selectAllItems,
     selectionMode,
   ]);
+
 
   const q = searchQuery.trim().toLowerCase();
 
@@ -820,6 +840,7 @@ export default function DirectoryView() {
             realItems={realItems}
             bulkLoading={bulkLoading}
             onBulkConfirm={() => setBulkConfirm(true)}
+            onProperties={() => setShowSelectionProperties(true)}
             loading={loading}
             listRefreshing={listRefreshing}
             onRefresh={handleRefresh}
@@ -874,6 +895,13 @@ export default function DirectoryView() {
         setDeleteItem={setDeleteItem}
         confirmDelete={confirmDelete}
       />
+      {showSelectionProperties && selectedItems.length > 0 && (
+        <SelectionPropertiesModal
+          items={selectedItems}
+          breadcrumbs={breadcrumbs}
+          onClose={() => setShowSelectionProperties(false)}
+        />
+      )}
       {detailsItem && (
         <DetailsModal
           item={detailsItem}

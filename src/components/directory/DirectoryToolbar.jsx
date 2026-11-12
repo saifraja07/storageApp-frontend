@@ -22,6 +22,7 @@ const DirectoryToolbar = memo(function DirectoryToolbar({
   realItems,
   bulkLoading,
   onBulkConfirm,
+  onProperties,
   loading,
   listRefreshing,
   onRefresh,
@@ -120,6 +121,7 @@ const DirectoryToolbar = memo(function DirectoryToolbar({
                 setSelectedItems(allSelected ? [] : selectableRealItems)
               }
               onDelete={() => selectedItems.length && onBulkConfirm()}
+              onProperties={onProperties}
               onCancelSelection={onCancelSelection}
             />
           </div>
