@@ -2,9 +2,11 @@
 
 const VALID_TABS = ["profile", "security", "storage"];
 const ALLOWED_IMAGE_TYPES = [
+  "image/jpg",
   "image/jpeg",
   "image/png",
   "image/webp",
+  "image/avif",
   "image/heic",
   "image/heif",
 ];

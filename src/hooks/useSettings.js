@@ -80,7 +80,15 @@ export default function useSettings() {
 
     setProfileError("");
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    const allowedExtensions = ["jpg", "jpeg", "png", "webp", "avif", "heic", "heif"];
+
+    const extension = file.name.split(".").pop()?.toLowerCase();
+
+    const isValidImage =
+      ALLOWED_IMAGE_TYPES.includes(file.type) ||
+      allowedExtensions.includes(extension);
+
+    if (!isValidImage) {
       setProfileError("Please select a valid image.");
       return;
     }
