@@ -10,7 +10,7 @@ const ALLOWED_IMAGE_TYPES = [
   "image/heic",
   "image/heif",
 ];
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
 
 const SETTINGS_TABS = [
   { id: "profile", label: "Profile" },

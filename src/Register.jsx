@@ -106,10 +106,10 @@ export default function Register() {
   };
 
   const handleVerifyOtp = async () => {
-    if (!/^\d{4}$/.test(otp)) {
+    if (!/^\d{6}$/.test(otp)) {
       setErrors((prev) => ({
         ...prev,
-        otp: "Please enter a valid 4-digit code.",
+        otp: "Please enter a valid 6-digit code.",
       }));
       return;
     }
@@ -276,9 +276,9 @@ export default function Register() {
               }}
               onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
               onBlur={(e) =>
-                (e.target.style.borderColor = errors.name
-                  ? "#EF4444"
-                  : "var(--border)")
+              (e.target.style.borderColor = errors.name
+                ? "#EF4444"
+                : "var(--border)")
               }
             />
             {errors.name && (
@@ -307,9 +307,9 @@ export default function Register() {
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
                 onBlur={(e) =>
-                  (e.target.style.borderColor = errors.email
-                    ? "#EF4444"
-                    : "var(--border)")
+                (e.target.style.borderColor = errors.email
+                  ? "#EF4444"
+                  : "var(--border)")
                 }
               />
               <button
@@ -331,9 +331,9 @@ export default function Register() {
                   fontWeight: 600,
                   cursor:
                     otpVerified ||
-                    isSending ||
-                    countdown > 0 ||
-                    !formData.email.trim()
+                      isSending ||
+                      countdown > 0 ||
+                      !formData.email.trim()
                       ? "not-allowed"
                       : "pointer",
                   whiteSpace: "nowrap",
@@ -370,7 +370,7 @@ export default function Register() {
               </p>
             )}
           </div>
-          
+
           {otpSent && (
             <div>
               <label style={labelStyle}>
@@ -383,15 +383,15 @@ export default function Register() {
                 <input
                   type="text"
                   inputMode="numeric"
-                  maxLength={4}
+                  maxLength={6}
                   autoComplete="one-time-code"
                   disabled={otpVerified}
-                  placeholder="4-digit OTP"
+                  placeholder="6-digit OTP"
                   value={otp}
                   onChange={(e) => {
                     const digitsOnly = e.target.value
                       .replace(/\D/g, "")
-                      .slice(0, 4);
+                      .slice(0, 6);
                     setErrors((prev) => ({ ...prev, otp: "" }));
                     setOtp(digitsOnly);
                   }}
@@ -407,9 +407,9 @@ export default function Register() {
                     (e.target.style.borderColor = "var(--primary)")
                   }
                   onBlur={(e) =>
-                    (e.target.style.borderColor = errors.otp
-                      ? "#EF4444"
-                      : "var(--border)")
+                  (e.target.style.borderColor = errors.otp
+                    ? "#EF4444"
+                    : "var(--border)")
                   }
                 />
                 <button
@@ -479,9 +479,9 @@ export default function Register() {
               }}
               onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
               onBlur={(e) =>
-                (e.target.style.borderColor = errors.password
-                  ? "#EF4444"
-                  : "var(--border)")
+              (e.target.style.borderColor = errors.password
+                ? "#EF4444"
+                : "var(--border)")
               }
             />
             {errors.password && (
