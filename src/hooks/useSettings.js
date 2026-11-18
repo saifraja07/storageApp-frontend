@@ -94,7 +94,7 @@ export default function useSettings() {
     }
 
     if (file.size > MAX_IMAGE_SIZE) {
-      setProfileError("Image must be smaller than 5MB.");
+      setProfileError("Image must be smaller than 4MB.");
       return;
     }
 
