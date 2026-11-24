@@ -5,15 +5,19 @@ import EmptyDirectory from "./EmptyDirectory";
 
 const DirectoryGrid = memo(function DirectoryGrid({
   loading,
+  fetching = false,
   viewMode,
-  sorted,
+  items,
   totalItems,
   searchQuery,
-  q,
   itemProps,
 }) {
   return (
-    <>
+    // While the next page loads the current items stay visible, dimmed.
+    <div
+      aria-busy={fetching}
+      style={{ opacity: fetching ? 0.6 : 1, transition: "opacity 0.15s" }}
+    >
       {/* Item count (left) + selected count while in selection mode (right) */}
       {!loading && (
         <div
@@ -28,8 +32,8 @@ const DirectoryGrid = memo(function DirectoryGrid({
           }}
         >
           <span>
-            {q
-              ? `${sorted.length} result${sorted.length !== 1 ? "s" : ""} for "${q}"`
+            {searchQuery
+              ? `${totalItems} result${totalItems !== 1 ? "s" : ""} for "${searchQuery}"`
               : `${totalItems} item${totalItems !== 1 ? "s" : ""}`}
           </span>
           {itemProps.selectionMode && (
@@ -47,7 +51,7 @@ const DirectoryGrid = memo(function DirectoryGrid({
       {/* Loading skeletons */}
       {loading && viewMode === "grid" && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12 }}>
-          {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
+          {[...Array(12)].map((_, i) => <SkeletonCard key={i} />)}
         </div>
       )}
       {loading && viewMode === "list" && (
@@ -57,14 +61,14 @@ const DirectoryGrid = memo(function DirectoryGrid({
       )}
 
       {/* Empty state */}
-      {!loading && sorted.length === 0 && (
+      {!loading && items.length === 0 && (
         <EmptyDirectory searchQuery={searchQuery} />
       )}
 
       {/* Grid view */}
-      {!loading && sorted.length > 0 && viewMode === "grid" && (
+      {!loading && items.length > 0 && viewMode === "grid" && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12 }}>
-          {sorted.map((item) => (
+          {items.map((item) => (
             <FileCard
               key={(item._id || item.id) + String(item.isDirectory)}
               item={item}
@@ -75,7 +79,7 @@ const DirectoryGrid = memo(function DirectoryGrid({
       )}
 
       {/* List view */}
-      {!loading && sorted.length > 0 && viewMode === "list" && (
+      {!loading && items.length > 0 && viewMode === "list" && (
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10 }}>
           {/* Header row */}
           <div
@@ -92,7 +96,7 @@ const DirectoryGrid = memo(function DirectoryGrid({
             <span style={{ minWidth: 90, textAlign: "right" }} className="hide-sm">Modified</span>
             <span style={{ width: 30 }} />
           </div>
-          {sorted.map((item) => (
+          {items.map((item) => (
             <FileRow
               key={(item._id || item.id) + String(item.isDirectory)}
               item={item}
@@ -101,7 +105,7 @@ const DirectoryGrid = memo(function DirectoryGrid({
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 });
 

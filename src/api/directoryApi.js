@@ -1,8 +1,17 @@
 import { axiosWithCreds } from "./axiosInstances";
 
-export const getDirectoryItems = async (dirId = "") => {
+export const getDirectoryItems = async (
+  dirId = "",
+  { page, limit, search, sortBy, sortDir } = {},
+) => {
   const endpoint = dirId ? `/directories/${dirId}` : "/directories";
-  const { data } = await axiosWithCreds.get(endpoint);
+  const params = { page, limit };
+  if (search) params.search = search;
+  if (sortBy) {
+    params.sortBy = sortBy;
+    params.sortDir = sortDir;
+  }
+  const { data } = await axiosWithCreds.get(endpoint, { params });
   return data;
 };
 

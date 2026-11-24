@@ -5,7 +5,8 @@ import UserSkeleton from "./UserSkeleton";
 
 const UserTable = memo(function UserTable({
   loading,
-  filtered,
+  fetching = false,
+  users,
   canManageUsers,
   TABLE_COLUMNS,
   userEmail,
@@ -20,7 +21,16 @@ const UserTable = memo(function UserTable({
   onCloseMenu,
 }) {
   return (
-    <div style={{ overflowX: "auto", overflowY: "visible" }}>
+    <div
+      aria-busy={fetching}
+      style={{
+        overflowX: "auto",
+        overflowY: "visible",
+        // Previous rows stay visible (dimmed) while the next page loads.
+        opacity: fetching ? 0.6 : 1,
+        transition: "opacity 0.15s",
+      }}
+    >
       <div
         style={{
           background: "var(--surface)",
@@ -57,7 +67,7 @@ const UserTable = memo(function UserTable({
         {loading && <UserSkeleton />}
 
         {/* Empty state */}
-        {!loading && filtered.length === 0 && (
+        {!loading && users.length === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -74,7 +84,7 @@ const UserTable = memo(function UserTable({
 
         {/* Rows */}
         {!loading &&
-          filtered.map((u) => (
+          users.map((u) => (
             <UserRow
               key={u.id}
               u={u}
