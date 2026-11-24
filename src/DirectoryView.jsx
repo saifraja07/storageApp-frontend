@@ -1,10 +1,7 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate, useBlocker } from "react-router-dom";
 import { Trash2 } from "lucide-react";
-import AppLayout from "./components/AppLayout";
 import { useUser } from "./context/UserContext";
-import toast from "react-hot-toast";
-
 import {
   getDirectoryItems,
   createDirectory,
@@ -19,10 +16,19 @@ import {
   uploadComplete,
   uploadInitiate,
 } from "./api/fileApi";
+import {
+  DEFAULT_PAGE_SIZE,
+  SEARCH_DEBOUNCE_MS,
+  scrollListIntoView,
+} from "./utils/pagination";
 import { bulkDeleteItems } from "./api/userApi";
 import { BASE_URL } from "./api/axiosInstances";
-import { getExt, getErr, formatStorage } from "./utils/directoryUtils";
+import { getErr, formatStorage } from "./utils/directoryUtils";
+import { useDebouncedValue } from "./hooks/useDebouncedValue";
+import { usePage } from "./hooks/usePage";
 import { useIsMobile } from "./hooks/useIsMobile";
+import toast from "react-hot-toast";
+import AppLayout from "./components/AppLayout";
 import Breadcrumbs from "./components/BreadCrumb";
 import CreateFolderModal from "./components/CreateFolderModal";
 import ConfirmDialog from "./components/ConfirmDialog";
@@ -35,19 +41,41 @@ import UploadProgressBar from "./components/UploadProgressBar";
 import DirectoryToolbar from "./components/directory/DirectoryToolbar";
 import MobileActionBar from "./components/directory/MobileActionBar";
 import DirectoryGrid from "./components/directory/DirectoryGrid";
+import Pagination from "./components/Pagination";
 import * as uploadManager from "./utils/uploadManager";
 
 // ── Module-level cache — survives navigation (unmount/remount) ────────────
+// One entry per directory *page*: the key carries everything that changes what
+// the server returns (directory, page, page size, search, sort).
 const dirCache = new Map();
+const MAX_CACHE_ENTRIES = 100;
+
+function pageCacheKey({ userId, dirId, page, limit, search, sortBy, sortDir }) {
+  return `${userId}:${dirId || "root"}|p${page}|l${limit}|s${search}|b${sortBy || ""}|d${sortBy ? sortDir : ""}`;
+}
+
+function cacheSet(key, entry) {
+  // Oldest entry goes first (Map keeps insertion order) so the cache can't grow forever.
+  if (dirCache.size >= MAX_CACHE_ENTRIES) dirCache.delete(dirCache.keys().next().value);
+  dirCache.set(key, entry);
+}
+
+// ── Invalidate every cached page (any page/sort/search) of one directory ──
+function invalidateDir(userId, dirId) {
+  const prefix = `${userId}:${dirId || "root"}|`;
+  for (const key of dirCache.keys()) {
+    if (key.startsWith(prefix)) dirCache.delete(key);
+  }
+}
 
 // ── Invalidate a directory's cache plus every ancestor up to root ────────
 function invalidateDirAndAncestors(userId, targetDirId, breadcrumbs) {
   if (!userId) return;
-  dirCache.delete(`${userId}:root`);
-  dirCache.delete(`${userId}:${targetDirId || "root"}`);
+  invalidateDir(userId, "root");
+  invalidateDir(userId, targetDirId);
   (breadcrumbs || []).forEach((crumb) => {
     const id = crumb?._id || crumb?.id;
-    if (id) dirCache.delete(`${userId}:${id}`);
+    if (id) invalidateDir(userId, id);
   });
 }
 
@@ -128,6 +156,11 @@ export default function DirectoryView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [listRefreshing, setListRefreshing] = useState(false);
+  // Next page / new sort / new search in the same directory: keep the current
+  // items (dimmed) instead of flashing the skeleton.
+  const [fetching, setFetching] = useState(false);
+  const [pagination, setPagination] = useState(null);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [sortBy, setSortBy] = useState(null);
   const [sortDir, setSortDir] = useState("asc");
   const [isDragOver, setIsDragOver] = useState(false);
@@ -176,7 +209,29 @@ export default function DirectoryView() {
   const fileInputRef = useRef(null);
   const dragCounter = useRef(0);
   const processUploadRef = useRef(null);
-  const cacheKey = `${user?.id}:${dirId || "root"}`;
+  const listTopRef = useRef(null);
+
+  // ── pagination state ───────────────────────────────────────────────────────
+  // The server does the searching, sorting and paging. Search waits for a pause
+  // in typing; opening another directory, searching, sorting or changing the
+  // page size all start again from page 1.
+  const search = useDebouncedValue(searchQuery.trim(), SEARCH_DEBOUNCE_MS);
+  const [page, setPage] = usePage(
+    `${dirId || "root"}|${search}|${pageSize}|${sortBy || ""}|${sortBy ? sortDir : ""}`,
+  );
+  const query = {
+    userId: user?.id,
+    dirId,
+    page,
+    limit: pageSize,
+    search,
+    sortBy,
+    sortDir,
+  };
+  const cacheKey = pageCacheKey(query);
+  // Always the view that is on screen right now (see loadDirectory).
+  const queryRef = useRef(query);
+  queryRef.current = query;
 
   // ── stale-closure guard ────────────────────────────────────────────────────
   const dirIdRef = useRef(dirId);
@@ -185,40 +240,79 @@ export default function DirectoryView() {
   }, [dirId]);
 
   // ── load directory ─────────────────────────────────────────────────────────
+  const requestIdRef = useRef(0); // only the newest request may update the screen
+  const loadedDirRef = useRef(null); // directory whose items are on screen
+  const breadcrumbsRef = useRef([]);
+  breadcrumbsRef.current = breadcrumbs;
+
   const loadDirectory = useCallback(
     async (opts = {}) => {
-      if (!opts.force && dirCache.has(cacheKey)) {
-        const { directories, files, breadcrumbs: bc } = dirCache.get(cacheKey);
-        setDirectoriesList(directories);
-        setFilesList(files);
-        setBreadcrumbs(bc || []);
+      // Read the live view rather than a closure: this is also called when a
+      // long upload finishes, by which time the user may be on another page.
+      const q = queryRef.current;
+      const dirKey = q.dirId || "root";
+      const key = pageCacheKey(q);
+      const requestId = ++requestIdRef.current;
+      const isLatest = () => requestId === requestIdRef.current;
+
+      const show = (entry) => {
+        setDirectoriesList(entry.directories);
+        setFilesList(entry.files);
+        setPagination(entry.pagination);
+        setBreadcrumbs(entry.breadcrumbs);
+        loadedDirRef.current = dirKey;
+      };
+
+      const cached = !opts.force && dirCache.get(key);
+      if (cached) {
+        show(cached);
         setLoading(false);
+        setFetching(false);
+        setListRefreshing(false); // a refresh this page request superseded must not leave the spinner on
         return;
-      } else if (opts.silent) {
-        setListRefreshing(true);
-      } else {
-        setLoading(true);
       }
+      if (opts.silent) setListRefreshing(true);
+      else if (loadedDirRef.current === dirKey) setFetching(true);
+      else setLoading(true);
+
       try {
+        // Breadcrumbs belong to the directory, not the page: fetch them when
+        // entering a directory (or on an explicit refresh), not per page.
+        const needPath = Boolean(q.dirId) && (opts.force || loadedDirRef.current !== dirKey);
         const [data, pathData] = await Promise.all([
-          getDirectoryItems(dirId),
-          dirId ? getDirectoryPath(dirId) : Promise.resolve(null),
+          getDirectoryItems(q.dirId, q),
+          needPath ? getDirectoryPath(q.dirId) : Promise.resolve(null),
         ]);
-        const dirs = [...data.directories].reverse();
-        const files = [...data.files].reverse();
-        const bc = pathData ? [...pathData.path, pathData.current] : [];
-        dirCache.set(cacheKey, { directories: dirs, files, breadcrumbs: bc });
-        setDirectoriesList(dirs);
-        setFilesList(files);
-        setBreadcrumbs(bc);
+        if (!isLatest()) return;
+
+        const bc = !q.dirId
+          ? []
+          : pathData
+            ? [...pathData.path, pathData.current]
+            : breadcrumbsRef.current;
+        const entry = {
+          directories: data.directories,
+          files: data.files,
+          pagination: data.pagination,
+          breadcrumbs: bc,
+        };
+        // The server moves an out-of-range page (e.g. after deleting the last
+        // item on the last page) to the last valid one: cache and show it as that.
+        const actualPage = entry.pagination.currentPage;
+        cacheSet(pageCacheKey({ ...q, page: actualPage }), entry);
+        show(entry);
+        if (actualPage !== q.page) setPage(actualPage);
       } catch (err) {
-        toast.error(getErr(err));
+        if (isLatest()) toast.error(getErr(err));
       } finally {
-        setLoading(false);
-        setListRefreshing(false);
+        if (isLatest()) {
+          setLoading(false);
+          setFetching(false);
+          setListRefreshing(false);
+        }
       }
     },
-    [cacheKey, dirId],
+    [setPage],
   );
 
   const previousUserId = useRef();
@@ -240,7 +334,7 @@ export default function DirectoryView() {
     loadDirectory();
     setSelectedItems([]);
     setSelectionMode(false);
-  }, [dirId, hasUser, userId, loadDirectory]);
+  }, [cacheKey, hasUser, userId, loadDirectory]);
 
   useEffect(() => {
     localStorage.setItem("viewMode", viewMode);
@@ -417,7 +511,13 @@ export default function DirectoryView() {
             prev.filter((f) => String(f._id || f.id) !== itemId),
           );
       }
-      await refreshUser();
+      // Refill the page from the server (and move back a page if it emptied).
+      await Promise.all([
+        refreshUser(),
+        dirIdRef.current === actionDirId
+          ? loadDirectory({ force: true, silent: true })
+          : null,
+      ]);
       toast.success(`"${item.name}" has been deleted`);
     } catch (err) {
       toast.error(getErr(err));
@@ -431,14 +531,13 @@ export default function DirectoryView() {
   async function handleCreateDirectory(e) {
     e.preventDefault();
     const actionDirId = dirId;
-    const actionCacheKey = cacheKey;
     setCreateLoading(true);
     try {
       await createDirectory(dirId, newDirname);
       const name = newDirname;
       setNewDirname("New Folder");
       setShowCreateDir(false);
-      dirCache.delete(actionCacheKey);
+      invalidateDir(user?.id, actionDirId);
       if (dirIdRef.current === actionDirId)
         loadDirectory({ force: true, silent: true });
       toast.success(`"${name}" folder created`);
@@ -452,14 +551,13 @@ export default function DirectoryView() {
   async function handleRenameSubmit(e) {
     e.preventDefault();
     const actionDirId = dirId;
-    const actionCacheKey = cacheKey;
     setRenameLoading(true);
     try {
       if (renameTarget.type === "file")
         await renameFile(renameTarget.id, renameTarget.value);
       else await renameDirectory(renameTarget.id, renameTarget.value);
       setShowRename(false);
-      dirCache.delete(actionCacheKey);
+      invalidateDir(user?.id, actionDirId);
       if (dirIdRef.current === actionDirId)
         loadDirectory({ force: true, silent: true });
       toast.success(`Renamed to "${renameTarget.value}"`);
@@ -712,45 +810,15 @@ export default function DirectoryView() {
   ]);
 
 
-  const q = searchQuery.trim().toLowerCase();
+  // Everything matching in this directory (all pages), from the server.
+  const totalItems = pagination?.totalItems ?? 0;
 
-  const sorted = useMemo(() => {
-    const filtered = q
-      ? realItems.filter((i) => i.name?.toLowerCase().includes(q))
-      : realItems;
-
-    if (!sortBy) return filtered;
-
-    return [...filtered].sort((a, b) => {
-      if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
-      let av, bv;
-      if (sortBy === "name") {
-        av = (a.name || "").toLowerCase();
-        bv = (b.name || "").toLowerCase();
-      } else if (sortBy === "date") {
-        av = new Date(a.updatedAt || a.createdAt || 0);
-        bv = new Date(b.updatedAt || b.createdAt || 0);
-      } else if (sortBy === "size") {
-        av = a.size || 0;
-        bv = b.size || 0;
-      } else if (sortBy === "type") {
-        av = getExt(a.name);
-        bv = getExt(b.name);
-      } else {
-        av = "";
-        bv = "";
-      }
-      if (av < bv) return sortDir === "asc" ? -1 : 1;
-      if (av > bv) return sortDir === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [realItems, q, sortBy, sortDir]);
-
-  const totalItems = useMemo(
-    () =>
-      directoriesList.length +
-      filesList.filter((f) => !f.id?.startsWith("temp-")).length,
-    [directoriesList, filesList],
+  const changePage = useCallback(
+    (next) => {
+      setPage(next);
+      scrollListIntoView(listTopRef.current);
+    },
+    [setPage],
   );
 
   const itemProps = useMemo(
@@ -851,6 +919,7 @@ export default function DirectoryView() {
 
           {/* File list area */}
           <div
+            ref={listTopRef}
             style={{
               position: "relative",
               minHeight: loading ? undefined : 60,
@@ -859,14 +928,23 @@ export default function DirectoryView() {
 
             <DirectoryGrid
               loading={loading}
+              fetching={fetching}
               viewMode={viewMode}
-              sorted={sorted}
+              items={realItems}
               totalItems={totalItems}
-              searchQuery={searchQuery}
-              q={q}
+              searchQuery={search}
               itemProps={itemProps}
             />
           </div>
+
+          {!loading && (
+            <Pagination
+              pagination={pagination}
+              onPageChange={changePage}
+              onLimitChange={setPageSize}
+              itemLabel="items"
+            />
+          )}
         </div>
       </div>
 

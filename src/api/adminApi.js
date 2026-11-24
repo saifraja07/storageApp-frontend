@@ -1,7 +1,15 @@
 import { axiosWithCreds } from "./axiosInstances";
 
-export const fetchAllUsers = async () => {
-  const { data } = await axiosWithCreds.get("/admin/users");
+export const fetchAllUsers = async ({ page, limit, search, role } = {}) => {
+  const params = { page, limit };
+  if (search) params.search = search;
+  if (role && role !== "all") params.role = role;
+  const { data } = await axiosWithCreds.get("/admin/users", { params });
+  return data;
+};
+
+export const fetchUserStats = async () => {
+  const { data } = await axiosWithCreds.get("/admin/users/stats");
   return data;
 };
 
