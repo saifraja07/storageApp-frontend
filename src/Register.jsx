@@ -1,3 +1,4 @@
+import { Eye, EyeOff } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { sendOtp, verifyOtp } from "./api/authApi";
@@ -39,6 +40,7 @@ export default function Register() {
   const [countdown, setCountdown] = useState(0);
   const [googleError, setGoogleError] = useState("");
   const { refreshUser } = useContext(UserContext);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo =
@@ -465,25 +467,57 @@ export default function Register() {
 
           <div>
             <label style={labelStyle}>Password</label>
-            <input
-              type="password"
-              name="password"
-              autoComplete="new-password"
-              placeholder="Choose a strong password"
-              value={formData.password}
-              onChange={handleChange}
-              style={{
-                ...inputStyle,
-                flex: 1,
-                borderColor: errors.password ? "#EF4444" : "var(--border)",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
-              onBlur={(e) =>
-              (e.target.style.borderColor = errors.password
-                ? "#EF4444"
-                : "var(--border)")
-              }
-            />
+
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                autoComplete="new-password"
+                placeholder="Choose a strong password"
+                value={formData.password}
+                onChange={handleChange}
+                style={{
+                  ...inputStyle,
+                  flex: 1,
+                  paddingRight: 44,
+                  borderColor: errors.password ? "#EF4444" : "var(--border)",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
+                onBlur={(e) =>
+                (e.target.style.borderColor = errors.password
+                  ? "#EF4444"
+                  : "var(--border)")
+                }
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                title={showPassword ? "Hide password" : "Show password"}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 30,
+                  height: 30,
+                  padding: 0,
+                  border: "none",
+                  background: "transparent",
+                  color: "var(--muted)",
+                  cursor: "pointer",
+                  borderRadius: 6,
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
             {errors.password && (
               <p style={{ color: "var(--status-red-text)", fontSize: 12, marginTop: 4 }}>
                 {errors.password}
