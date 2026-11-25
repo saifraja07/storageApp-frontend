@@ -43,7 +43,7 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
           display: "flex",
           alignItems: "center",
           gap: 6,
-          height: 32,
+          height: 37.5,
           padding: "0 12px",
           borderRadius: 8,
           border: "1px solid var(--border)",
@@ -53,6 +53,8 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
           cursor: "pointer",
           fontFamily: "Inter,sans-serif",
           whiteSpace: "nowrap",
+          minWidth: 0,
+          maxWidth: "min(100%, 150px)",
         }}
       >
         {current ? (
@@ -60,7 +62,19 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
             <span style={{ display: "flex" }}>
               <current.icon size={14} aria-hidden="true" />
             </span>
-            <span style={{ fontWeight: 500 }}>{current.label}</span>
+            <span
+              title={current.label}
+              style={{
+                fontWeight: 500,
+                minWidth: 0,
+                flex: "1 1 auto",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {current.label}
+            </span>
             <span style={{ color: "var(--muted)", fontSize: 10, display: "flex" }}>
               {sortDir === "asc" ? (
                 <ArrowUp size={12} aria-hidden="true" />
@@ -74,7 +88,7 @@ export default function SortDropdown({ sortBy, sortDir, onSort }) {
             <span style={{ display: "flex" }}>
               <ArrowUpDown size={14} aria-hidden="true" />
             </span>
-            <span style={{ fontWeight: 500 }}>Sort</span>
+            <span style={{ fontWeight: 500, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Sort</span>
           </>
         )}
 

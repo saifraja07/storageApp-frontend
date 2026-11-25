@@ -1,6 +1,6 @@
 import { memo } from "react";
-import { Search } from "lucide-react";
 import ReloadButton from "../../ReloadButton";
+import SearchInput from "../../SearchInput";
 
 const UserFilters = memo(function UserFilters({
   searchQ,
@@ -19,43 +19,16 @@ const UserFilters = memo(function UserFilters({
         gap: 10,
         marginBottom: 16,
         flexWrap: "wrap",
+        alignItems: "center",
       }}
     >
-      {/* Search */}
-      <div style={{ position: "relative", flex: "1 1 200px", maxWidth: 320 }}>
-        <span
-          style={{
-            position: "absolute",
-            left: 10,
-            top: "50%",
-            transform: "translateY(-50%)",
-            color: "var(--muted)",
-            fontSize: 14,
-            display: "flex",
-          }}
-        >
-          <Search size={14} aria-hidden="true" />
-        </span>
-        <input
-          type="text"
-          placeholder="Search by name or email…"
-          value={searchQ}
-          onChange={(e) => setSearchQ(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px 12px 8px 32px",
-            background: "var(--surface-tint)",
-            border: "1px solid var(--border)",
-            borderRadius: 8,
-            color: "var(--text)",
-            fontSize: 13,
-            outline: "none",
-            fontFamily: "Inter,sans-serif",
-          }}
-          onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
-          onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
-        />
-      </div>
+      {/* Shared search field */}
+      <SearchInput
+        value={searchQ}
+        onChange={setSearchQ}
+        placeholder="Search by name or email…"
+        ariaLabel="Search users by name or email"
+      />
 
       {/* Role filter + count: one unit, so they wrap onto a new line together */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
@@ -63,11 +36,12 @@ const UserFilters = memo(function UserFilters({
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
           style={{
-            padding: "8px 32px 8px 12px",
+            height: 37.5,
+            padding: "0 32px 0 12px",
             background: "var(--surface-hover)",
             border: "1px solid var(--border)",
             borderRadius: 8,
-            color: "var(--text)",
+            color: "var(--muted)",
             fontSize: 13,
             outline: "none",
             fontFamily: "Inter,sans-serif",
@@ -101,13 +75,15 @@ const UserFilters = memo(function UserFilters({
         </div>
       </div>
 
-      {/* Refresh */}
-      <ReloadButton
-        onClick={onRefresh}
-        loading={listRefreshing}
-        label="Refresh users"
-        style={{ marginLeft: "auto" }}
-      />
+      {/* Refresh stays with the toolbar controls on compact layouts. On wider
+          screens it moves to the far edge to use the available space cleanly. */}
+      <div className="admin-users-refresh">
+        <ReloadButton
+          onClick={onRefresh}
+          loading={listRefreshing}
+          label="Refresh users"
+        />
+      </div>
     </div>
   );
 });
