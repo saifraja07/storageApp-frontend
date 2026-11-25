@@ -19,17 +19,17 @@
   --surface: #111827;
   --surface-hover: #1F2937;
   --surface-elevated: #1a2433;
-  --surface-tint: rgba(255,255,255,0.05);
-  --surface-tint-strong: rgba(255,255,255,0.08);
+  --surface-tint: rgba(255, 255, 255, 0.05);
+  --surface-tint-strong: rgba(255, 255, 255, 0.08);
   --primary: #3B82F6;
   --primary-hover: #2563EB;
   --text: #F9FAFB;
   --muted: #94A3B8;
-  --border: rgba(255,255,255,0.08);
-  --divider-strong: rgba(255,255,255,0.18);
-  --label-faint: rgba(255,255,255,0.28);
-  --scrollbar-thumb: rgba(255,255,255,0.15);
-  --shadow-color: rgba(0,0,0,0.5);
+  --border: rgba(255, 255, 255, 0.08);
+  --divider-strong: rgba(255, 255, 255, 0.18);
+  --label-faint: rgba(255, 255, 255, 0.28);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --shadow-color: rgba(0, 0, 0, 0.5);
 
   /* status/semantic text colors (used on top of translucent tinted badges) */
   --status-red-text: #FCA5A5;
@@ -52,17 +52,17 @@
   --surface: #FFFFFF;
   --surface-hover: #EDF1F7;
   --surface-elevated: #FFFFFF;
-  --surface-tint: rgba(15,23,42,0.035);
-  --surface-tint-strong: rgba(15,23,42,0.06);
+  --surface-tint: rgba(15, 23, 42, 0.035);
+  --surface-tint-strong: rgba(15, 23, 42, 0.06);
   --primary: #3B82F6;
   --primary-hover: #2563EB;
   --text: #0F172A;
   --muted: #5B6B82;
-  --border: rgba(15,23,42,0.10);
-  --divider-strong: rgba(15,23,42,0.16);
-  --label-faint: rgba(15,23,42,0.38);
-  --scrollbar-thumb: rgba(15,23,42,0.18);
-  --shadow-color: rgba(15,23,42,0.16);
+  --border: rgba(15, 23, 42, 0.10);
+  --divider-strong: rgba(15, 23, 42, 0.16);
+  --label-faint: rgba(15, 23, 42, 0.38);
+  --scrollbar-thumb: rgba(15, 23, 42, 0.18);
+  --shadow-color: rgba(15, 23, 42, 0.16);
 
   --status-red-text: #DC2626;
   --status-red-text-strong: #B91C1C;
@@ -101,17 +101,21 @@ body {
     align-items: start !important;
     row-gap: 10px !important;
   }
+
   .profile-avatar {
     grid-area: avatar;
   }
+
   .profile-info {
     grid-area: info;
   }
+
   .profile-edit-btn {
     grid-area: edit;
     margin-left: 0 !important;
     justify-self: start;
   }
+
   .edit-profile-text {
     display: none;
   }
@@ -139,10 +143,27 @@ select {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--surface);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 3px;
+}
+
+/* Admin Users toolbar: keep refresh aligned with the other controls when the
+   toolbar wraps on compact screens; only push it to the far edge on desktop. */
+.admin-users-refresh {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-left: 0;
+}
+
+@media (min-width: 769px) {
+  .admin-users-refresh {
+    margin-left: auto;
+  }
 }

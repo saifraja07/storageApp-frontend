@@ -1,48 +1,48 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { useParams, useNavigate, useBlocker } from "react-router-dom";
 import { Trash2 } from "lucide-react";
-import { useUser } from "./context/UserContext";
+import { bulkDeleteItems } from "../api/userApi";
+import { BASE_URL } from "../api/axiosInstances";
+import { usePage } from "../hooks/usePage";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { useUser } from "../context/UserContext";
+import { getErr, formatStorage } from "../utils/directoryUtils";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
+import { useParams, useNavigate, useBlocker } from "react-router-dom";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import {
   getDirectoryItems,
   createDirectory,
   deleteDirectory,
   renameDirectory,
   getDirectoryPath,
-} from "./api/directoryApi";
+} from "../api/directoryApi";
 import {
   deleteFile,
   renameFile,
   uploadCancel,
   uploadComplete,
   uploadInitiate,
-} from "./api/fileApi";
+} from "../api/fileApi";
 import {
   DEFAULT_PAGE_SIZE,
   SEARCH_DEBOUNCE_MS,
   scrollListIntoView,
-} from "./utils/pagination";
-import { bulkDeleteItems } from "./api/userApi";
-import { BASE_URL } from "./api/axiosInstances";
-import { getErr, formatStorage } from "./utils/directoryUtils";
-import { useDebouncedValue } from "./hooks/useDebouncedValue";
-import { usePage } from "./hooks/usePage";
-import { useIsMobile } from "./hooks/useIsMobile";
+} from "../utils/pagination";
 import toast from "react-hot-toast";
-import AppLayout from "./components/AppLayout";
-import Breadcrumbs from "./components/BreadCrumb";
-import CreateFolderModal from "./components/CreateFolderModal";
-import ConfirmDialog from "./components/ConfirmDialog";
-import RenameModal from "./components/RenameModal";
-import DeleteModal from "./components/DeleteModal";
-import DetailsModal from "./components/DetailsModal";
-import UploadZone from "./components/UploadZone";
-import SelectionPropertiesModal from "./components/SelectionPropertiesModal";
-import UploadProgressBar from "./components/UploadProgressBar";
-import DirectoryToolbar from "./components/directory/DirectoryToolbar";
-import MobileActionBar from "./components/directory/MobileActionBar";
-import DirectoryGrid from "./components/directory/DirectoryGrid";
-import Pagination from "./components/Pagination";
-import * as uploadManager from "./utils/uploadManager";
+import AppLayout from "../components/AppLayout";
+import Breadcrumbs from "../components/BreadCrumb";
+import CreateFolderModal from "../components/CreateFolderModal";
+import ConfirmDialog from "../components/ConfirmDialog";
+import RenameModal from "../components/RenameModal";
+import DeleteModal from "../components/DeleteModal";
+import DetailsModal from "../components/DetailsModal";
+import UploadZone from "../components/UploadZone";
+import SelectionPropertiesModal from "../components/SelectionPropertiesModal";
+import UploadProgressBar from "../components/UploadProgressBar";
+import DirectoryToolbar from "../components/directory/DirectoryToolbar";
+import MobileActionBar from "../components/directory/MobileActionBar";
+import DirectoryGrid from "../components/directory/DirectoryGrid";
+import Pagination from "../components/Pagination";
+import * as uploadManager from "../utils/uploadManager";
 
 // ── Module-level cache — survives navigation (unmount/remount) ────────────
 // One entry per directory *page*: the key carries everything that changes what

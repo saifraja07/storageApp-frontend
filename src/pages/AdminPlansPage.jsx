@@ -6,7 +6,6 @@ import { useUser } from "../context/UserContext";
 import { fetchPlansDashboard } from "../api/adminApi";
 import { getErr } from "../utils/directoryUtils";
 import toast from "react-hot-toast";
-import ReloadButton from "../components/ReloadButton";
 import PlanStats from "../components/admin/plansPage/PlanStats";
 import PlansSearchBar from "../components/admin/plansPage/PlansSearchBar";
 import ActivePlansTable from "../components/admin/plansPage/ActivePlansTable";
@@ -104,7 +103,7 @@ export default function AdminPlansPage() {
       <div style={{ padding: "24px 24px", minWidth: 0 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           {/* Header */}
-          <div style={{ marginBottom: 24, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ marginBottom: 24 }}>
             <div style={{ minWidth: 0 }}>
               <h1
                 style={{
@@ -124,12 +123,6 @@ export default function AdminPlansPage() {
                 users.
               </p>
             </div>
-            <ReloadButton
-              onClick={handleRefresh}
-              loading={refreshing}
-              disabled={loading}
-              label="Refresh plan data"
-            />
           </div>
 
           {/* Summary cards */}
@@ -152,6 +145,9 @@ export default function AdminPlansPage() {
               setSearchQ={setSearchQ}
               filteredCount={filteredPlans.length}
               totalCount={data.activePlans.length}
+              onRefresh={handleRefresh}
+              refreshing={refreshing}
+              loading={loading}
             />
             <ActivePlansTable loading={loading} plans={filteredPlans} />
           </div>

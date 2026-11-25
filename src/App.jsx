@@ -8,9 +8,9 @@ import { useUser } from "./context/UserContext";
 import "./App.css";
 
 // ── Lazy-loaded routes (code split per route) ─────────────────────────────
-const DirectoryView = lazy(() => import("./DirectoryView"));
-const Register = lazy(() => import("./Register"));
-const Login = lazy(() => import("./Login"));
+const DirectoryView = lazy(() => import("./pages/DirectoryViewPage"));
+const Register = lazy(() => import("./pages/RegisterPage"));
+const Login = lazy(() => import("./pages/LoginPage"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));

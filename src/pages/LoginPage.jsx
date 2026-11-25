@@ -1,8 +1,9 @@
+import { Eye, EyeOff } from "lucide-react";
 import { useState, useContext } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { loginUser } from "./api/authApi";
-import { UserContext } from "./context/UserContext";
-import GoogleAuthButton from "./components/GoogleAuthButton";
+import { loginUser } from "../api/authApi";
+import { UserContext } from "../context/UserContext";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 const spinnerStyle = {
   width: 16,
@@ -20,6 +21,7 @@ export default function Login() {
   const [serverError, setServerError] = useState("");
   const [googleError, setGoogleError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { refreshUser } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -171,21 +173,54 @@ export default function Login() {
           </div>
           <div>
             <label style={labelStyle}>Password</label>
-            <input
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="Enter Password"
-              value={formData.password}
-              onChange={handleChange}
-              style={inputStyle(!!serverError)}
-              onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
-              onBlur={(e) =>
-              (e.target.style.borderColor = serverError
-                ? "#EF4444"
-                : "var(--border)")
-              }
-            />
+
+            <div style={{ position: "relative" }}>
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Enter Password"
+                value={formData.password}
+                onChange={handleChange}
+                style={{
+                  ...inputStyle(!!serverError),
+                  paddingRight: 44,
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
+                onBlur={(e) =>
+                (e.target.style.borderColor = serverError
+                  ? "#EF4444"
+                  : "var(--border)")
+                }
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                title={showPassword ? "Hide password" : "Show password"}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 30,
+                  height: 30,
+                  padding: 0,
+                  border: "none",
+                  background: "transparent",
+                  color: "var(--muted)",
+                  cursor: "pointer",
+                  borderRadius: 6,
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           {serverError && (
             <div

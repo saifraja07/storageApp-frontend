@@ -99,7 +99,7 @@ const DirectoryActionsMenu = memo(function DirectoryActionsMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         className={[
-          "inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border",
+          "inline-flex h-[37.5px] w-[37.5px] shrink-0 cursor-pointer items-center justify-center rounded-lg border",
           "transition-colors",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--primary)",
           selectionMode || open

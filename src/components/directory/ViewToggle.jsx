@@ -6,10 +6,9 @@ const OPTIONS = [
   ["list", "List view", ListIcon],
 ];
 
-// Segment size. The outer box is 32px tall (2px padding + 1px border each side),
-// so it lines up with the other toolbar buttons.
-const SEG_W = 30;
-const SEG_H = 26;
+// Segment dimensions keep the complete control aligned with 37.5px toolbar fields.
+const SEG_W = 34;
+const SEG_H = 31.5;
 
 // ── Connected Grid / List switch ──────────────────────────────────────────
 // Both buttons live in one bordered box; a single highlight "thumb" slides
@@ -21,7 +20,7 @@ const ViewToggle = memo(function ViewToggle({ viewMode, setViewMode }) {
     <div
       role="group"
       aria-label="View mode"
-      className="relative inline-flex h-8 shrink-0 items-center rounded-lg border border-(--border) bg-(--surface-hover)"
+      className="relative inline-flex h-[37.5px] shrink-0 items-center rounded-lg border border-(--border) bg-(--surface-hover)"
       style={{ padding: 2 }}
     >
       <span

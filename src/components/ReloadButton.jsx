@@ -44,10 +44,18 @@ const ReloadButton = memo(function ReloadButton({
       aria-label={label}
       aria-busy={loading}
       title={label}
-      style={{ ...(showText ? { paddingInline: 12 } : null), ...style }}
+      style={{
+        ...(showText ? { paddingInline: 12 } : null),
+        ...style,
+        // Keep the control from compressing enough to wrap its label.
+        boxSizing: "border-box",
+        whiteSpace: "nowrap",
+        flex: "0 0 auto",
+        minWidth: showText ? 88 : 37.5,
+      }}
       className={[
-        "inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5",
-        showText ? "text-[13px] font-medium whitespace-nowrap" : "w-8",
+        "inline-flex h-[37.5px] shrink-0 cursor-pointer items-center justify-center gap-1.5",
+        showText ? "text-[13px] font-medium whitespace-nowrap" : "w-[37.5px]",
         "rounded-lg border border-(--border) bg-(--surface-hover) text-(--muted)",
         "transition-colors",
         "hover:enabled:bg-(--surface-tint-strong) hover:enabled:text-(--text)",
