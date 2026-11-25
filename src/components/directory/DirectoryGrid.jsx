@@ -15,8 +15,8 @@ const DirectoryGrid = memo(function DirectoryGrid({
   return (
     // While the next page loads the current items stay visible, dimmed.
     <div
-      aria-busy={fetching}
-      style={{ opacity: fetching ? 0.6 : 1, transition: "opacity 0.15s" }}
+      aria-busy={loading || fetching}
+      style={{ opacity: fetching && !loading ? 0.6 : 1, transition: "opacity 0.15s" }}
     >
       {/* Item count (left) + selected count while in selection mode (right) */}
       {!loading && (

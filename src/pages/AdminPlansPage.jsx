@@ -72,6 +72,7 @@ export default function AdminPlansPage() {
     if (refreshing) return;
     try {
       setRefreshing(true);
+      setLoading(true);
       setData(await fetchPlansDashboard());
       toast.success("Plan data refreshed");
     } catch (err) {
@@ -80,6 +81,7 @@ export default function AdminPlansPage() {
       else toast.error(getErr(err));
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   }
 
@@ -174,6 +176,10 @@ export default function AdminPlansPage() {
       </div>
 
       <style>{`
+        @keyframes skpulse {
+          0%,100% { opacity:0.4 }
+          50% { opacity:0.8 }
+        }
         @media (max-width: 900px) {
           .plans-bottom-grid { grid-template-columns: 1fr !important; }
         }

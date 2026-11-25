@@ -48,6 +48,8 @@ export default function AdminR2UsagePage() {
     if (refreshing) return;
     try {
       setRefreshing(true);
+      setLoading(true);
+      setLoadError("");
       const accs = extractAccounts(await refreshR2Usage());
       if (!accs) throw new Error("Unexpected response from server.");
       setAccounts(accs);
@@ -61,6 +63,7 @@ export default function AdminR2UsagePage() {
       else toast.error(getErr(err));
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   }
 
@@ -187,7 +190,7 @@ export default function AdminR2UsagePage() {
           {!loading && accounts && Object.keys(accounts).length > 0 && (
             <div style={gridStyle}>
               {Object.entries(accounts).map(([key, account]) => (
-                <R2AccountCard key={key} account={account} refreshing={refreshing} />
+                <R2AccountCard key={key} account={account} />
               ))}
             </div>
           )}
