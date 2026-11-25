@@ -1,9 +1,9 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState, useContext } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { loginUser } from "./api/authApi";
-import { UserContext } from "./context/UserContext";
-import GoogleAuthButton from "./components/GoogleAuthButton";
+import { loginUser } from "../api/authApi";
+import { UserContext } from "../context/UserContext";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 const spinnerStyle = {
   width: 16,

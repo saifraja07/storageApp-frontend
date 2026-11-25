@@ -35,10 +35,7 @@ src/
 ├── pages/                # Route-level page components
 ├── utils/                # uploadManager, directoryUtils, logger
 ├── App.jsx               # Router setup + route guards
-├── main.jsx              # App entry point, providers
-├── Login.jsx
-├── Register.jsx
-└── DirectoryView.jsx      # Main file browser page
+└── main.jsx              # App entry point, providers
 ```
 
 ## Features
