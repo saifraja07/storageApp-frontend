@@ -28,7 +28,7 @@ const SQUARE = {
   padding: 0,
 };
 
-function RowsPerPage({ value, onChange, compact, size }) {
+function RowsPerPage({ value, onChange, compact, size, disabled }) {
   return (
     <label
       style={{
@@ -42,6 +42,7 @@ function RowsPerPage({ value, onChange, compact, size }) {
       <span style={{ position: "relative", display: "inline-flex" }}>
         <select
           value={value}
+          disabled={disabled}
           onChange={(e) => onChange(Number(e.target.value))}
           aria-label="page size"
           className={`cursor-pointer appearance-none rounded-lg border border-(--border) bg-(--surface-hover) text-[13px] font-medium text-(--text) outline-none ${FOCUS}`}
@@ -82,6 +83,7 @@ const Pagination = memo(function Pagination({
   onPageChange,
   onLimitChange,
   itemLabel = "items",
+  isLoading = false,
 }) {
   const isMobile = useIsMobile();
 
@@ -116,6 +118,7 @@ const Pagination = memo(function Pagination({
       onChange={onLimitChange}
       compact={isMobile}
       size={CONTROL}
+      disabled={isLoading}
     />
   );
 
@@ -133,7 +136,7 @@ const Pagination = memo(function Pagination({
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage <= 1}
+        disabled={isLoading || currentPage <= 1}
         aria-label="Previous page"
         title="Previous page"
         className={`${BUTTON_BASE} ${BUTTON_IDLE}`}
@@ -163,7 +166,8 @@ const Pagination = memo(function Pagination({
           <button
             key={item}
             type="button"
-            onClick={() => item !== currentPage && onPageChange(item)}
+            onClick={() => !isLoading && item !== currentPage && onPageChange(item)}
+            disabled={isLoading}
             aria-label={`Page ${item}`}
             aria-current={item === currentPage ? "page" : undefined}
             className={`${BUTTON_BASE} ${item === currentPage ? BUTTON_CURRENT : BUTTON_IDLE
@@ -184,7 +188,7 @@ const Pagination = memo(function Pagination({
       <button
         type="button"
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages}
+        disabled={isLoading || currentPage >= totalPages}
         aria-label="Next page"
         title="Next page"
         className={`${BUTTON_BASE} ${BUTTON_IDLE}`}
@@ -202,7 +206,7 @@ const Pagination = memo(function Pagination({
   };
 
   return (
-    <nav aria-label={`${itemLabel} pagination`}>
+    <nav aria-label={`${itemLabel} pagination`} aria-busy={isLoading}>
       {isMobile ? (
         // Phone: page buttons first, details underneath.
         <div

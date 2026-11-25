@@ -33,7 +33,6 @@ export default function AdminUsersPage() {
   const [pagination, setPagination] = useState(null);
   const [stats, setStats] = useState({ total: 0, active: 0, admins: 0, deleted: 0 });
   const [loading, setLoading] = useState(true);
-  // Next page / new filter: keep the current rows (dimmed) instead of a skeleton.
   const [fetching, setFetching] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -67,26 +66,31 @@ export default function AdminUsersPage() {
   const navigateRef = useRef(navigate);
   navigateRef.current = navigate;
 
+  // Resolves true only when this request's result was applied to the screen
+  // (false: it failed, was superseded by a newer request, or redirected to
+  // another page). The manual-refresh toast depends on it.
   const loadUsers = useCallback(async () => {
     const requestId = ++requestIdRef.current;
     const isLatest = () => requestId === requestIdRef.current;
     try {
       const data = await fetchAllUsers({ page, limit: pageSize, search, role: filterRole });
-      if (!isLatest()) return;
+      if (!isLatest()) return false;
       // The page no longer exists (e.g. its last user was deleted): the server
       // answered with the last valid page, so move there; that reloads it.
       if (data.pagination.currentPage !== page) {
         setPage(data.pagination.currentPage);
-        return;
+        return false;
       }
       setUsers(data.users);
       setPagination(data.pagination);
       hasLoadedRef.current = true;
+      return true;
     } catch (err) {
-      if (!isLatest()) return;
+      if (!isLatest()) return false;
       if (err.response?.status === 403) navigateRef.current("/directory");
       else if (err.response?.status === 401) navigateRef.current("/login");
       else if (hasLoadedRef.current) toast.error(getErr(err));
+      return false;
     } finally {
       if (isLatest()) {
         setLoading(false);
@@ -115,18 +119,39 @@ export default function AdminUsersPage() {
   }, [loadStats]);
 
   // Reload button / after an action: refresh the current page and the totals.
-  const refreshUsers = useCallback(async () => {
+  const refreshUsers = useCallback(async ({ showSkeleton = false } = {}) => {
+    if (showSkeleton) setLoading(true);
     setListRefreshing(true);
-    await Promise.all([loadUsers(), loadStats()]);
+    const [applied] = await Promise.all([loadUsers(), loadStats()]);
+    return applied;
   }, [loadUsers, loadStats]);
+
+  // Only the Refresh button toasts, and only when its own request succeeded
+  // and was not superseded (failures already show their own error toast).
+  const handleManualRefresh = useCallback(async () => {
+    const applied = await refreshUsers({ showSkeleton: true });
+    if (applied) toast.success("Users refreshed successfully");
+  }, [refreshUsers]);
 
   const changePage = useCallback(
     (next) => {
+      // Same page => the loader does not re-run, so the shimmer would never
+      // be cleared (reachable after a failed page fetch, when the page state
+      // is ahead of the rows on screen).
+      if (next === page) return;
+      setLoading(true);
       setPage(next);
       scrollListIntoView(tableTopRef.current);
     },
-    [setPage],
+    [page, setPage],
   );
+
+  // A page-size change always requests a different result set, so use the
+  // existing table skeleton instead of dimming the previous rows.
+  const changePageSize = useCallback((nextSize) => {
+    setLoading(true);
+    setPageSize(nextSize);
+  }, []);
 
   useEffect(() => {
     const closeMenu = () => setOpenMenuId(null);
@@ -243,7 +268,7 @@ export default function AdminUsersPage() {
             setFilterRole={setFilterRole}
             filteredCount={pagination?.totalItems ?? 0}
             totalCount={Math.max(stats.total, pagination?.totalItems ?? 0)}
-            onRefresh={refreshUsers}
+            onRefresh={handleManualRefresh}
             listRefreshing={listRefreshing}
           />
 
@@ -266,14 +291,13 @@ export default function AdminUsersPage() {
             onCloseMenu={() => setOpenMenuId(null)}
           />
 
-          {!loading && (
-            <Pagination
-              pagination={pagination}
-              onPageChange={changePage}
-              onLimitChange={setPageSize}
-              itemLabel="users"
-            />
-          )}
+          <Pagination
+            pagination={pagination}
+            onPageChange={changePage}
+            onLimitChange={changePageSize}
+            itemLabel="users"
+            isLoading={loading || fetching}
+          />
         </div>
       </div>
 

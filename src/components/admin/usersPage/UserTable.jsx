@@ -22,12 +22,11 @@ const UserTable = memo(function UserTable({
 }) {
   return (
     <div
-      aria-busy={fetching}
+      aria-busy={loading || fetching}
       style={{
         overflowX: "auto",
         overflowY: "visible",
-        // Previous rows stay visible (dimmed) while the next page loads.
-        opacity: fetching ? 0.6 : 1,
+        opacity: fetching && !loading ? 0.6 : 1,
         transition: "opacity 0.15s",
       }}
     >

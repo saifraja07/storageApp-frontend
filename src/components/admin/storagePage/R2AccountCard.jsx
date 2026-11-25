@@ -89,7 +89,7 @@ function OperationMetric({ title, metric }) {
   );
 }
 
-const R2AccountCard = memo(function R2AccountCard({ account, refreshing }) {
+const R2AccountCard = memo(function R2AccountCard({ account }) {
   const { label, status, storage, operations, lastSyncedAt, error } = account;
   const message = error?.message;
   const hasData = Boolean(storage && operations);
@@ -104,8 +104,6 @@ const R2AccountCard = memo(function R2AccountCard({ account, refreshing }) {
         border: "1px solid var(--border)",
         borderRadius: 12,
         padding: "16px 18px",
-        opacity: refreshing ? 0.6 : 1,
-        transition: "opacity 0.2s",
       }}
     >
       <header

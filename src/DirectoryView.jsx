@@ -156,8 +156,7 @@ export default function DirectoryView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [listRefreshing, setListRefreshing] = useState(false);
-  // Next page / new sort / new search in the same directory: keep the current
-  // items (dimmed) instead of flashing the skeleton.
+  // Search, sort and background updates keep the current items visible while fetching.
   const [fetching, setFetching] = useState(false);
   const [pagination, setPagination] = useState(null);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
@@ -241,6 +240,7 @@ export default function DirectoryView() {
 
   // ── load directory ─────────────────────────────────────────────────────────
   const requestIdRef = useRef(0); // only the newest request may update the screen
+  const showSkeletonOnNextLoadRef = useRef(false);
   const loadedDirRef = useRef(null); // directory whose items are on screen
   const breadcrumbsRef = useRef([]);
   breadcrumbsRef.current = breadcrumbs;
@@ -254,6 +254,8 @@ export default function DirectoryView() {
       const key = pageCacheKey(q);
       const requestId = ++requestIdRef.current;
       const isLatest = () => requestId === requestIdRef.current;
+      const showSkeleton = Boolean(opts.showSkeleton || showSkeletonOnNextLoadRef.current);
+      showSkeletonOnNextLoadRef.current = false;
 
       const show = (entry) => {
         setDirectoriesList(entry.directories);
@@ -263,6 +265,8 @@ export default function DirectoryView() {
         loadedDirRef.current = dirKey;
       };
 
+      // Prefer cached pages even when a page-change shimmer was requested.
+      // The shimmer is only shown when this page actually needs a network fetch.
       const cached = !opts.force && dirCache.get(key);
       if (cached) {
         show(cached);
@@ -271,7 +275,11 @@ export default function DirectoryView() {
         setListRefreshing(false); // a refresh this page request superseded must not leave the spinner on
         return;
       }
-      if (opts.silent) setListRefreshing(true);
+      if (showSkeleton) {
+        setLoading(true);
+        setFetching(false);
+        if (opts.silent) setListRefreshing(true);
+      } else if (opts.silent) setListRefreshing(true);
       else if (loadedDirRef.current === dirKey) setFetching(true);
       else setLoading(true);
 
@@ -649,7 +657,7 @@ export default function DirectoryView() {
   }, []);
 
   const handleRefresh = useCallback(
-    () => loadDirectory({ force: true, silent: true }),
+    () => loadDirectory({ force: true, silent: true, showSkeleton: true }),
     [loadDirectory],
   );
 
@@ -815,11 +823,22 @@ export default function DirectoryView() {
 
   const changePage = useCallback(
     (next) => {
+      // Same page => cacheKey is unchanged and no load runs, so the flag would
+      // stay armed and later turn an action refresh into a shimmer.
+      if (next === page) return;
+      showSkeletonOnNextLoadRef.current = true;
       setPage(next);
       scrollListIntoView(listTopRef.current);
     },
-    [setPage],
+    [page, setPage],
   );
+
+  // Page-size changes use the same cache-aware shimmer path as page changes.
+  // Cached result sets still render immediately inside loadDirectory.
+  const changePageSize = useCallback((nextSize) => {
+    showSkeletonOnNextLoadRef.current = true;
+    setPageSize(nextSize);
+  }, []);
 
   const itemProps = useMemo(
     () => ({
@@ -937,14 +956,13 @@ export default function DirectoryView() {
             />
           </div>
 
-          {!loading && (
-            <Pagination
-              pagination={pagination}
-              onPageChange={changePage}
-              onLimitChange={setPageSize}
-              itemLabel="items"
-            />
-          )}
+          <Pagination
+            pagination={pagination}
+            onPageChange={changePage}
+            onLimitChange={changePageSize}
+            itemLabel="items"
+            isLoading={loading || fetching}
+          />
         </div>
       </div>
 
